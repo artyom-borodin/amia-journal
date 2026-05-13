@@ -1,6 +1,12 @@
-.w-full { width: 100%; }
-.text-center { text-align: center; }
-.mt-3 { margin-top: 1rem; }
+.w-full {
+  width: 100%;
+}
+.text-center {
+  text-align: center;
+}
+.mt-3 {
+  margin-top: 1rem;
+}
 
 .layout-wrapper {
   min-height: 100vh;

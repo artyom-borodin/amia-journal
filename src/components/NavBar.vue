@@ -5,16 +5,22 @@
     </div>
     <div class="navbar-actions">
       <span class="user-role">{{ userRole }}</span>
-      <Button :label="APP_CONSTANTS.UI.LABELS.LOGOUT_BTN" icon="pi pi-sign-out" severity="secondary" text @click="handleLogout" />
+      <Button
+        :label="APP_CONSTANTS.UI.LABELS.LOGOUT_BTN"
+        icon="pi pi-sign-out"
+        severity="secondary"
+        text
+        @click="handleLogout"
+      />
     </div>
   </header>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
-import { APP_CONSTANTS } from '../config/constants';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../store/authStore";
+import { APP_CONSTANTS } from "../config/constants";
 
 const router = useRouter();
 const authStore = useAuthStore();

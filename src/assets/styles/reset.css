@@ -1,5 +1,13 @@
 :root {
-  font-family: var(--p-font-family, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif);
+  font-family: var(
+    --p-font-family,
+    Inter,
+    system-ui,
+    Avenir,
+    Helvetica,
+    Arial,
+    sans-serif
+  );
   font-size: 14px;
   color: var(--p-text-color);
   background-color: var(--p-surface-50);
@@ -8,7 +16,9 @@
   box-sizing: border-box;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 

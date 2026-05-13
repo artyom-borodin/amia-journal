@@ -1,11 +1,18 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import { JournalService } from '../services/journalService';
-import { APP_CONSTANTS } from '../config/constants';
-import { generateCellKey } from '../utils/journalUtils';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { JournalService } from "../services/journalService";
+import { APP_CONSTANTS } from "../config/constants";
+import { generateCellKey } from "../utils/journalUtils";
 
-export const useJournalStore = defineStore('journal', () => {
-  const dicts = ref({ groups: [], subjects: [], markKinds: [], markValues: [], lessonTimes: [], attendanceReasons: [] });
+export const useJournalStore = defineStore("journal", () => {
+  const dicts = ref({
+    groups: [],
+    subjects: [],
+    markKinds: [],
+    markValues: [],
+    lessonTimes: [],
+    attendanceReasons: [],
+  });
   const persons = ref([]);
   const lessons = ref([]);
   const recordsMap = ref({});
@@ -18,33 +25,43 @@ export const useJournalStore = defineStore('journal', () => {
 
   const fetchGridData = async (studentType, groupId, subjectId) => {
     if (!groupId || !subjectId) return;
-    
+
     isLoading.value = true;
     try {
       const [personsData, journalData] = await Promise.all([
         JournalService.getPersons(studentType, groupId),
-        JournalService.getJournalData(groupId, subjectId)
+        JournalService.getJournalData(groupId, subjectId),
       ]);
 
       persons.value = personsData;
-      
+
       lessons.value = journalData.lessons.sort((a, b) => {
         if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-        const timeA = dicts.value.lessonTimes.find(t => t.id === a.lesson_time)?.number || 0;
-        const timeB = dicts.value.lessonTimes.find(t => t.id === b.lesson_time)?.number || 0;
+        const timeA =
+          dicts.value.lessonTimes.find((t) => t.id === a.lesson_time)?.number ||
+          0;
+        const timeB =
+          dicts.value.lessonTimes.find((t) => t.id === b.lesson_time)?.number ||
+          0;
         return timeA - timeB;
       });
 
       const rMap = {};
-      journalData.records.forEach(r => {
-        const personId = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? r.cadet : r.student;
+      journalData.records.forEach((r) => {
+        const personId =
+          studentType === APP_CONSTANTS.STUDENT_TYPES.CADET
+            ? r.cadet
+            : r.student;
         rMap[generateCellKey(personId, r.mark_date, r.lesson_time)] = r;
       });
       recordsMap.value = rMap;
 
       const aMap = {};
-      journalData.attendances.forEach(a => {
-        const personId = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? a.cadet : a.student;
+      journalData.attendances.forEach((a) => {
+        const personId =
+          studentType === APP_CONSTANTS.STUDENT_TYPES.CADET
+            ? a.cadet
+            : a.student;
         aMap[generateCellKey(personId, a.date, a.lesson_time)] = a;
       });
       attendancesMap.value = aMap;
@@ -53,36 +70,49 @@ export const useJournalStore = defineStore('journal', () => {
     }
   };
 
-  const saveCellData = async ({ reason, mark_value, person, lesson, record, attendance, studentType, userId }) => {
+  const saveCellData = async ({
+    reason,
+    mark_value,
+    person,
+    lesson,
+    record,
+    attendance,
+    studentType,
+    userId,
+  }) => {
     const isCadet = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET;
     const basePayload = {
       date: lesson.date,
       lesson_time: lesson.lesson_time,
       subject: lesson.subject,
       cadet: isCadet ? person.id : null,
-      student: !isCadet ? person.id : null
+      student: !isCadet ? person.id : null,
     };
 
     const promises = [];
 
     if (reason !== null || attendance?.id) {
-      promises.push(JournalService.saveAttendance({
-        ...basePayload,
-        id: attendance?.id,
-        reason: reason
-      }));
+      promises.push(
+        JournalService.saveAttendance({
+          ...basePayload,
+          id: attendance?.id,
+          reason: reason,
+        }),
+      );
     }
 
     if (mark_value !== null || record?.id) {
-      promises.push(JournalService.saveRecord({
-        ...basePayload,
-        id: record?.id,
-        mark_date: lesson.date,
-        mark_kind: lesson.mark_kind,
-        mark_value: mark_value,
-        who_rated: userId,
-        is_active: true
-      }));
+      promises.push(
+        JournalService.saveRecord({
+          ...basePayload,
+          id: record?.id,
+          mark_date: lesson.date,
+          mark_kind: lesson.mark_kind,
+          mark_value: mark_value,
+          who_rated: userId,
+          is_active: true,
+        }),
+      );
     }
 
     return Promise.all(promises);
@@ -102,6 +132,6 @@ export const useJournalStore = defineStore('journal', () => {
     fetchFilters,
     fetchGridData,
     saveCellData,
-    addLesson
+    addLesson,
   };
 });

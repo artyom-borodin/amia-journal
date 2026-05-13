@@ -1,11 +1,15 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { AuthService } from '../services/authService';
-import { APP_CONSTANTS } from '../config/constants';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { AuthService } from "../services/authService";
+import { APP_CONSTANTS } from "../config/constants";
 
-export const useAuthStore = defineStore('auth', () => {
-  const token = ref(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN) || null);
-  const user = ref(JSON.parse(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.USER)) || null);
+export const useAuthStore = defineStore("auth", () => {
+  const token = ref(
+    localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN) || null,
+  );
+  const user = ref(
+    JSON.parse(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.USER)) || null,
+  );
 
   const isAuthenticated = computed(() => !!token.value);
   const userRole = computed(() => user.value?.role || null);
@@ -14,9 +18,12 @@ export const useAuthStore = defineStore('auth', () => {
     const data = await AuthService.login(credentials);
     token.value = data.token;
     user.value = data.user;
-    
+
     localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN, data.token);
-    localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.USER, JSON.stringify(data.user));
+    localStorage.setItem(
+      APP_CONSTANTS.STORAGE_KEYS.USER,
+      JSON.stringify(data.user),
+    );
   };
 
   const logout = () => {

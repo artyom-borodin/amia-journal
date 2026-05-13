@@ -1,40 +1,41 @@
 <template>
   <div class="layout-wrapper">
     <NavBar />
-    
+    <Toast />
+
     <main class="journal-main">
       <Card class="filters-card">
         <template #content>
           <div class="filters-row">
             <div class="filter-item">
               <label>{{ APP_CONSTANTS.UI.LABELS.GROUP }}</label>
-              <Select 
-                v-model="selectedGroup" 
-                :options="journalStore.dicts.groups" 
-                optionLabel="group_name" 
-                optionValue="id" 
-                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_GROUP" 
-                class="w-full" 
+              <Select
+                v-model="selectedGroup"
+                :options="journalStore.dicts.groups"
+                optionLabel="group_name"
+                optionValue="id"
+                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_GROUP"
+                class="w-full"
               />
             </div>
             <div class="filter-item">
               <label>{{ APP_CONSTANTS.UI.LABELS.SUBJECT }}</label>
-              <Select 
-                v-model="selectedSubject" 
-                :options="journalStore.dicts.subjects" 
-                optionLabel="subject_name" 
-                optionValue="id" 
-                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SUBJECT" 
-                class="w-full" 
+              <Select
+                v-model="selectedSubject"
+                :options="journalStore.dicts.subjects"
+                optionLabel="subject_name"
+                optionValue="id"
+                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SUBJECT"
+                class="w-full"
               />
             </div>
             <div class="filter-action">
-              <Button 
-                v-if="selectedGroup && selectedSubject" 
-                :label="APP_CONSTANTS.UI.LABELS.ADD_LESSON" 
-                icon="pi pi-plus" 
-                severity="success" 
-                @click="showAddLessonModal = true" 
+              <Button
+                v-if="selectedGroup && selectedSubject"
+                :label="APP_CONSTANTS.UI.LABELS.ADD_LESSON"
+                icon="pi pi-plus"
+                severity="success"
+                @click="showAddLessonModal = true"
               />
             </div>
           </div>
@@ -51,7 +52,7 @@
       </div>
 
       <div v-else class="grid-container">
-        <JournalGrid 
+        <JournalGrid
           :persons="journalStore.persons"
           :lessons="journalStore.lessons"
           :records-map="journalStore.recordsMap"
@@ -61,7 +62,7 @@
         />
       </div>
 
-      <CellModal 
+      <CellModal
         v-if="selectedCell"
         :visible="!!selectedCell"
         :person="selectedCell.person"
@@ -74,49 +75,60 @@
         @save="handleSaveCell"
       />
 
-      <AddLessonModal 
+      <AddLessonModal
         :visible="showAddLessonModal"
         :dicts="journalStore.dicts"
         @update:visible="showAddLessonModal = $event"
         @add="handleAddLesson"
       />
-
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import NavBar from '../components/NavBar.vue';
-import JournalGrid from '../components/JournalGrid.vue';
-import CellModal from '../components/CellModal.vue';
-import AddLessonModal from '../components/AddLessonModal.vue';
-import { useAuthStore } from '../store/authStore';
-import { useJournalStore } from '../store/journalStore';
-import { APP_CONSTANTS } from '../config/constants';
-import { generateCellKey } from '../utils/journalUtils';
+import { ref, onMounted, watch } from "vue";
+import { useToast } from "primevue/usetoast";
+import NavBar from "../components/NavBar.vue";
+import JournalGrid from "../components/JournalGrid.vue";
+import CellModal from "../components/CellModal.vue";
+import AddLessonModal from "../components/AddLessonModal.vue";
+import { useAuthStore } from "../store/authStore";
+import { useJournalStore } from "../store/journalStore";
+import { APP_CONSTANTS } from "../config/constants";
+import { generateCellKey } from "../utils/journalUtils";
 
 const props = defineProps({ studentType: String });
 const authStore = useAuthStore();
 const journalStore = useJournalStore();
+const toast = useToast();
 
-const selectedGroup = ref('');
-const selectedSubject = ref('');
+const selectedGroup = ref(null);
+const selectedSubject = ref(null);
 
 const showAddLessonModal = ref(false);
 const selectedCell = ref(null);
 const isSavingCell = ref(false);
 
 const loadGridData = async () => {
-  await journalStore.fetchGridData(props.studentType, selectedGroup.value, selectedSubject.value);
+  await journalStore.fetchGridData(
+    props.studentType,
+    selectedGroup.value,
+    selectedSubject.value,
+  );
 };
 
 const openCellModal = ({ person, lesson }) => {
   selectedCell.value = {
     person,
     lesson,
-    record: journalStore.recordsMap[generateCellKey(person.id, lesson.date, lesson.lesson_time)],
-    attendance: journalStore.attendancesMap[generateCellKey(person.id, lesson.date, lesson.lesson_time)]
+    record:
+      journalStore.recordsMap[
+        generateCellKey(person.id, lesson.date, lesson.lesson_time)
+      ],
+    attendance:
+      journalStore.attendancesMap[
+        generateCellKey(person.id, lesson.date, lesson.lesson_time)
+      ],
   };
 };
 
@@ -131,13 +143,18 @@ const handleSaveCell = async ({ reason, mark_value }) => {
       record: selectedCell.value.record,
       attendance: selectedCell.value.attendance,
       studentType: props.studentType,
-      userId: authStore.user.id
+      userId: authStore.user.id,
     });
-    
+
     selectedCell.value = null;
     await loadGridData();
-  } catch (error) {
-    alert(APP_CONSTANTS.UI.ERRORS.SAVE_DATA);
+  } catch {
+    toast.add({
+      severity: "error",
+      summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
+      detail: APP_CONSTANTS.UI.ERRORS.SAVE_DATA,
+      life: 3000,
+    });
   } finally {
     isSavingCell.value = false;
   }
@@ -148,12 +165,17 @@ const handleAddLesson = async (lessonData) => {
     await journalStore.addLesson({
       ...lessonData,
       group: selectedGroup.value,
-      subject: selectedSubject.value
+      subject: selectedSubject.value,
     });
     showAddLessonModal.value = false;
     await loadGridData();
-  } catch (error) {
-    alert(APP_CONSTANTS.UI.ERRORS.ADD_LESSON);
+  } catch {
+    toast.add({
+      severity: "error",
+      summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
+      detail: APP_CONSTANTS.UI.ERRORS.ADD_LESSON,
+      life: 3000,
+    });
   }
 };
 

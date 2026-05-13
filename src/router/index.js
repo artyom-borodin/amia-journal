@@ -1,32 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
-import { APP_CONSTANTS } from '../config/constants';
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../store/authStore";
+import { APP_CONSTANTS } from "../config/constants";
 
 const routes = [
   {
     path: APP_CONSTANTS.ROUTES.LOGIN,
-    name: 'Login',
-    component: () => import('../views/LoginView.vue'),
-    meta: { requiresGuest: true }
+    name: "Login",
+    component: () => import("../views/LoginView.vue"),
+    meta: { requiresGuest: true },
   },
   {
     path: APP_CONSTANTS.ROUTES.DASHBOARD,
-    name: 'Dashboard',
-    component: () => import('../views/DashboardView.vue'),
-    meta: { requiresAuth: true }
+    name: "Dashboard",
+    component: () => import("../views/DashboardView.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: `${APP_CONSTANTS.ROUTES.JOURNAL}/:studentType`,
-    name: 'Journal',
-    component: () => import('../views/JournalView.vue'),
+    name: "Journal",
+    component: () => import("../views/JournalView.vue"),
     meta: { requiresAuth: true },
-    props: true
-  }
+    props: true,
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
