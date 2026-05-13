@@ -1,15 +1,29 @@
 .w-full {
   width: 100%;
 }
+
 .text-center {
   text-align: center;
 }
+
 .mt-3 {
-  margin-top: 1rem;
+  margin-top: var(--space-3);
 }
 
 .layout-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Shared form field - used in login, modal, and journal filters */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field label {
+  font-weight: var(--fw-semibold);
+  color: var(--p-surface-700);
 }

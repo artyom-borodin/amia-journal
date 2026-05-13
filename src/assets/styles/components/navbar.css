@@ -2,28 +2,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: var(--space-3) var(--space-6);
   background-color: var(--p-primary-color);
   color: var(--p-primary-contrast-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
+
 .navbar-brand {
-  font-size: 1.25rem;
-  font-weight: bold;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   cursor: pointer;
 }
+
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-5);
 }
+
 .user-role {
-  opacity: 0.9;
-  font-size: 0.9rem;
+  opacity: var(--opacity-muted);
+  font-size: var(--fs-sm);
 }
+
+/* PrimeVue overrides for inverted navbar context */
 .navbar .p-button.p-button-secondary.p-button-text {
   color: var(--p-primary-contrast-color);
 }
+
 .navbar .p-button.p-button-secondary.p-button-text:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-overlay-light);
 }

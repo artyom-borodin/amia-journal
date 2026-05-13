@@ -4,17 +4,21 @@
   align-items: center;
   min-height: 100vh;
 }
+
 .login-card {
   width: 100%;
-  max-width: 450px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: var(--size-login-card);
+  box-shadow: var(--shadow-md);
 }
+
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  margin-top: 1rem;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
 }
+
+/* PrimeVue Password override: inner input must fill container */
 .login-form .p-password input {
   width: 100%;
 }

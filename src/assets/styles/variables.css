@@ -1,6 +1,53 @@
 :root {
-  --modal-sm-width: 400px;
-  --modal-md-width: 500px;
+  /* ─── Typography scale ──────────────────────────────────────────────── */
+  --fs-2xs: clamp(0.625rem, 0.55rem + 0.38vw, 0.75rem);
+  --fs-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --fs-sm: clamp(0.8125rem, 0.77rem + 0.22vw, 0.9rem);
+  --fs-base: clamp(0.875rem, 0.84rem + 0.18vw, 1rem);
+  --fs-lg: clamp(1.125rem, 1.05rem + 0.38vw, 1.25rem);
+  --fs-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --fs-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  --fs-icon: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
 
-  --icon-lg-size: 2rem;
+  /* ─── Spacing scale ─────────────────────────────────────────────────── */
+  --space-1: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+  --space-2: clamp(0.5rem, 0.44rem + 0.3vw, 0.75rem);
+  --space-3: clamp(0.75rem, 0.67rem + 0.4vw, 1rem);
+  --space-4: clamp(1rem, 0.88rem + 0.6vw, 1.5rem);
+  --space-5: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --space-6: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --space-8: clamp(2rem, 1.6rem + 2vw, 3rem);
+
+  /* ─── Shadow tokens ─────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* ─── Component size tokens ─────────────────────────────────────────── */
+  --size-login-card: clamp(20rem, 90vw, 28rem);
+  --size-modal-sm: clamp(20rem, 90vw, 25rem);
+  --size-modal-md: clamp(20rem, 90vw, 31rem);
+  --size-card-w: clamp(11rem, 20vw, 15.625rem);
+  --size-card-h: clamp(6rem, 12vw, 9.375rem);
+  --size-fio-col: clamp(12rem, 25vw, 17.5rem);
+  --size-lesson-col: clamp(6.5rem, 12vw, 8.125rem);
+  --size-topic-max: clamp(5rem, 10vw, 6.875rem);
+  --size-cell-h: clamp(2.25rem, 4vw, 2.8125rem);
+  --size-filter-min: clamp(12rem, 25vw, 15.625rem);
+
+  /* ─── Border radius ─────────────────────────────────────────────────── */
+  --radius-lg: 1rem;
+
+  /* ─── Font weights ───────────────────────────────────────────────────── */
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ─── Transitions ────────────────────────────────────────────────────── */
+  --duration-fast: 0.2s;
+
+  /* ─── Opacity ────────────────────────────────────────────────────────── */
+  --opacity-muted: 0.9;
+
+  /* ─── Overlays ───────────────────────────────────────────────────────── */
+  --color-overlay-light: rgba(255, 255, 255, 0.1);
 }
