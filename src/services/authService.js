@@ -12,9 +12,12 @@ export class AuthService {
     );
 
     const token = tokenResponse.data.access;
-    localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN, token);
 
-    const userResponse = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ME);
+    const userResponse = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ME, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return {
       token,

@@ -35,14 +35,15 @@ export const useJournalStore = defineStore("journal", () => {
 
       persons.value = personsData;
 
+      const lessonTimesMap = dicts.value.lessonTimes.reduce((acc, t) => {
+        acc[t.id] = t.number;
+        return acc;
+      }, {});
+
       lessons.value = journalData.lessons.sort((a, b) => {
         if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-        const timeA =
-          dicts.value.lessonTimes.find((t) => t.id === a.lesson_time)?.number ||
-          0;
-        const timeB =
-          dicts.value.lessonTimes.find((t) => t.id === b.lesson_time)?.number ||
-          0;
+        const timeA = lessonTimesMap[a.lesson_time] || 0;
+        const timeB = lessonTimesMap[b.lesson_time] || 0;
         return timeA - timeB;
       });
 

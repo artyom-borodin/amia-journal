@@ -56,6 +56,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
 import { generateCellKey } from "../utils/journalUtils";
@@ -70,16 +71,28 @@ const props = defineProps({
 
 defineEmits(["cell-click"]);
 
+const createMap = (array, key = "id") => {
+  return array.reduce((acc, item) => {
+    acc[item[key]] = item;
+    return acc;
+  }, {});
+};
+
+const lessonTimesMap = computed(() => createMap(props.dicts.lessonTimes));
+const markKindsMap = computed(() => createMap(props.dicts.markKinds));
+const markValuesMap = computed(() => createMap(props.dicts.markValues));
+const attendanceReasonsMap = computed(() => createMap(props.dicts.attendanceReasons));
+
 const getLessonTime = (id) => {
-  const time = props.dicts.lessonTimes.find((t) => t.id === id);
+  const time = lessonTimesMap.value[id];
   return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
 };
 
-const getMarkKind = (id) =>
-  props.dicts.markKinds.find((m) => m.id === id)?.mark_kind || "";
+const getMarkKind = (id) => markKindsMap.value[id]?.mark_kind || "";
 
 const getRecord = (personId, lesson) =>
   props.recordsMap[generateCellKey(personId, lesson.date, lesson.lesson_time)];
+
 const getAttendance = (personId, lesson) =>
   props.attendancesMap[
     generateCellKey(personId, lesson.date, lesson.lesson_time)
@@ -88,15 +101,13 @@ const getAttendance = (personId, lesson) =>
 const getMarkValue = (personId, lesson) => {
   const record = getRecord(personId, lesson);
   if (!record || !record.mark_value) return "";
-  return (
-    props.dicts.markValues.find((m) => m.id === record.mark_value)?.value || ""
-  );
+  return markValuesMap.value[record.mark_value]?.value || "";
 };
 
 const isAbsent = (personId, lesson) => {
   const att = getAttendance(personId, lesson);
   if (!att) return false;
-  const reason = props.dicts.attendanceReasons.find((r) => r.id === att.reason);
+  const reason = attendanceReasonsMap.value[att.reason];
   return reason ? reason.is_absent : false;
 };
 </script>
