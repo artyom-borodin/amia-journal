@@ -3,7 +3,7 @@
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
       <div>
         <h2 class="mt-5 text-center text-2xl font-extrabold text-gray-900">
-          Журнал учета посещаемости и отметок обучающихся
+          {{ APP_CONSTANTS.UI.APP_TITLE }}
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
           Войдите в свой аккаунт
@@ -73,7 +73,7 @@ const handleLogin = async () => {
     await authStore.login(credentials);
     router.push(APP_CONSTANTS.ROUTES.DASHBOARD);
   } catch (error) {
-    errorMessage.value = error.response?.data?.error || 'Ошибка авторизации. Попробуйте еще раз.';
+    errorMessage.value = error.response?.data?.error || APP_CONSTANTS.UI.ERRORS.LOGIN;
   } finally {
     isLoading.value = false;
   }

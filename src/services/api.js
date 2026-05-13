@@ -2,6 +2,7 @@ import axios from 'axios';
 import { APP_CONSTANTS } from '../config/constants';
 
 const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -18,7 +19,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === APP_CONSTANTS.HTTP_STATUS.UNAUTHORIZED) {
       localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
       localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
       window.location.href = APP_CONSTANTS.ROUTES.LOGIN;

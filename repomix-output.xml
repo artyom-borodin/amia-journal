@@ -1,0 +1,1056 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+src/
+  assets/
+    main.css
+  components/
+    CellModal.vue
+    JournalGrid.vue
+    NavBar.vue
+  config/
+    constants.js
+  router/
+    index.js
+  services/
+    api.js
+    authService.js
+    journalService.js
+  store/
+    authStore.js
+  views/
+    DashboardView.vue
+    JournalView.vue
+    LoginView.vue
+  App.vue
+  main.js
+.gitignore
+index.html
+package.json
+postcss.config.js
+tailwind.config.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/assets/main.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar for the grid */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+</file>
+
+<file path="src/components/CellModal.vue">
+<template>
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <h3 class="text-lg font-bold mb-4 border-b pb-2">
+        {{ person.last_name_rus }} {{ person.first_name_rus }}
+      </h3>
+      
+      <form @submit.prevent="handleSave" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Посещаемость</label>
+          <select v-model="formData.reason" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option :value="null">{{ APP_CONSTANTS.UI.DEFAULT_ATTENDANCE }}</option>
+            <option v-for="r in dicts.attendanceReasons" :key="r.id" :value="r.id">{{ r.name }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Отметка</label>
+          <select v-model="formData.mark_value" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option :value="null">{{ APP_CONSTANTS.UI.DEFAULT_MARK }}</option>
+            <option v-for="m in dicts.markValues" :key="m.id" :value="m.id">{{ m.value }}</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button type="button" @click="$emit('close')" class="px-4 py-2 border rounded-md text-gray-700">Отмена</button>
+          <button type="submit" :disabled="isSaving" class="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50">
+            {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { APP_CONSTANTS } from '../config/constants';
+
+const props = defineProps({
+  person: Object,
+  lesson: Object,
+  record: Object,
+  attendance: Object,
+  dicts: Object,
+  isSaving: Boolean
+});
+
+const emit = defineEmits(['close', 'save']);
+
+const formData = ref({
+  reason: props.attendance ? props.attendance.reason : null,
+  mark_value: props.record ? props.record.mark_value : null
+});
+
+const handleSave = () => {
+  emit('save', {
+    reason: formData.value.reason,
+    mark_value: formData.value.mark_value
+  });
+};
+</script>
+</file>
+
+<file path="src/components/JournalGrid.vue">
+<template>
+  <div id="journal-scroll-container" class="overflow-auto flex-1 relative">
+    <table class="w-max border-collapse table-fixed">
+      <thead class="bg-gray-100 sticky top-0 z-20 shadow-sm">
+        <tr>
+          <th class="border border-gray-300 p-3 text-left text-sm font-bold text-gray-900 sticky left-0 bg-gray-100 z-30 w-[280px]">
+            ФИО
+          </th>
+          <th 
+            v-for="lesson in lessons" 
+            :key="lesson.id"
+            :data-date="lesson.date"
+            class="border border-gray-300 p-2 text-center w-[130px] bg-gray-50"
+          >
+            <div class="text-sm font-bold text-gray-900">{{ formatDate(lesson.date) }}</div>
+            <div class="text-xs font-semibold text-gray-700">{{ getLessonTime(lesson.lesson_time) }}</div>
+            <div class="text-[10px] text-blue-600 mt-1 truncate" :title="lesson.topic">{{ lesson.topic || 'Без темы' }}</div>
+            <div class="text-[10px] text-gray-500 mt-1 truncate" :title="getMarkKind(lesson.mark_kind)">{{ getMarkKind(lesson.mark_kind) }}</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white">
+        <tr v-for="person in persons" :key="person.id" class="hover:bg-blue-50 transition-colors">
+          <td 
+            class="border border-gray-200 p-3 text-sm text-gray-900 sticky left-0 bg-white z-10 font-medium shadow-[1px_0_0_0_#e5e7eb] truncate"
+            :title="`${person.last_name_rus} ${person.first_name_rus} ${person.patronymic_rus}`"
+          >
+            {{ person.last_name_rus }} {{ person.first_name_rus }} {{ person.patronymic_rus }}
+          </td>
+          <td 
+            v-for="lesson in lessons" 
+            :key="lesson.id"
+            class="border border-gray-200 p-2 text-center cursor-pointer relative"
+            :class="getCellBgClass(person.id, lesson)"
+            @click="$emit('cell-click', { person, lesson })"
+          >
+            <span class="font-bold text-gray-900">{{ getMarkValue(person.id, lesson) }}</span>
+            <span v-if="isAbsent(person.id, lesson)" class="absolute bottom-0 right-1 text-[10px] text-red-600 font-bold" title="Отсутствует">{{ APP_CONSTANTS.UI.ABSENT_MARK }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script setup>
+import { APP_CONSTANTS } from '../config/constants';
+
+const props = defineProps({
+  persons: Array,
+  lessons: Array,
+  recordsMap: Object,
+  attendancesMap: Object,
+  dicts: Object
+});
+
+defineEmits(['cell-click']);
+
+const formatDate = (dateStr) => {
+  const d = new Date(dateStr);
+  return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const getLessonTime = (id) => {
+  const time = props.dicts.lessonTimes.find(t => t.id === id);
+  return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : '';
+};
+
+const getMarkKind = (id) => props.dicts.markKinds.find(m => m.id === id)?.mark_kind || '';
+
+const getRecord = (personId, lesson) => props.recordsMap[`${personId}_${lesson.date}_${lesson.lesson_time}`];
+const getAttendance = (personId, lesson) => props.attendancesMap[`${personId}_${lesson.date}_${lesson.lesson_time}`];
+
+const getMarkValue = (personId, lesson) => {
+  const record = getRecord(personId, lesson);
+  if (!record || !record.mark_value) return '';
+  return props.dicts.markValues.find(m => m.id === record.mark_value)?.value || '';
+};
+
+const isAbsent = (personId, lesson) => {
+  const att = getAttendance(personId, lesson);
+  if (!att) return false;
+  const reason = props.dicts.attendanceReasons.find(r => r.id === att.reason);
+  return reason ? reason.is_absent : false;
+};
+
+const getCellBgClass = (personId, lesson) => {
+  return isAbsent(personId, lesson) ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-blue-100';
+};
+</script>
+</file>
+
+<file path="src/components/NavBar.vue">
+<template>
+  <nav class="bg-blue-800 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center cursor-pointer" @click="goHome">
+          <span class="font-bold text-xl tracking-tight">{{ APP_CONSTANTS.UI.APP_TITLE }}</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-blue-200">{{ userRole }}</span>
+          <button 
+            @click="handleLogout" 
+            class="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+          >
+            Выйти
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup>
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../store/authStore';
+import { APP_CONSTANTS } from '../config/constants';
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const userRole = computed(() => authStore.userRole);
+
+const goHome = () => {
+  router.push(APP_CONSTANTS.ROUTES.DASHBOARD);
+};
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push(APP_CONSTANTS.ROUTES.LOGIN);
+};
+</script>
+</file>
+
+<file path="src/config/constants.js">
+export const APP_CONSTANTS = {
+  ROUTES: { LOGIN: '/login', DASHBOARD: '/', JOURNAL: '/journal' },
+  API_ENDPOINTS: {
+    TOKEN: '/api/token/',
+    ME: '/api/users/me/',
+    GROUPS: '/api/group/',
+    SUBJECTS: '/api/subjects/',
+    CADETS: '/api/cadet/',
+    STUDENTS: '/api/student/',
+    MARK_KINDS: '/api/mark-kind/',
+    MARK_VALUES: '/api/mark-values/',
+    LESSON_TIMES: '/api/lesson-times/',
+    ATTENDANCE_REASONS: '/api/attendance-reasons/',
+    LESSONS: '/api/lessons/',
+    ATTENDANCES: '/api/attendances/',
+    JOURNAL_RECORDS: '/api/journal-records/'
+  },
+  STORAGE_KEYS: { TOKEN: 'kis_access_token', USER: 'kis_user' },
+  STUDENT_TYPES: { CADET: 'cadet', STUDENT: 'student' },
+  UI: {
+    APP_TITLE: 'Журнал учета посещаемости и отметок обучающихся',
+    ABSENT_MARK: 'Н',
+    LESSON_SUFFIX: 'пара',
+    DEFAULT_ATTENDANCE: 'Не указано (Присутствует)',
+    DEFAULT_MARK: 'Нет отметки',
+    ERRORS: {
+      LOGIN: 'Ошибка авторизации. Попробуйте еще раз.',
+      SAVE_DATA: 'Ошибка при сохранении данных',
+      ADD_LESSON: 'Ошибка при добавлении занятия'
+    }
+  }
+};
+</file>
+
+<file path="src/router/index.js">
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '../store/authStore';
+import { APP_CONSTANTS } from '../config/constants';
+
+const routes = [
+  {
+    path: APP_CONSTANTS.ROUTES.LOGIN,
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
+    meta: { requiresGuest: true }
+  },
+  {
+    path: APP_CONSTANTS.ROUTES.DASHBOARD,
+    name: 'Dashboard',
+    component: () => import('../views/DashboardView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: `${APP_CONSTANTS.ROUTES.JOURNAL}/:studentType`,
+    name: 'Journal',
+    component: () => import('../views/JournalView.vue'),
+    meta: { requiresAuth: true },
+    props: true
+  }
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next(APP_CONSTANTS.ROUTES.LOGIN);
+  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    next(APP_CONSTANTS.ROUTES.DASHBOARD);
+  } else {
+    next();
+  }
+});
+
+export default router;
+</file>
+
+<file path="src/services/api.js">
+import axios from 'axios';
+import { APP_CONSTANTS } from '../config/constants';
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
+      window.location.href = APP_CONSTANTS.ROUTES.LOGIN;
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default apiClient;
+</file>
+
+<file path="src/services/authService.js">
+import apiClient from './api';
+import { APP_CONSTANTS } from '../config/constants';
+
+export class AuthService {
+  static async login(credentials) {
+
+    const tokenResponse = await apiClient.post(APP_CONSTANTS.API_ENDPOINTS.TOKEN, {
+      username: credentials.login,
+      password: credentials.password
+    });
+    
+    const token = tokenResponse.data.access;
+    localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN, token);
+
+    const userResponse = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ME);
+    
+    return {
+      token,
+      user: userResponse.data
+    };
+  }
+}
+</file>
+
+<file path="src/services/journalService.js">
+import apiClient from './api';
+import { APP_CONSTANTS } from '../config/constants';
+
+export class JournalService {
+  static async getDictionaries(studentType) {
+    const [groups, subjects, markKinds, markValues, lessonTimes, attendanceReasons] = await Promise.all([
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.GROUPS, { params: { student_type: studentType } }),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS)
+    ]);
+    return {
+      groups: groups.data.results || groups.data,
+      subjects: subjects.data.results || subjects.data,
+      markKinds: markKinds.data.results || markKinds.data,
+      markValues: markValues.data.results || markValues.data,
+      lessonTimes: lessonTimes.data.results || lessonTimes.data,
+      attendanceReasons: attendanceReasons.data.results || attendanceReasons.data
+    };
+  }
+
+  static async getPersons(type, groupId) {
+    const endpoint = type === APP_CONSTANTS.STUDENT_TYPES.CADET ? APP_CONSTANTS.API_ENDPOINTS.CADETS : APP_CONSTANTS.API_ENDPOINTS.STUDENTS;
+    const res = await apiClient.get(endpoint, { params: { group: groupId } });
+    return res.data.results || res.data;
+  }
+
+  static async getJournalData(groupId, subjectId) {
+    const [lessons, records, attendances] = await Promise.all([
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSONS, { params: { group: groupId, subject: subjectId } }),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS, { params: { subject: subjectId } }),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, { params: { subject: subjectId } })
+    ]);
+    return {
+      lessons: lessons.data.results || lessons.data,
+      records: records.data.results || records.data,
+      attendances: attendances.data.results || attendances.data
+    };
+  }
+
+  static async createLesson(payload) {
+    const res = await apiClient.post(APP_CONSTANTS.API_ENDPOINTS.LESSONS, payload);
+    return res.data;
+  }
+
+  static async saveRecord(payload) {
+    if (payload.id) return (await apiClient.patch(`${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}${payload.id}/`, payload)).data;
+    return (await apiClient.post(APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS, payload)).data;
+  }
+
+  static async saveAttendance(payload) {
+    if (payload.id) return (await apiClient.patch(`${APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES}${payload.id}/`, payload)).data;
+    return (await apiClient.post(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, payload)).data;
+  }
+
+  static async saveCellData({ reason, mark_value, person, lesson, record, attendance, studentType, userId }) {
+    const isCadet = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET;
+    const basePayload = {
+      date: lesson.date,
+      lesson_time: lesson.lesson_time,
+      subject: lesson.subject,
+      cadet: isCadet ? person.id : null,
+      student: !isCadet ? person.id : null
+    };
+
+    const promises = [];
+
+    if (reason !== null || attendance?.id) {
+      promises.push(this.saveAttendance({
+        ...basePayload,
+        id: attendance?.id,
+        reason: reason
+      }));
+    }
+
+    if (mark_value !== null || record?.id) {
+      promises.push(this.saveRecord({
+        ...basePayload,
+        id: record?.id,
+        mark_date: lesson.date,
+        mark_kind: lesson.mark_kind,
+        mark_value: mark_value,
+        who_rated: userId,
+        is_active: true
+      }));
+    }
+
+    return Promise.all(promises);
+  }
+}
+</file>
+
+<file path="src/store/authStore.js">
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { AuthService } from '../services/authService';
+import { APP_CONSTANTS } from '../config/constants';
+
+export const useAuthStore = defineStore('auth', () => {
+  const token = ref(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN) || null);
+  const user = ref(JSON.parse(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.USER)) || null);
+
+  const isAuthenticated = computed(() => !!token.value);
+  const userRole = computed(() => user.value?.role || null);
+
+  const login = async (credentials) => {
+    const data = await AuthService.login(credentials);
+    token.value = data.token;
+    user.value = data.user;
+    
+    localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN, data.token);
+    localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.USER, JSON.stringify(data.user));
+  };
+
+  const logout = () => {
+    token.value = null;
+    user.value = null;
+    localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
+    localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
+  };
+
+  return { token, user, isAuthenticated, userRole, login, logout };
+});
+</file>
+
+<file path="src/views/DashboardView.vue">
+<template>
+  <div class="min-h-screen bg-gray-50">
+    <NavBar />
+    <main class="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold text-center text-gray-900 mb-10">
+        Выберите категорию обучающихся
+      </h1>
+      
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-8">
+        <button 
+          @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.CADET)" 
+          class="w-64 h-40 bg-blue-600 text-white text-2xl font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all flex items-center justify-center"
+        >
+          Курсанты
+        </button>
+        
+        <button 
+          @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.STUDENT)" 
+          class="w-64 h-40 bg-green-600 text-white text-2xl font-bold rounded-xl shadow-lg hover:bg-green-700 hover:shadow-xl transition-all flex items-center justify-center"
+        >
+          Студенты
+        </button>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router';
+import NavBar from '../components/NavBar.vue';
+import { APP_CONSTANTS } from '../config/constants';
+
+const router = useRouter();
+
+const goToJournal = (type) => {
+  router.push(`${APP_CONSTANTS.ROUTES.JOURNAL}/${type}`);
+};
+</script>
+</file>
+
+<file path="src/views/JournalView.vue">
+<template>
+  <div class="min-h-screen bg-gray-50 flex flex-col">
+    <NavBar />
+    
+    <main class="flex-1 max-w-[100vw] w-full mx-auto py-6 sm:px-6 lg:px-8 flex flex-col overflow-hidden">
+      
+      <!-- Фильтры -->
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4 shrink-0">
+        <div class="flex flex-col md:flex-row md:items-end gap-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Группа</label>
+            <select v-model="selectedGroup" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+              <option value="">-- Выберите группу --</option>
+              <option v-for="g in dicts.groups" :key="g.id" :value="g.id">{{ g.group_name || `Группа ${g.id}` }}</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Дисциплина</label>
+            <select v-model="selectedSubject" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+              <option value="">-- Выберите дисциплину --</option>
+              <option v-for="s in dicts.subjects" :key="s.id" :value="s.id">{{ s.subject_name }}</option>
+            </select>
+          </div>
+          <button 
+            v-if="selectedGroup && selectedSubject" 
+            @click="showAddLessonModal = true" 
+            class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-medium h-[42px]"
+          >
+            + Добавить занятие
+          </button>
+        </div>
+      </div>
+
+      <div v-if="!selectedGroup || !selectedSubject" class="flex-1 flex items-center justify-center bg-white rounded-lg border border-dashed">
+        <span class="text-gray-500 text-lg">Выберите группу и дисциплину</span>
+      </div>
+      <div v-else-if="isLoading" class="flex-1 flex items-center justify-center">
+        <span class="text-gray-500 text-lg">Загрузка данных...</span>
+      </div>
+
+      <!-- Сетка -->
+      <div v-else class="flex-1 overflow-hidden bg-white shadow rounded-lg flex flex-col">
+        <JournalGrid 
+          :persons="persons"
+          :lessons="lessons"
+          :records-map="recordsMap"
+          :attendances-map="attendancesMap"
+          :dicts="dicts"
+          @cell-click="openCellModal"
+        />
+      </div>
+
+      <!-- Модалка редактирования ячейки -->
+      <CellModal 
+        v-if="selectedCell"
+        :person="selectedCell.person"
+        :lesson="selectedCell.lesson"
+        :record="selectedCell.record"
+        :attendance="selectedCell.attendance"
+        :dicts="dicts"
+        :is-saving="isSavingCell"
+        @close="selectedCell = null"
+        @save="handleSaveCell"
+      />
+
+      <!-- Модалка добавления занятия -->
+      <div v-if="showAddLessonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-[500px] shadow-xl">
+          <h3 class="text-lg font-bold mb-4">Добавить занятие</h3>
+          <form @submit.prevent="addLesson" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Дата</label>
+                <input type="date" v-model="newLesson.date" required class="mt-1 w-full border p-2 rounded-md">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Пара</label>
+                <select v-model="newLesson.lesson_time" required class="mt-1 w-full border p-2 rounded-md">
+                  <option v-for="lt in dicts.lessonTimes" :key="lt.id" :value="lt.id">{{ lt.number }} {{ APP_CONSTANTS.UI.LESSON_SUFFIX }}</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Вид контроля</label>
+              <select v-model="newLesson.mark_kind" required class="mt-1 w-full border p-2 rounded-md">
+                <option v-for="mk in dicts.markKinds" :key="mk.id" :value="mk.id">{{ mk.mark_kind }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Тема занятия</label>
+              <textarea v-model="newLesson.topic" rows="2" class="mt-1 w-full border p-2 rounded-md"></textarea>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+              <button type="button" @click="showAddLessonModal = false" class="px-4 py-2 border rounded-md">Отмена</button>
+              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Добавить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, watch, nextTick } from 'vue';
+import NavBar from '../components/NavBar.vue';
+import JournalGrid from '../components/JournalGrid.vue';
+import CellModal from '../components/CellModal.vue';
+import { JournalService } from '../services/journalService';
+import { useAuthStore } from '../store/authStore';
+import { APP_CONSTANTS } from '../config/constants';
+
+const props = defineProps({ studentType: String });
+const authStore = useAuthStore();
+
+const dicts = ref({ groups: [], subjects: [], markKinds: [], markValues: [], lessonTimes: [], attendanceReasons: [] });
+const selectedGroup = ref('');
+const selectedSubject = ref('');
+
+const isLoading = ref(false);
+const persons = ref([]);
+const lessons = ref([]);
+const recordsMap = ref({});
+const attendancesMap = ref({});
+
+const showAddLessonModal = ref(false);
+const newLesson = ref({ date: '', lesson_time: '', mark_kind: '', topic: '' });
+
+const selectedCell = ref(null);
+const isSavingCell = ref(false);
+
+const fetchFilters = async () => {
+  dicts.value = await JournalService.getDictionaries(props.studentType);
+};
+
+const fetchGridData = async () => {
+  if (!selectedGroup.value || !selectedSubject.value) return;
+  isLoading.value = true;
+  try {
+    const [personsData, journalData] = await Promise.all([
+      JournalService.getPersons(props.studentType, selectedGroup.value),
+      JournalService.getJournalData(selectedGroup.value, selectedSubject.value)
+    ]);
+
+    persons.value = personsData;
+    
+    lessons.value = journalData.lessons.sort((a, b) => {
+      if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
+      const timeA = dicts.value.lessonTimes.find(t => t.id === a.lesson_time)?.number || 0;
+      const timeB = dicts.value.lessonTimes.find(t => t.id === b.lesson_time)?.number || 0;
+      return timeA - timeB;
+    });
+
+    const rMap = {};
+    journalData.records.forEach(r => {
+      const personId = props.studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? r.cadet : r.student;
+      rMap[`${personId}_${r.mark_date}_${r.lesson_time}`] = r;
+    });
+    recordsMap.value = rMap;
+
+    const aMap = {};
+    journalData.attendances.forEach(a => {
+      const personId = props.studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? a.cadet : a.student;
+      aMap[`${personId}_${a.date}_${a.lesson_time}`] = a;
+    });
+    attendancesMap.value = aMap;
+
+    nextTick(() => {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayCol = document.querySelector(`[data-date="${todayStr}"]`);
+      if (todayCol) {
+        todayCol.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+      } else {
+        const container = document.getElementById('journal-scroll-container');
+        if(container) container.scrollLeft = container.scrollWidth;
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const openCellModal = ({ person, lesson }) => {
+  selectedCell.value = {
+    person,
+    lesson,
+    record: recordsMap.value[`${person.id}_${lesson.date}_${lesson.lesson_time}`],
+    attendance: attendancesMap.value[`${person.id}_${lesson.date}_${lesson.lesson_time}`]
+  };
+};
+
+const handleSaveCell = async ({ reason, mark_value }) => {
+  isSavingCell.value = true;
+  try {
+    await JournalService.saveCellData({
+      reason,
+      mark_value,
+      person: selectedCell.value.person,
+      lesson: selectedCell.value.lesson,
+      record: selectedCell.value.record,
+      attendance: selectedCell.value.attendance,
+      studentType: props.studentType,
+      userId: authStore.user.id
+    });
+    
+    selectedCell.value = null;
+    await fetchGridData();
+  } catch (error) {
+    alert(APP_CONSTANTS.UI.ERRORS.SAVE_DATA);
+  } finally {
+    isSavingCell.value = false;
+  }
+};
+
+const addLesson = async () => {
+  try {
+    await JournalService.createLesson({
+      ...newLesson.value,
+      group: selectedGroup.value,
+      subject: selectedSubject.value
+    });
+    showAddLessonModal.value = false;
+    newLesson.value = { date: '', lesson_time: '', mark_kind: '', topic: '' };
+    await fetchGridData();
+  } catch (error) {
+    alert(APP_CONSTANTS.UI.ERRORS.ADD_LESSON);
+  }
+};
+
+watch([selectedGroup, selectedSubject], fetchGridData);
+onMounted(fetchFilters);
+</script>
+</file>
+
+<file path="src/views/LoginView.vue">
+<template>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+      <div>
+        <h2 class="mt-5 text-center text-2xl font-extrabold text-gray-900">
+          {{ APP_CONSTANTS.UI.APP_TITLE }}
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          Войдите в свой аккаунт
+        </p>
+      </div>
+      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+        <div class="rounded-md shadow-sm space-y-4">
+          <div>
+            <label for="login" class="sr-only">Войти</label>
+            <input 
+              id="login" 
+              v-model="credentials.login" 
+              type="text" 
+              required 
+              class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+              placeholder="Имя пользователя"
+            >
+          </div>
+          <div>
+            <label for="password" class="sr-only">Пароль</label>
+            <input 
+              id="password" 
+              v-model="credentials.password" 
+              type="password" 
+              required 
+              class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+              placeholder="Пароль"
+            >
+          </div>
+        </div>
+
+        <div v-if="errorMessage" class="text-red-500 text-sm text-center">
+          {{ errorMessage }}
+        </div>
+
+        <div>
+          <button 
+            type="submit" 
+            :disabled="isLoading"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            {{ isLoading ? 'Авторизация...' : 'Авторизоваться' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../store/authStore';
+import { APP_CONSTANTS } from '../config/constants';
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const credentials = reactive({ login: '', password: '' });
+const isLoading = ref(false);
+const errorMessage = ref('');
+
+const handleLogin = async () => {
+  isLoading.value = true;
+  errorMessage.value = '';
+  try {
+    await authStore.login(credentials);
+    router.push(APP_CONSTANTS.ROUTES.DASHBOARD);
+  } catch (error) {
+    errorMessage.value = error.response?.data?.error || APP_CONSTANTS.UI.ERRORS.LOGIN;
+  } finally {
+    isLoading.value = false;
+  }
+};
+</script>
+</file>
+
+<file path="src/App.vue">
+<template>
+  <router-view></router-view>
+</template>
+
+<script setup>
+// Root component simply renders the active route
+</script>
+
+<style>
+/* Global styles can be added here if Tailwind is not enough */
+@import './assets/main.css';
+</style>
+</file>
+
+<file path="src/main.js">
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import App from './App.vue';
+import router from './router';
+import './assets/main.css';
+
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia);
+app.use(router);
+
+app.mount('#app');
+</file>
+
+<file path=".gitignore">
+node_modules
+package-lock.json
+</file>
+
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Журнал учета посещаемости и отметок обучающихся</title>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "amia-journal-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
+    }
+  }
+});
+</file>
+
+</files>

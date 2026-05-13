@@ -16,7 +16,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: `${APP_CONSTANTS.ROUTES.JOURNAL}/:groupId/:subjectId`,
+    path: `${APP_CONSTANTS.ROUTES.JOURNAL}/:studentType`,
     name: 'Journal',
     component: () => import('../views/JournalView.vue'),
     meta: { requiresAuth: true },

@@ -1,1 +1,0 @@
-# amia-journal

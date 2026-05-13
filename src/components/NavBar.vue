@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <div class="flex items-center cursor-pointer" @click="goHome">
-          <span class="font-bold text-xl tracking-tight">Журнал учета посещаемости и отметок обучающихся</span>
+          <span class="font-bold text-xl tracking-tight">{{ APP_CONSTANTS.UI.APP_TITLE }}</span>
         </div>
         <div class="flex items-center space-x-4">
           <span class="text-sm text-blue-200">{{ userRole }}</span>
