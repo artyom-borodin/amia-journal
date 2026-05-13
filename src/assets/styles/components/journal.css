@@ -1,0 +1,142 @@
+.journal-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+.filters-card {
+  flex-shrink: 0;
+}
+.filters-card .p-card-body {
+  padding: 1rem;
+}
+.filters-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.filter-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 250px;
+}
+.filter-item label {
+  font-weight: 600;
+  color: var(--p-surface-700);
+}
+.filter-action {
+  padding-bottom: 2px;
+}
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--p-surface-0);
+  border-radius: var(--p-border-radius);
+  border: 2px dashed var(--p-surface-300);
+  color: var(--p-surface-500);
+  font-size: 1.2rem;
+}
+.empty-state-icon {
+  font-size: var(--icon-lg-size);
+}
+.grid-container {
+  flex: 1;
+  overflow: hidden;
+  background: var(--p-surface-0);
+  border-radius: var(--p-border-radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Стили таблицы */
+.journal-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.fio-column {
+  min-width: 280px;
+  font-weight: 600;
+  background-color: var(--p-surface-50);
+}
+.lesson-column {
+  min-width: 130px;
+  padding: 0 !important;
+}
+.lesson-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 2px;
+  padding: 0.5rem;
+}
+.lesson-date {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--p-surface-900);
+}
+.lesson-time {
+  font-size: 0.8rem;
+  color: var(--p-surface-600);
+}
+.lesson-topic {
+  font-size: 0.7rem;
+  color: var(--p-primary-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+.lesson-kind {
+  font-size: 0.7rem;
+  color: var(--p-surface-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+.cell-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.cell-content:hover {
+  background-color: var(--p-primary-50);
+}
+.cell-content.is-absent {
+  background-color: var(--p-red-50);
+}
+.cell-content.is-absent:hover {
+  background-color: var(--p-red-100);
+}
+.mark-value {
+  font-weight: bold;
+  font-size: 1rem;
+  color: var(--p-surface-900);
+}
+.absent-mark {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: var(--p-red-500);
+}

@@ -1,25 +1,23 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="layout-wrapper">
     <NavBar />
-    <main class="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold text-center text-gray-900 mb-10">
-        Выберите категорию обучающихся
-      </h1>
+    <main class="dashboard-main">
+      <h1 class="dashboard-title">{{ APP_CONSTANTS.UI.DASHBOARD_TITLE }}</h1>
       
-      <div class="flex flex-col sm:flex-row justify-center items-center gap-8">
-        <button 
+      <div class="cards-container">
+        <Button 
+          :label="APP_CONSTANTS.UI.LABELS.CADETS" 
+          icon="pi pi-users" 
+          class="dashboard-btn" 
           @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.CADET)" 
-          class="w-64 h-40 bg-blue-600 text-white text-2xl font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all flex items-center justify-center"
-        >
-          Курсанты
-        </button>
-        
-        <button 
+        />
+        <Button 
+          :label="APP_CONSTANTS.UI.LABELS.STUDENTS" 
+          icon="pi pi-graduation-cap" 
+          severity="success" 
+          class="dashboard-btn" 
           @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.STUDENT)" 
-          class="w-64 h-40 bg-green-600 text-white text-2xl font-bold rounded-xl shadow-lg hover:bg-green-700 hover:shadow-xl transition-all flex items-center justify-center"
-        >
-          Студенты
-        </button>
+        />
       </div>
     </main>
   </div>

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { JournalService } from '../services/journalService';
 import { APP_CONSTANTS } from '../config/constants';
+import { generateCellKey } from '../utils/journalUtils';
 
 export const useJournalStore = defineStore('journal', () => {
   const dicts = ref({ groups: [], subjects: [], markKinds: [], markValues: [], lessonTimes: [], attendanceReasons: [] });
@@ -37,14 +38,14 @@ export const useJournalStore = defineStore('journal', () => {
       const rMap = {};
       journalData.records.forEach(r => {
         const personId = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? r.cadet : r.student;
-        rMap[`${personId}_${r.mark_date}_${r.lesson_time}`] = r;
+        rMap[generateCellKey(personId, r.mark_date, r.lesson_time)] = r;
       });
       recordsMap.value = rMap;
 
       const aMap = {};
       journalData.attendances.forEach(a => {
         const personId = studentType === APP_CONSTANTS.STUDENT_TYPES.CADET ? a.cadet : a.student;
-        aMap[`${personId}_${a.date}_${a.lesson_time}`] = a;
+        aMap[generateCellKey(personId, a.date, a.lesson_time)] = a;
       });
       attendancesMap.value = aMap;
     } finally {

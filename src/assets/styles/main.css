@@ -1,0 +1,9 @@
+@import './variables.css';
+@import './reset.css';
+@import './utilities.css';
+
+@import './components/navbar.css';
+@import './components/login.css';
+@import './components/dashboard.css';
+@import './components/journal.css';
+@import './components/modal.css';

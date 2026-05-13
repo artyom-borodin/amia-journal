@@ -1,22 +1,13 @@
 <template>
-  <nav class="bg-blue-800 text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
-        <div class="flex items-center cursor-pointer" @click="goHome">
-          <span class="font-bold text-xl tracking-tight">{{ APP_CONSTANTS.UI.APP_TITLE }}</span>
-        </div>
-        <div class="flex items-center space-x-4">
-          <span class="text-sm text-blue-200">{{ userRole }}</span>
-          <button 
-            @click="handleLogout" 
-            class="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            Выйти
-          </button>
-        </div>
-      </div>
+  <header class="navbar">
+    <div class="navbar-brand" @click="goHome">
+      {{ APP_CONSTANTS.UI.APP_TITLE }}
     </div>
-  </nav>
+    <div class="navbar-actions">
+      <span class="user-role">{{ userRole }}</span>
+      <Button :label="APP_CONSTANTS.UI.LABELS.LOGOUT_BTN" icon="pi pi-sign-out" severity="secondary" text @click="handleLogout" />
+    </div>
+  </header>
 </template>
 
 <script setup>

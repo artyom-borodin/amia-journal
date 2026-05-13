@@ -22,10 +22,42 @@ export const APP_CONSTANTS = {
   },
   UI: {
     APP_TITLE: 'Журнал учета посещаемости и отметок обучающихся',
+    LOGIN_SUBTITLE: 'Войдите в свой аккаунт',
+    DASHBOARD_TITLE: 'Выберите категорию обучающихся',
     ABSENT_MARK: 'Н',
     LESSON_SUFFIX: 'пара',
     DEFAULT_ATTENDANCE: 'Не указано (Присутствует)',
     DEFAULT_MARK: 'Нет отметки',
+    NO_TOPIC: 'Без темы',
+    LABELS: {
+      USERNAME: 'Имя пользователя',
+      PASSWORD: 'Пароль',
+      LOGIN_BTN: 'Авторизоваться',
+      LOGOUT_BTN: 'Выйти',
+      CADETS: 'Курсанты',
+      STUDENTS: 'Студенты',
+      GROUP: 'Группа',
+      SUBJECT: 'Дисциплина',
+      DATE: 'Дата',
+      LESSON_TIME: 'Пара',
+      MARK_KIND: 'Вид контроля',
+      TOPIC: 'Тема занятия',
+      ATTENDANCE: 'Посещаемость',
+      MARK: 'Отметка',
+      CANCEL: 'Отмена',
+      SAVE: 'Сохранить',
+      ADD: 'Добавить',
+      ADD_LESSON: 'Добавить занятие'
+    },
+    PLACEHOLDERS: {
+      SELECT_GROUP: '-- Выберите группу --',
+      SELECT_SUBJECT: '-- Выберите дисциплину --',
+      SELECT_LESSON_TIME: 'Выберите пару'
+    },
+    MESSAGES: {
+      SELECT_FILTERS: 'Выберите группу и дисциплину',
+      LOADING: 'Загрузка данных...'
+    },
     ERRORS: {
       LOGIN: 'Ошибка авторизации. Попробуйте еще раз.',
       SAVE_DATA: 'Ошибка при сохранении данных',
