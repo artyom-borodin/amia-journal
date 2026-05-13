@@ -19,14 +19,17 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response &&
-      error.response.status === APP_CONSTANTS.HTTP_STATUS.UNAUTHORIZED
-    ) {
+    const isUnauthorized =
+      error.response?.status === APP_CONSTANTS.HTTP_STATUS.UNAUTHORIZED;
+    const isAuthRequest =
+      error.config?.url === APP_CONSTANTS.API_ENDPOINTS.TOKEN;
+
+    if (isUnauthorized && !isAuthRequest) {
       localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
       localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
       window.location.href = APP_CONSTANTS.ROUTES.LOGIN;
     }
+
     return Promise.reject(error);
   },
 );
