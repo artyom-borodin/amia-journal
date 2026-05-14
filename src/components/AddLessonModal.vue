@@ -80,8 +80,9 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import { APP_CONSTANTS } from "../config/constants";
 import DatePicker from "primevue/datepicker";
+import { APP_CONSTANTS } from "../config/constants";
+import { toApiDate } from "../utils/dateUtils";
 
 const props = defineProps({
   visible: Boolean,
@@ -90,13 +91,23 @@ const props = defineProps({
 
 const emit = defineEmits(["update:visible", "add"]);
 
-const newLesson = ref({ date: "", lesson_time: "", mark_kind: "", topic: "" });
+const newLesson = ref({
+  date: null,
+  lesson_time: "",
+  mark_kind: "",
+  topic: "",
+});
 
 watch(
   () => props.visible,
   (newVal) => {
     if (newVal) {
-      newLesson.value = { date: "", lesson_time: "", mark_kind: "", topic: "" };
+      newLesson.value = {
+        date: null,
+        lesson_time: "",
+        mark_kind: "",
+        topic: "",
+      };
     }
   },
 );
@@ -107,6 +118,9 @@ const getLessonTimeLabel = (id) => {
 };
 
 const handleSubmit = () => {
-  emit("add", { ...newLesson.value });
+  emit("add", {
+    ...newLesson.value,
+    date: toApiDate(newLesson.value.date),
+  });
 };
 </script>
