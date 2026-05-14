@@ -81,7 +81,9 @@ const createMap = (array, key = "id") => {
 const lessonTimesMap = computed(() => createMap(props.dicts.lessonTimes));
 const markKindsMap = computed(() => createMap(props.dicts.markKinds));
 const markValuesMap = computed(() => createMap(props.dicts.markValues));
-const attendanceReasonsMap = computed(() => createMap(props.dicts.attendanceReasons));
+const attendanceReasonsMap = computed(() =>
+  createMap(props.dicts.attendanceReasons),
+);
 
 const getLessonTime = (id) => {
   const time = lessonTimesMap.value[id];

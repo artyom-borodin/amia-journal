@@ -92,28 +92,32 @@ export const useJournalStore = defineStore("journal", () => {
 
     const promises = [];
 
-    if (reason !== null || attendance?.id) {
+    if (reason !== null) {
       promises.push(
         JournalService.saveAttendance({
           ...basePayload,
           id: attendance?.id,
-          reason: reason,
+          reason,
         }),
       );
+    } else if (attendance?.id) {
+      promises.push(JournalService.deleteAttendance(attendance.id));
     }
 
-    if (mark_value !== null || record?.id) {
+    if (mark_value !== null) {
       promises.push(
         JournalService.saveRecord({
           ...basePayload,
           id: record?.id,
           mark_date: lesson.date,
           mark_kind: lesson.mark_kind,
-          mark_value: mark_value,
+          mark_value,
           who_rated: userId,
           is_active: true,
         }),
       );
+    } else if (record?.id) {
+      promises.push(JournalService.deleteRecord(record.id));
     }
 
     return Promise.all(promises);

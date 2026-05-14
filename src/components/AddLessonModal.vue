@@ -10,11 +10,12 @@
       <div class="form-grid">
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.DATE }}</label>
-          <input
-            type="date"
+          <DatePicker
             v-model="newLesson.date"
             required
-            class="p-inputtext p-component w-full"
+            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_DATE"
+            showIcon
+            iconDisplay="input"
           />
         </div>
         <div class="field">
@@ -80,6 +81,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
+import DatePicker from "primevue/datepicker";
 
 const props = defineProps({
   visible: Boolean,

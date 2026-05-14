@@ -80,6 +80,14 @@ export class JournalService {
     ).data;
   }
 
+  static async deleteRecord(id) {
+    return (
+      await apiClient.delete(
+        `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}${id}/`,
+      )
+    ).data;
+  }
+
   static async saveAttendance(payload) {
     if (payload.id)
       return (
@@ -90,6 +98,12 @@ export class JournalService {
       ).data;
     return (
       await apiClient.post(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, payload)
+    ).data;
+  }
+
+  static async deleteAttendance(id) {
+    return (
+      await apiClient.delete(`${APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES}${id}/`)
     ).data;
   }
 }

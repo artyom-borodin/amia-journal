@@ -53,6 +53,7 @@ export const APP_CONSTANTS = {
       SELECT_GROUP: "-- Выберите группу --",
       SELECT_SUBJECT: "-- Выберите дисциплину --",
       SELECT_LESSON_TIME: "Выберите пару",
+      SELECT_DATE: "Выберите дату",
     },
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
