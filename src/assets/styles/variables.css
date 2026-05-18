@@ -9,7 +9,7 @@
   --fs-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
   --fs-icon: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
 
-  /* ─── Spacing scale ─────────────────────────────────────────────────── */
+  /* ─── Spacing scale (Fluid) ─────────────────────────────────────────── */
   --space-1: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
   --space-2: clamp(0.5rem, 0.44rem + 0.3vw, 0.75rem);
   --space-3: clamp(0.75rem, 0.67rem + 0.4vw, 1rem);
@@ -18,10 +18,20 @@
   --space-6: clamp(1.5rem, 1.3rem + 1vw, 2rem);
   --space-8: clamp(2rem, 1.6rem + 2vw, 3rem);
 
+  /* ─── Micro Spacing (Fixed) ─────────────────────────────────────────── */
+  --space-3xs: 0.125rem; /* 2px */
+  --space-2xs: 0.25rem; /* 4px */
+  --space-xs: 0.375rem; /* 6px */
+
   /* ─── Shadow tokens ─────────────────────────────────────────────────── */
   --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* ─── Border Shadows (for sticky tables) ────────────────────────────── */
+  --shadow-border-b: inset 0 -1px 0 var(--p-surface-200);
+  --shadow-border-r: inset -1px 0 0 var(--p-surface-200);
+  --shadow-border-br: inset -1px -1px 0 var(--p-surface-200);
 
   /* ─── Component size tokens ─────────────────────────────────────────── */
   --size-login-card: clamp(20rem, 90vw, 28rem);
@@ -31,12 +41,22 @@
   --size-card-h: clamp(6rem, 12vw, 9.375rem);
   --size-fio-col: clamp(12rem, 25vw, 17.5rem);
   --size-lesson-col: clamp(6.5rem, 12vw, 8.125rem);
-  --size-topic-max: clamp(5rem, 10vw, 6.875rem);
   --size-cell-h: clamp(2.25rem, 4vw, 2.8125rem);
   --size-filter-min: clamp(12rem, 25vw, 15.625rem);
+  --size-header-min-h: 2.5rem;
+  --size-subheader-min-h: 3rem;
 
   /* ─── Border radius ─────────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
   --radius-lg: 1rem;
+
+  /* ─── Borders ───────────────────────────────────────────────────────── */
+  --border-width-md: 2px;
+
+  /* ─── Z-index scale ─────────────────────────────────────────────────── */
+  --z-base: 10;
+  --z-header: 20;
+  --z-corner: 30;
 
   /* ─── Font weights ───────────────────────────────────────────────────── */
   --fw-semibold: 600;

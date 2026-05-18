@@ -17,20 +17,58 @@
           :placeholder="APP_CONSTANTS.UI.DEFAULT_ATTENDANCE"
           class="w-full"
           showClear
+          :disabled="isSaving"
         />
       </div>
 
       <div class="field">
-        <label>{{ APP_CONSTANTS.UI.LABELS.MARK }}</label>
-        <Select
-          v-model="formData.mark_value"
-          :options="dicts.markValues"
-          optionLabel="value"
-          optionValue="id"
-          :placeholder="APP_CONSTANTS.UI.DEFAULT_MARK"
-          class="w-full"
-          showClear
-        />
+        <div class="marks-header">
+          <label>{{ APP_CONSTANTS.UI.LABELS.MARK }}</label>
+          <Button 
+            icon="pi pi-plus" 
+            size="small" 
+            text 
+            @click="addMark" 
+            :disabled="isSaving" 
+          />
+        </div>
+
+        <div
+          v-for="(mark, index) in formData.marks"
+          :key="index"
+          class="mark-row"
+        >
+          <Select
+            v-model="mark.mark_value"
+            :options="dicts.markValues"
+            optionLabel="value"
+            optionValue="id"
+            :placeholder="APP_CONSTANTS.UI.LABELS.MARK_VALUE"
+            class="mark-select"
+            required
+            :disabled="isSaving"
+          />
+          <Select
+            v-model="mark.mark_kind"
+            :options="dicts.markKinds"
+            optionLabel="mark_kind"
+            optionValue="id"
+            :placeholder="APP_CONSTANTS.UI.LABELS.MARK_KIND_TYPE"
+            class="kind-select"
+            required
+            :disabled="isSaving"
+          />
+          <Button
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            @click="removeMark(index)"
+            :disabled="isSaving"
+          />
+        </div>
+        <div v-if="formData.marks.length === 0" class="no-marks-text">
+          {{ APP_CONSTANTS.UI.MESSAGES.NO_MARKS }}
+        </div>
       </div>
 
       <div class="dialog-footer">
@@ -40,6 +78,7 @@
           text
           severity="secondary"
           @click="$emit('update:visible', false)"
+          :disabled="isSaving"
         />
         <Button
           type="submit"
@@ -55,12 +94,13 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
+import { getPersonFullName } from "../utils/journalUtils";
 
 const props = defineProps({
   visible: Boolean,
   person: Object,
   lesson: Object,
-  record: Object,
+  records: Array,
   attendance: Object,
   dicts: Object,
   isSaving: Boolean,
@@ -68,28 +108,41 @@ const props = defineProps({
 
 const emit = defineEmits(["update:visible", "save"]);
 
-const headerTitle = computed(() => {
-  if (!props.person) return "";
-  return `${props.person.last_name_rus} ${props.person.first_name_rus}`;
-});
+const headerTitle = computed(() => getPersonFullName(props.person));
 
 const formData = ref({
-  reason: props.attendance?.reason ?? null,
-  mark_value: props.record?.mark_value ?? null,
+  reason: null,
+  marks: [],
 });
 
 watch(
-  () => [props.record, props.attendance],
-  ([newRecord, newAttendance]) => {
-    formData.value.reason = newAttendance?.reason ?? null;
-    formData.value.mark_value = newRecord?.mark_value ?? null;
+  () => [props.records, props.attendance, props.visible],
+  ([newRecords, newAttendance, isVisible]) => {
+    if (isVisible) {
+      formData.value.reason = newAttendance?.reason ?? null;
+      formData.value.marks = newRecords
+        ? newRecords.map((r) => ({
+            mark_value: r.mark_value,
+            mark_kind: r.mark_kind,
+          }))
+        : [];
+    }
   },
+  { immediate: true },
 );
+
+const addMark = () => {
+  formData.value.marks.push({ mark_value: null, mark_kind: null });
+};
+
+const removeMark = (index) => {
+  formData.value.marks.splice(index, 1);
+};
 
 const handleSave = () => {
   emit("save", {
     reason: formData.value.reason,
-    mark_value: formData.value.mark_value,
+    marks: formData.value.marks,
   });
 };
 </script>

@@ -6,17 +6,24 @@
 
       <div class="cards-container">
         <Button
-          :label="APP_CONSTANTS.UI.LABELS.CADETS"
-          icon="pi pi-users"
+          :label="APP_CONSTANTS.UI.LABELS.JOURNAL"
+          icon="pi pi-book"
           class="dashboard-btn"
-          @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.CADET)"
+          @click="goTo(APP_CONSTANTS.ROUTES.JOURNAL)"
         />
         <Button
-          :label="APP_CONSTANTS.UI.LABELS.STUDENTS"
-          icon="pi pi-graduation-cap"
-          severity="success"
+          :label="APP_CONSTANTS.UI.LABELS.REPORTS"
+          icon="pi pi-chart-bar"
+          severity="info"
           class="dashboard-btn"
-          @click="goToJournal(APP_CONSTANTS.STUDENT_TYPES.STUDENT)"
+          @click="goTo(APP_CONSTANTS.ROUTES.REPORTS)"
+        />
+        <Button
+          :label="APP_CONSTANTS.UI.LABELS.DOCUMENTS"
+          icon="pi pi-file"
+          severity="help"
+          class="dashboard-btn"
+          @click="goTo(APP_CONSTANTS.ROUTES.DOCUMENTS)"
         />
       </div>
     </main>
@@ -30,7 +37,7 @@ import { APP_CONSTANTS } from "../config/constants";
 
 const router = useRouter();
 
-const goToJournal = (type) => {
-  router.push(`${APP_CONSTANTS.ROUTES.JOURNAL}/${type}`);
+const goTo = (route) => {
+  router.push(route);
 };
 </script>

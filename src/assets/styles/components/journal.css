@@ -38,27 +38,9 @@
 }
 
 .filter-action {
-  padding-bottom: 2px; /* visual alignment with Select bottom border */
-}
-
-/* ─── Empty / loading states ────────────────────────────────────────────── */
-
-.empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  background: var(--p-surface-0);
-  border-radius: var(--p-border-radius);
-  border: 2px dashed var(--p-surface-300);
-  color: var(--p-surface-500);
-  font-size: var(--fs-lg);
-}
-
-.empty-state-icon {
-  font-size: var(--fs-icon);
+  padding-bottom: var(
+    --space-3xs
+  ); /* visual alignment with Select bottom border */
 }
 
 /* ─── Grid container ────────────────────────────────────────────────────── */
@@ -73,6 +55,18 @@
   flex-direction: column;
 }
 
+/* Hide scrollbars for grid and table container */
+.grid-container,
+.grid-container .journal-table .p-datatable-table-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.grid-container::-webkit-scrollbar,
+.grid-container .journal-table .p-datatable-table-container::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── Journal table ─────────────────────────────────────────────────────── */
 
 .journal-table {
@@ -83,52 +77,87 @@
 
 .grid-container .journal-table .p-datatable-table-container {
   align-items: flex-start;
-  overflow-x: auto;
+  overflow: auto;
 }
 
 .grid-container .journal-table .p-datatable-table {
   width: auto;
+  table-layout: fixed;
 }
 
 .fio-column {
-  min-width: var(--size-fio-col);
+  width: var(--size-fio-col) !important;
+  min-width: var(--size-fio-col) !important;
+  max-width: var(--size-fio-col) !important;
   font-weight: var(--fw-semibold);
   background-color: var(--p-surface-50);
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 /* PrimeVue overrides: frozen column stacking context */
-.journal-table td.fio-column,
-.journal-table th.fio-column {
-  z-index: 1 !important;
-  background-color: var(--p-surface-50);
+
+.journal-table .p-datatable-thead {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header) !important;
 }
 
-.journal-table thead th.fio-column {
-  z-index: 2 !important;
+.journal-table .p-datatable-thead > tr > th {
+  z-index: var(--z-header) !important;
+  background-color: var(--p-surface-50) !important;
 }
 
-/* PrimeVue override: remove default cell padding for full-bleed cell content */
+.journal-table .p-datatable-thead > tr:last-child > th {
+  box-shadow: var(--shadow-border-b);
+}
+
+.journal-table .p-datatable-thead > tr > th.fio-column {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: var(--z-corner) !important;
+  box-shadow: var(--shadow-border-br);
+}
+
+.journal-table .p-datatable-tbody > tr > td.fio-column {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: var(--z-base) !important;
+  background-color: var(--p-surface-50) !important;
+  box-shadow: var(--shadow-border-r);
+}
+
 .lesson-column {
-  min-width: var(--size-lesson-col);
+  width: var(--size-lesson-col) !important;
+  min-width: var(--size-lesson-col) !important;
+  max-width: var(--size-lesson-col) !important;
   padding: 0 !important;
+  box-sizing: border-box;
 }
 
 /* ─── Lesson header ─────────────────────────────────────────────────────── */
 
-.lesson-header {
+.date-header-content {
+  font-weight: normal;
+  font-size: var(--fs-sm);
+  color: var(--p-surface-900);
+  width: 100%;
+  min-height: var(--size-header-min-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lesson-header-sub {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100%;
-  gap: 2px;
-  padding: var(--space-2);
-}
-
-.lesson-date {
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-sm);
-  color: var(--p-surface-900);
+  gap: var(--space-3xs);
+  padding: var(--space-1) var(--space-2);
+  height: 100%;
+  min-height: var(--size-subheader-min-h);
 }
 
 .lesson-time {
@@ -136,22 +165,21 @@
   color: var(--p-surface-600);
 }
 
-.lesson-topic {
+.lesson-topic,
+.lesson-kind {
   font-size: var(--fs-2xs);
-  color: var(--p-primary-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: var(--size-topic-max);
+  max-width: 100%;
+}
+
+.lesson-topic {
+  color: var(--p-primary-color);
 }
 
 .lesson-kind {
-  font-size: var(--fs-2xs);
   color: var(--p-surface-500);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: var(--size-topic-max);
 }
 
 /* ─── Cell ──────────────────────────────────────────────────────────────── */
@@ -180,16 +208,32 @@
   background-color: var(--p-red-100);
 }
 
-.mark-value {
+.disabled-cell,
+.disabled-cell:hover {
+  cursor: default;
+  background-color: transparent;
+}
+
+.marks-container {
+  display: flex;
+  gap: var(--space-2xs);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mark-badge {
   font-weight: var(--fw-bold);
   font-size: var(--fs-base);
   color: var(--p-surface-900);
+  background: var(--p-surface-100);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-sm);
 }
 
 .absent-mark {
   position: absolute;
-  bottom: 2px;
-  right: 4px;
+  bottom: var(--space-3xs);
+  right: var(--space-2xs);
   font-size: var(--fs-2xs);
   font-weight: var(--fw-bold);
   color: var(--p-red-500);

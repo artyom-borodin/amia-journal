@@ -44,15 +44,39 @@
       </div>
 
       <div class="field">
-        <label>{{ APP_CONSTANTS.UI.LABELS.MARK_KIND }}</label>
+        <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TYPE }}</label>
         <Select
-          v-model="newLesson.mark_kind"
-          :options="dicts.markKinds"
-          optionLabel="mark_kind"
+          v-model="newLesson.lesson_type"
+          :options="dicts.lessonTypes"
+          optionLabel="name"
           optionValue="id"
           class="w-full"
           required
         />
+      </div>
+
+      <div class="field">
+        <label>{{ APP_CONSTANTS.UI.LABELS.TEACHERS }}</label>
+        <MultiSelect
+          v-model="newLesson.teachers"
+          :options="dicts.teachers"
+          optionLabel="username"
+          display="chip"
+          optionValue="id"
+          filter
+          :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_TEACHERS"
+          class="w-full"
+        >
+          <template #option="slotProps">
+            {{ getPersonFullName(slotProps.option) }}
+          </template>
+
+          <template #chip="slotProps">
+            <div>
+              {{ getPersonFullName(getTeacherById(slotProps.value)) }}
+            </div>
+          </template>
+        </MultiSelect>
       </div>
 
       <div class="field">
@@ -83,6 +107,8 @@ import { ref, watch } from "vue";
 import DatePicker from "primevue/datepicker";
 import { APP_CONSTANTS } from "../config/constants";
 import { toApiDate } from "../utils/dateUtils";
+import { getPersonFullName } from "../utils/journalUtils";
+import { useAuthStore } from "../store/authStore";
 
 const props = defineProps({
   visible: Boolean,
@@ -90,12 +116,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:visible", "add"]);
+const authStore = useAuthStore();
 
 const newLesson = ref({
   date: null,
   lesson_time: "",
-  mark_kind: "",
+  lesson_type: "",
   topic: "",
+  teachers: [],
 });
 
 watch(
@@ -105,15 +133,16 @@ watch(
       newLesson.value = {
         date: null,
         lesson_time: "",
-        mark_kind: "",
+        lesson_type: "",
         topic: "",
+        teachers: authStore.user?.id ? [authStore.user.id] : [],
       };
     }
   },
 );
 
 const getLessonTimeLabel = (id) => {
-  const time = props.dicts.lessonTimes.find((t) => t.id === id);
+  const time = props.dicts.lessonTimes?.find((t) => t.id === id);
   return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
 };
 
@@ -122,5 +151,10 @@ const handleSubmit = () => {
     ...newLesson.value,
     date: toApiDate(newLesson.value.date),
   });
+};
+
+const getTeacherById = (id) => {
+  if (!props.dicts.teachers) return null;
+  return props.dicts.teachers.find(teacher => teacher.id === id);
 };
 </script>

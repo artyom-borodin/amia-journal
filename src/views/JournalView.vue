@@ -14,6 +14,7 @@
                 :options="journalStore.dicts.groups"
                 optionLabel="group_name"
                 optionValue="id"
+                filter
                 :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_GROUP"
                 class="w-full"
               />
@@ -25,6 +26,7 @@
                 :options="journalStore.dicts.subjects"
                 optionLabel="subject_name"
                 optionValue="id"
+                filter
                 :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SUBJECT"
                 class="w-full"
               />
@@ -57,7 +59,7 @@
           :lessons="journalStore.lessons"
           :records-map="journalStore.recordsMap"
           :attendances-map="journalStore.attendancesMap"
-          :dicts="journalStore.dicts"
+          :dicts-map="journalStore.dictsMap"
           @cell-click="openCellModal"
         />
       </div>
@@ -67,7 +69,7 @@
         :visible="!!selectedCell"
         :person="selectedCell.person"
         :lesson="selectedCell.lesson"
-        :record="selectedCell.record"
+        :records="selectedCell.records"
         :attendance="selectedCell.attendance"
         :dicts="journalStore.dicts"
         :is-saving="isSavingCell"
@@ -92,13 +94,10 @@ import NavBar from "../components/NavBar.vue";
 import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
 import AddLessonModal from "../components/AddLessonModal.vue";
-import { useAuthStore } from "../store/authStore";
 import { useJournalStore } from "../store/journalStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
 
-const props = defineProps({ studentType: String });
-const authStore = useAuthStore();
 const journalStore = useJournalStore();
 const toast = useToast();
 
@@ -110,21 +109,17 @@ const selectedCell = ref(null);
 const isSavingCell = ref(false);
 
 const loadGridData = async () => {
-  await journalStore.fetchGridData(
-    props.studentType,
-    selectedGroup.value,
-    selectedSubject.value,
-  );
+  await journalStore.fetchGridData(selectedGroup.value, selectedSubject.value);
 };
 
 const openCellModal = ({ person, lesson }) => {
   selectedCell.value = {
     person,
     lesson,
-    record:
+    records:
       journalStore.recordsMap[
         generateCellKey(person.id, lesson.date, lesson.lesson_time)
-      ],
+      ] || [],
     attendance:
       journalStore.attendancesMap[
         generateCellKey(person.id, lesson.date, lesson.lesson_time)
@@ -132,23 +127,21 @@ const openCellModal = ({ person, lesson }) => {
   };
 };
 
-const handleSaveCell = async ({ reason, mark_value }) => {
+const handleSaveCell = async ({ reason, marks }) => {
   isSavingCell.value = true;
   try {
     await journalStore.saveCellData({
       reason,
-      mark_value,
+      marks,
       person: selectedCell.value.person,
       lesson: selectedCell.value.lesson,
-      record: selectedCell.value.record,
       attendance: selectedCell.value.attendance,
-      studentType: props.studentType,
-      userId: authStore.user.id,
     });
 
     selectedCell.value = null;
     await loadGridData();
-  } catch {
+  } catch (error) {
+    console.error("Failed to save cell data:", error);
     toast.add({
       severity: "error",
       summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
@@ -169,7 +162,8 @@ const handleAddLesson = async (lessonData) => {
     });
     showAddLessonModal.value = false;
     await loadGridData();
-  } catch {
+  } catch (error) {
+    console.error("Failed to add lesson:", error);
     toast.add({
       severity: "error",
       summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
@@ -182,6 +176,6 @@ const handleAddLesson = async (lessonData) => {
 watch([selectedGroup, selectedSubject], loadGridData);
 
 onMounted(() => {
-  journalStore.fetchFilters(props.studentType);
+  journalStore.fetchFilters();
 });
 </script>

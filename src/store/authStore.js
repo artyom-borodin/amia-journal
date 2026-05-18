@@ -7,9 +7,18 @@ export const useAuthStore = defineStore("auth", () => {
   const token = ref(
     localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN) || null,
   );
-  const user = ref(
-    JSON.parse(localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.USER)) || null,
-  );
+
+  const getStoredUser = () => {
+    try {
+      const stored = localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.USER);
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
+      return null;
+    }
+  };
+
+  const user = ref(getStoredUser());
 
   const isAuthenticated = computed(() => !!token.value);
   const userRole = computed(() => user.value?.role || null);

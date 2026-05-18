@@ -1,55 +1,124 @@
 <template>
   <DataTable
-    :value="persons"
+    :value="paddedPersons"
     scrollable
     scrollHeight="flex"
     class="journal-table"
     showGridlines
     size="small"
   >
-    <Column
-      field="fullName"
-      header="ФИО"
-      frozen
-      alignFrozen="left"
-      class="fio-column"
-    >
+    <ColumnGroup type="header">
+      <Row>
+        <Column
+          :header="APP_CONSTANTS.UI.LABELS.FULL_NAME"
+          :rowspan="2"
+          frozen
+          alignFrozen="left"
+          class="fio-column"
+        />
+        <Column
+          v-for="group in groupedLessons"
+          :key="group.date"
+          :colspan="group.count"
+          class="date-group-header"
+        >
+          <template #header>
+            <div class="date-header-content">{{ formatDate(group.date) }}</div>
+          </template>
+        </Column>
+        <Column
+          v-for="i in emptyColumnsCount"
+          :key="'empty-date-' + i"
+          class="date-group-header empty-header"
+        >
+          <template #header>
+            <div class="date-header-content">&nbsp;</div>
+          </template>
+        </Column>
+      </Row>
+      <Row>
+        <Column
+          v-for="lesson in lessons"
+          :key="'header-' + lesson.id"
+          class="lesson-column"
+        >
+          <template #header>
+            <div class="lesson-header-sub">
+              <span class="lesson-time">{{
+                getLessonTime(lesson.lesson_time)
+              }}</span>
+              <span class="lesson-topic" :title="lesson.topic">{{
+                lesson.topic || APP_CONSTANTS.UI.NO_TOPIC
+              }}</span>
+              <span
+                class="lesson-kind"
+                :title="getLessonType(lesson.lesson_type)"
+                >{{ getLessonType(lesson.lesson_type) }}</span
+              >
+            </div>
+          </template>
+        </Column>
+        <Column
+          v-for="i in emptyColumnsCount"
+          :key="'empty-sub-' + i"
+          class="lesson-column"
+        >
+          <template #header>
+            <div class="lesson-header-sub empty-header">
+              <span class="lesson-time">&nbsp;</span>
+              <span class="lesson-topic">&nbsp;</span>
+              <span class="lesson-kind">&nbsp;</span>
+            </div>
+          </template>
+        </Column>
+      </Row>
+    </ColumnGroup>
+
+    <Column field="fullName" frozen alignFrozen="left" class="fio-column">
       <template #body="{ data }">
-        {{ data.last_name_rus }} {{ data.first_name_rus }}
-        {{ data.patronymic_rus }}
+        <template v-if="!data.isEmptyRow">
+          {{ getPersonFullName(data) }}
+        </template>
+        <template v-else> &nbsp; </template>
       </template>
     </Column>
 
     <Column v-for="lesson in lessons" :key="lesson.id" class="lesson-column">
-      <template #header>
-        <div class="lesson-header">
-          <span class="lesson-date">{{ formatDate(lesson.date) }}</span>
-          <span class="lesson-time">{{
-            getLessonTime(lesson.lesson_time)
-          }}</span>
-          <span class="lesson-topic" :title="lesson.topic">{{
-            lesson.topic || APP_CONSTANTS.UI.NO_TOPIC
-          }}</span>
-          <span class="lesson-kind" :title="getMarkKind(lesson.mark_kind)">{{
-            getMarkKind(lesson.mark_kind)
-          }}</span>
-        </div>
-      </template>
       <template #body="{ data }">
         <div
+          v-if="!data.isEmptyRow"
           class="cell-content"
           :class="{ 'is-absent': isAbsent(data.id, lesson) }"
           @click="$emit('cell-click', { person: data, lesson })"
         >
-          <span class="mark-value">{{ getMarkValue(data.id, lesson) }}</span>
+          <div class="marks-container">
+            <span
+              v-for="record in getRecords(data.id, lesson)"
+              :key="record.id"
+              class="mark-badge"
+            >
+              {{ getMarkValueText(record.mark_value) }}
+            </span>
+          </div>
           <span
             v-if="isAbsent(data.id, lesson)"
             class="absent-mark"
-            title="Отсутствует"
+            :title="APP_CONSTANTS.UI.LABELS.ABSENT"
           >
             {{ APP_CONSTANTS.UI.ABSENT_MARK }}
           </span>
         </div>
+        <div v-else class="cell-content disabled-cell"></div>
+      </template>
+    </Column>
+
+    <Column
+      v-for="i in emptyColumnsCount"
+      :key="'empty-col-' + i"
+      class="lesson-column"
+    >
+      <template #body>
+        <div class="cell-content disabled-cell"></div>
       </template>
     </Column>
   </DataTable>
@@ -59,57 +128,83 @@
 import { computed } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
-import { generateCellKey } from "../utils/journalUtils";
+import { generateCellKey, getPersonFullName } from "../utils/journalUtils";
 
 const props = defineProps({
   persons: Array,
   lessons: Array,
   recordsMap: Object,
   attendancesMap: Object,
-  dicts: Object,
+  dictsMap: Object,
 });
 
 defineEmits(["cell-click"]);
 
-const createMap = (array, key = "id") => {
-  return array.reduce((acc, item) => {
-    acc[item[key]] = item;
-    return acc;
-  }, {});
-};
+const groupedLessons = computed(() => {
+  const groups = [];
+  let currentGroup = null;
 
-const lessonTimesMap = computed(() => createMap(props.dicts.lessonTimes));
-const markKindsMap = computed(() => createMap(props.dicts.markKinds));
-const markValuesMap = computed(() => createMap(props.dicts.markValues));
-const attendanceReasonsMap = computed(() =>
-  createMap(props.dicts.attendanceReasons),
-);
+  props.lessons?.forEach((lesson) => {
+    if (!currentGroup || currentGroup.date !== lesson.date) {
+      if (currentGroup) groups.push(currentGroup);
+      currentGroup = { date: lesson.date, count: 1 };
+    } else {
+      currentGroup.count++;
+    }
+  });
+  if (currentGroup) groups.push(currentGroup);
+
+  return groups;
+});
+
+const emptyColumnsCount = computed(() => {
+  const currentLessons = props.lessons?.length || 0;
+  return Math.max(0, APP_CONSTANTS.GRID.MIN_COLUMNS - currentLessons);
+});
+
+const paddedPersons = computed(() => {
+  const realPersons = props.persons || [];
+  const emptyRowsCount = Math.max(
+    0,
+    APP_CONSTANTS.GRID.MIN_ROWS - realPersons.length,
+  );
+
+  const emptyRows = Array.from({ length: emptyRowsCount }, (_, i) => ({
+    id: `empty-row-${i}`,
+    isEmptyRow: true,
+  }));
+
+  return [...realPersons, ...emptyRows];
+});
 
 const getLessonTime = (id) => {
-  const time = lessonTimesMap.value[id];
+  const time = props.dictsMap.lessonTimes[id];
   return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
 };
 
-const getMarkKind = (id) => markKindsMap.value[id]?.mark_kind || "";
+const getLessonType = (id) => props.dictsMap.lessonTypes[id]?.name || "";
 
-const getRecord = (personId, lesson) =>
-  props.recordsMap[generateCellKey(personId, lesson.date, lesson.lesson_time)];
+const getRecords = (personId, lesson) => {
+  return (
+    props.recordsMap[
+      generateCellKey(personId, lesson.date, lesson.lesson_time)
+    ] || []
+  );
+};
 
 const getAttendance = (personId, lesson) =>
   props.attendancesMap[
     generateCellKey(personId, lesson.date, lesson.lesson_time)
   ];
 
-const getMarkValue = (personId, lesson) => {
-  const record = getRecord(personId, lesson);
-  if (!record || !record.mark_value) return "";
-  return markValuesMap.value[record.mark_value]?.value || "";
+const getMarkValueText = (markValueId) => {
+  return props.dictsMap.markValues[markValueId]?.value || "";
 };
 
 const isAbsent = (personId, lesson) => {
   const att = getAttendance(personId, lesson);
   if (!att) return false;
-  const reason = attendanceReasonsMap.value[att.reason];
+  const reason = props.dictsMap.attendanceReasons[att.reason];
   return reason ? reason.is_absent : false;
 };
 </script>

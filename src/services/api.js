@@ -1,5 +1,7 @@
 import axios from "axios";
 import { APP_CONSTANTS } from "../config/constants";
+import { useAuthStore } from "../store/authStore";
+import router from "../router";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "",
@@ -25,9 +27,9 @@ apiClient.interceptors.response.use(
       error.config?.url === APP_CONSTANTS.API_ENDPOINTS.TOKEN;
 
     if (isUnauthorized && !isAuthRequest) {
-      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
-      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.USER);
-      window.location.href = APP_CONSTANTS.ROUTES.LOGIN;
+      const authStore = useAuthStore();
+      authStore.logout();
+      router.push(APP_CONSTANTS.ROUTES.LOGIN);
     }
 
     return Promise.reject(error);

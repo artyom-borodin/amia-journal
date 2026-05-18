@@ -25,3 +25,30 @@
   gap: var(--space-2);
   margin-top: var(--space-3);
 }
+
+.marks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mark-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.mark-select {
+  flex: 1;
+}
+
+.kind-select {
+  flex: 2;
+}
+
+.no-marks-text {
+  color: var(--p-surface-500);
+  font-size: var(--fs-sm);
+  font-style: italic;
+}
