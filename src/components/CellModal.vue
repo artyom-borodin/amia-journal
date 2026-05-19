@@ -24,12 +24,12 @@
       <div class="field">
         <div class="marks-header">
           <label>{{ APP_CONSTANTS.UI.LABELS.MARK }}</label>
-          <Button 
-            icon="pi pi-plus" 
-            size="small" 
-            text 
-            @click="addMark" 
-            :disabled="isSaving" 
+          <Button
+            icon="pi pi-plus"
+            size="small"
+            text
+            @click="addMark"
+            :disabled="isSaving"
           />
         </div>
 

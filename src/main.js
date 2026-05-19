@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
-import ToastService from "primevue/toastservice";
 import Aura from "@primevue/themes/aura";
 import "primeicons/primeicons.css";
 
@@ -22,7 +21,7 @@ import Row from "primevue/row";
 import Textarea from "primevue/textarea";
 import Message from "primevue/message";
 import Card from "primevue/card";
-import Toast from "primevue/toast";
+import DatePicker from "primevue/datepicker";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -37,7 +36,6 @@ app.use(PrimeVue, {
     },
   },
 });
-app.use(ToastService);
 
 app.component("Button", Button);
 app.component("InputText", InputText);
@@ -52,6 +50,6 @@ app.component("Row", Row);
 app.component("Textarea", Textarea);
 app.component("Message", Message);
 app.component("Card", Card);
-app.component("Toast", Toast);
+app.component("DatePicker", DatePicker);
 
 app.mount("#app");

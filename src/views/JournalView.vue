@@ -1,7 +1,6 @@
 <template>
   <div class="layout-wrapper">
     <NavBar />
-    <Toast />
 
     <main class="journal-main">
       <Card class="filters-card">
@@ -37,6 +36,7 @@
                 :label="APP_CONSTANTS.UI.LABELS.ADD_LESSON"
                 icon="pi pi-plus"
                 severity="success"
+                class="w-full"
                 @click="showAddLessonModal = true"
               />
             </div>
@@ -80,16 +80,32 @@
       <AddLessonModal
         :visible="showAddLessonModal"
         :dicts="journalStore.dicts"
+        :dicts-map="journalStore.dictsMap"
         @update:visible="showAddLessonModal = $event"
         @add="handleAddLesson"
       />
     </main>
+
+    <Dialog
+      v-model:visible="showErrorDialog"
+      modal
+      :header="APP_CONSTANTS.UI.ERROR_SUMMARY"
+      class="error-modal"
+      :closable="false"
+    >
+      <div class="error-dialog-content">
+        <i class="pi pi-exclamation-triangle error-icon"></i>
+        <span class="error-text">{{ errorMessage }}</span>
+      </div>
+      <template #footer>
+        <Button label="OK" @click="showErrorDialog = false" autofocus />
+      </template>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { useToast } from "primevue/usetoast";
 import NavBar from "../components/NavBar.vue";
 import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
@@ -97,9 +113,9 @@ import AddLessonModal from "../components/AddLessonModal.vue";
 import { useJournalStore } from "../store/journalStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
+import { extractErrorMessage } from "../utils/errorUtils";
 
 const journalStore = useJournalStore();
-const toast = useToast();
 
 const selectedGroup = ref(null);
 const selectedSubject = ref(null);
@@ -108,8 +124,20 @@ const showAddLessonModal = ref(false);
 const selectedCell = ref(null);
 const isSavingCell = ref(false);
 
-const loadGridData = async () => {
-  await journalStore.fetchGridData(selectedGroup.value, selectedSubject.value);
+const showErrorDialog = ref(false);
+const errorMessage = ref("");
+
+const showError = (error, defaultMsg) => {
+  errorMessage.value = extractErrorMessage(error, defaultMsg);
+  showErrorDialog.value = true;
+};
+
+const loadGridData = async (silent = false) => {
+  await journalStore.fetchGridData(
+    selectedGroup.value,
+    selectedSubject.value,
+    silent,
+  );
 };
 
 const openCellModal = ({ person, lesson }) => {
@@ -139,15 +167,9 @@ const handleSaveCell = async ({ reason, marks }) => {
     });
 
     selectedCell.value = null;
-    await loadGridData();
   } catch (error) {
     console.error("Failed to save cell data:", error);
-    toast.add({
-      severity: "error",
-      summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
-      detail: APP_CONSTANTS.UI.ERRORS.SAVE_DATA,
-      life: 3000,
-    });
+    showError(error, APP_CONSTANTS.UI.ERRORS.SAVE_DATA);
   } finally {
     isSavingCell.value = false;
   }
@@ -161,19 +183,16 @@ const handleAddLesson = async (lessonData) => {
       subject: selectedSubject.value,
     });
     showAddLessonModal.value = false;
-    await loadGridData();
+    await loadGridData(true);
   } catch (error) {
     console.error("Failed to add lesson:", error);
-    toast.add({
-      severity: "error",
-      summary: APP_CONSTANTS.UI.ERROR_SUMMARY,
-      detail: APP_CONSTANTS.UI.ERRORS.ADD_LESSON,
-      life: 3000,
-    });
+    showError(error, APP_CONSTANTS.UI.ERRORS.ADD_LESSON);
   }
 };
 
-watch([selectedGroup, selectedSubject], loadGridData);
+watch([selectedGroup, selectedSubject], () => {
+  loadGridData(false);
+});
 
 onMounted(() => {
   journalStore.fetchFilters();

@@ -51,3 +51,15 @@ export const buildAttendancesMap = (attendances) => {
   });
   return aMap;
 };
+
+export const sortGroupsByName = (groups) => {
+  return [...groups].sort((a, b) =>
+    a.group_name.localeCompare(b.group_name, undefined, { numeric: true }),
+  );
+};
+
+export const sortPersonsByFullName = (persons) => {
+  return [...persons].sort((a, b) =>
+    getPersonFullName(a).localeCompare(getPersonFullName(b)),
+  );
+};

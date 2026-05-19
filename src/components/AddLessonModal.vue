@@ -73,7 +73,7 @@
 
           <template #chip="slotProps">
             <div>
-              {{ getPersonFullName(getTeacherById(slotProps.value)) }}
+              {{ getPersonFullName(dictsMap.teachers[slotProps.value]) }}
             </div>
           </template>
         </MultiSelect>
@@ -113,6 +113,7 @@ import { useAuthStore } from "../store/authStore";
 const props = defineProps({
   visible: Boolean,
   dicts: Object,
+  dictsMap: Object,
 });
 
 const emit = defineEmits(["update:visible", "add"]);
@@ -142,7 +143,7 @@ watch(
 );
 
 const getLessonTimeLabel = (id) => {
-  const time = props.dicts.lessonTimes?.find((t) => t.id === id);
+  const time = props.dictsMap?.lessonTimes?.[id];
   return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
 };
 
@@ -151,10 +152,5 @@ const handleSubmit = () => {
     ...newLesson.value,
     date: toApiDate(newLesson.value.date),
   });
-};
-
-const getTeacherById = (id) => {
-  if (!props.dicts.teachers) return null;
-  return props.dicts.teachers.find(teacher => teacher.id === id);
 };
 </script>

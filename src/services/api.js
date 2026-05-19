@@ -2,6 +2,7 @@ import axios from "axios";
 import { APP_CONSTANTS } from "../config/constants";
 import { useAuthStore } from "../store/authStore";
 import router from "../router";
+import { storageUtils } from "../utils/storageUtils";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "",
@@ -11,7 +12,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
+  const token = storageUtils.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

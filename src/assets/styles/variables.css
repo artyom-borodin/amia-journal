@@ -44,7 +44,7 @@
   --size-cell-h: clamp(2.25rem, 4vw, 2.8125rem);
   --size-filter-min: clamp(12rem, 25vw, 15.625rem);
   --size-header-min-h: 2.5rem;
-  --size-subheader-min-h: 3rem;
+  --size-subheader-min-h: 4rem;
 
   /* ─── Border radius ─────────────────────────────────────────────────── */
   --radius-sm: 0.25rem;

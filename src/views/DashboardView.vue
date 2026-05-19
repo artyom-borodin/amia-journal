@@ -6,24 +6,13 @@
 
       <div class="cards-container">
         <Button
-          :label="APP_CONSTANTS.UI.LABELS.JOURNAL"
-          icon="pi pi-book"
+          v-for="card in dashboardCards"
+          :key="card.route"
+          :label="card.label"
+          :icon="card.icon"
+          :severity="card.severity"
           class="dashboard-btn"
-          @click="goTo(APP_CONSTANTS.ROUTES.JOURNAL)"
-        />
-        <Button
-          :label="APP_CONSTANTS.UI.LABELS.REPORTS"
-          icon="pi pi-chart-bar"
-          severity="info"
-          class="dashboard-btn"
-          @click="goTo(APP_CONSTANTS.ROUTES.REPORTS)"
-        />
-        <Button
-          :label="APP_CONSTANTS.UI.LABELS.DOCUMENTS"
-          icon="pi pi-file"
-          severity="help"
-          class="dashboard-btn"
-          @click="goTo(APP_CONSTANTS.ROUTES.DOCUMENTS)"
+          @click="goTo(card.route)"
         />
       </div>
     </main>
@@ -36,6 +25,27 @@ import NavBar from "../components/NavBar.vue";
 import { APP_CONSTANTS } from "../config/constants";
 
 const router = useRouter();
+
+const dashboardCards = [
+  {
+    route: APP_CONSTANTS.ROUTES.JOURNAL,
+    label: APP_CONSTANTS.UI.LABELS.JOURNAL,
+    icon: "pi pi-book",
+    severity: null,
+  },
+  {
+    route: APP_CONSTANTS.ROUTES.REPORTS,
+    label: APP_CONSTANTS.UI.LABELS.REPORTS,
+    icon: "pi pi-chart-bar",
+    severity: "info",
+  },
+  {
+    route: APP_CONSTANTS.ROUTES.DOCUMENTS,
+    label: APP_CONSTANTS.UI.LABELS.DOCUMENTS,
+    icon: "pi pi-file",
+    severity: "help",
+  },
+];
 
 const goTo = (route) => {
   router.push(route);

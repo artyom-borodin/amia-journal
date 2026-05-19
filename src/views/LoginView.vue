@@ -49,6 +49,7 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import { APP_CONSTANTS } from "../config/constants";
+import { extractErrorMessage } from "../utils/errorUtils";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -64,8 +65,10 @@ const handleLogin = async () => {
     await authStore.login(credentials);
     router.push(APP_CONSTANTS.ROUTES.DASHBOARD);
   } catch (error) {
-    errorMessage.value =
-      error.response?.data?.error || APP_CONSTANTS.UI.ERRORS.LOGIN;
+    errorMessage.value = extractErrorMessage(
+      error,
+      APP_CONSTANTS.UI.ERRORS.LOGIN,
+    );
   } finally {
     isLoading.value = false;
   }

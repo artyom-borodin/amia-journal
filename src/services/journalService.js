@@ -1,9 +1,25 @@
 import apiClient from "./api";
 import { APP_CONSTANTS } from "../config/constants";
-import { getPersonFullName } from "../utils/journalUtils";
+import { sortGroupsByName, sortPersonsByFullName } from "../utils/journalUtils";
+
+const extractData = (response) => response.data.results || response.data;
 
 export class JournalService {
   static async getDictionaries() {
+    const endpoints = [
+      APP_CONSTANTS.API_ENDPOINTS.GROUPS,
+      APP_CONSTANTS.API_ENDPOINTS.SUBJECTS,
+      APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS,
+      APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES,
+      APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES,
+      APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS,
+      APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES,
+      APP_CONSTANTS.API_ENDPOINTS.TEACHERS,
+    ];
+
+    const responses = await Promise.all(
+      endpoints.map((ep) => apiClient.get(ep)),
+    );
     const [
       groups,
       subjects,
@@ -13,31 +29,17 @@ export class JournalService {
       attendanceReasons,
       lessonTypes,
       teachers,
-    ] = await Promise.all([
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.TEACHERS),
-    ]);
-
-    const sortedGroups = (groups.data.results || groups.data).sort((a, b) =>
-      a.group_name.localeCompare(b.group_name, undefined, { numeric: true }),
-    );
+    ] = responses.map(extractData);
 
     return {
-      groups: sortedGroups,
-      subjects: subjects.data.results || subjects.data,
-      markKinds: markKinds.data.results || markKinds.data,
-      markValues: markValues.data.results || markValues.data,
-      lessonTimes: lessonTimes.data.results || lessonTimes.data,
-      attendanceReasons:
-        attendanceReasons.data.results || attendanceReasons.data,
-      lessonTypes: lessonTypes.data.results || lessonTypes.data,
-      teachers: teachers.data.results || teachers.data,
+      groups: sortGroupsByName(groups),
+      subjects,
+      markKinds,
+      markValues,
+      lessonTimes,
+      attendanceReasons,
+      lessonTypes,
+      teachers,
     };
   }
 
@@ -51,32 +53,35 @@ export class JournalService {
       }),
     ]);
 
-    const cadets = (cadetsRes.data.results || cadetsRes.data || []).map(
-      (p) => ({ ...p, personType: APP_CONSTANTS.STUDENT_TYPES.CADET }),
-    );
-    const students = (studentsRes.data.results || studentsRes.data || []).map(
-      (p) => ({ ...p, personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT }),
-    );
+    const cadets = extractData(cadetsRes).map((p) => ({
+      ...p,
+      personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
+    }));
+    const students = extractData(studentsRes).map((p) => ({
+      ...p,
+      personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
+    }));
 
-    return [...cadets, ...students].sort((a, b) => {
-      return getPersonFullName(a).localeCompare(getPersonFullName(b));
-    });
+    return sortPersonsByFullName([...cadets, ...students]);
   }
 
   static async getJournalData(groupId, subjectId) {
-    const [lessons, records, attendances] = await Promise.all([
+    const [lessonsRes, recordsRes, attendancesRes] = await Promise.all([
       apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSONS, {
         params: { group: groupId, subject: subjectId },
       }),
       apiClient.get(APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS, {
-        params: { lesson__subject: subjectId },
+        params: { lesson__group: groupId, lesson__subject: subjectId },
       }),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, {}),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, {
+        params: { group: groupId },
+      }),
     ]);
+
     return {
-      lessons: lessons.data.results || lessons.data,
-      records: records.data.results || records.data,
-      attendances: attendances.data.results || attendances.data,
+      lessons: extractData(lessonsRes),
+      records: extractData(recordsRes),
+      attendances: extractData(attendancesRes),
     };
   }
 
@@ -161,9 +166,11 @@ export class JournalService {
   static async saveCellData({ reason, marks, person, lesson, attendance }) {
     const { entityPayload, idPayload } = this._getPersonPayloads(person);
 
-    return Promise.all([
+    const [savedAttendance] = await Promise.all([
       this._handleAttendance(reason, entityPayload, lesson, attendance),
       this._handleMarks(marks, idPayload, lesson),
     ]);
+
+    return savedAttendance;
   }
 }

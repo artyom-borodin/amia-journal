@@ -28,7 +28,7 @@
         </Column>
         <Column
           v-for="i in emptyColumnsCount"
-          :key="'empty-date-' + i"
+          :key="APP_CONSTANTS.PREFIXES.EMPTY_DATE + i"
           class="date-group-header empty-header"
         >
           <template #header>
@@ -39,28 +39,21 @@
       <Row>
         <Column
           v-for="lesson in lessons"
-          :key="'header-' + lesson.id"
+          :key="APP_CONSTANTS.PREFIXES.HEADER + lesson.id"
           class="lesson-column"
         >
           <template #header>
             <div class="lesson-header-sub">
-              <span class="lesson-time">{{
-                getLessonTime(lesson.lesson_time)
-              }}</span>
-              <span class="lesson-topic" :title="lesson.topic">{{
-                lesson.topic || APP_CONSTANTS.UI.NO_TOPIC
-              }}</span>
-              <span
-                class="lesson-kind"
-                :title="getLessonType(lesson.lesson_type)"
-                >{{ getLessonType(lesson.lesson_type) }}</span
-              >
+              <span class="lesson-time">{{ getLessonTime(lesson.lesson_time) }}</span>
+              <span class="lesson-topic" :title="lesson.topic">{{ lesson.topic || APP_CONSTANTS.UI.NO_TOPIC }}</span>
+              <span class="lesson-kind" :title="getLessonType(lesson.lesson_type)">{{ getLessonType(lesson.lesson_type) }}</span>
+              <span class="lesson-teachers" :title="getLessonTeachers(lesson.teachers)">{{ getLessonTeachers(lesson.teachers) }}</span>
             </div>
           </template>
         </Column>
         <Column
           v-for="i in emptyColumnsCount"
-          :key="'empty-sub-' + i"
+          :key="APP_CONSTANTS.PREFIXES.EMPTY_SUB + i"
           class="lesson-column"
         >
           <template #header>
@@ -68,6 +61,7 @@
               <span class="lesson-time">&nbsp;</span>
               <span class="lesson-topic">&nbsp;</span>
               <span class="lesson-kind">&nbsp;</span>
+              <span class="lesson-teachers">&nbsp;</span>
             </div>
           </template>
         </Column>
@@ -88,25 +82,22 @@
         <div
           v-if="!data.isEmptyRow"
           class="cell-content"
-          :class="{ 'is-absent': isAbsent(data.id, lesson) }"
+          :class="{
+            'is-absent':
+              journalStore.gridMatrix[data.id]?.[lesson.id]?.isAbsent,
+          }"
           @click="$emit('cell-click', { person: data, lesson })"
         >
           <div class="marks-container">
             <span
-              v-for="record in getRecords(data.id, lesson)"
+              v-for="record in journalStore.gridMatrix[data.id]?.[lesson.id]
+                ?.records"
               :key="record.id"
               class="mark-badge"
             >
-              {{ getMarkValueText(record.mark_value) }}
+              {{ dictsMap.markValues[record.mark_value]?.value }}
             </span>
           </div>
-          <span
-            v-if="isAbsent(data.id, lesson)"
-            class="absent-mark"
-            :title="APP_CONSTANTS.UI.LABELS.ABSENT"
-          >
-            {{ APP_CONSTANTS.UI.ABSENT_MARK }}
-          </span>
         </div>
         <div v-else class="cell-content disabled-cell"></div>
       </template>
@@ -114,7 +105,7 @@
 
     <Column
       v-for="i in emptyColumnsCount"
-      :key="'empty-col-' + i"
+      :key="APP_CONSTANTS.PREFIXES.EMPTY_COL + i"
       class="lesson-column"
     >
       <template #body>
@@ -128,7 +119,8 @@
 import { computed } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
-import { generateCellKey, getPersonFullName } from "../utils/journalUtils";
+import { getPersonFullName } from "../utils/journalUtils";
+import { useJournalStore } from "../store/journalStore";
 
 const props = defineProps({
   persons: Array,
@@ -139,6 +131,8 @@ const props = defineProps({
 });
 
 defineEmits(["cell-click"]);
+
+const journalStore = useJournalStore();
 
 const groupedLessons = computed(() => {
   const groups = [];
@@ -170,7 +164,7 @@ const paddedPersons = computed(() => {
   );
 
   const emptyRows = Array.from({ length: emptyRowsCount }, (_, i) => ({
-    id: `empty-row-${i}`,
+    id: `${APP_CONSTANTS.PREFIXES.EMPTY_ROW}${i}`,
     isEmptyRow: true,
   }));
 
@@ -184,27 +178,14 @@ const getLessonTime = (id) => {
 
 const getLessonType = (id) => props.dictsMap.lessonTypes[id]?.name || "";
 
-const getRecords = (personId, lesson) => {
-  return (
-    props.recordsMap[
-      generateCellKey(personId, lesson.date, lesson.lesson_time)
-    ] || []
-  );
-};
-
-const getAttendance = (personId, lesson) =>
-  props.attendancesMap[
-    generateCellKey(personId, lesson.date, lesson.lesson_time)
-  ];
-
-const getMarkValueText = (markValueId) => {
-  return props.dictsMap.markValues[markValueId]?.value || "";
-};
-
-const isAbsent = (personId, lesson) => {
-  const att = getAttendance(personId, lesson);
-  if (!att) return false;
-  const reason = props.dictsMap.attendanceReasons[att.reason];
-  return reason ? reason.is_absent : false;
+const getLessonTeachers = (teacherIds) => {
+  if (!teacherIds || !teacherIds.length) return "";
+  return teacherIds
+    .map(id => {
+      const teacher = props.dictsMap.teachers[id];
+      return teacher ? getPersonFullName(teacher) : "";
+    })
+    .filter(Boolean)
+    .join(APP_CONSTANTS.FORMATTING.SEPARATOR);
 };
 </script>

@@ -1,35 +1,42 @@
 .journal-main {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: var(--space-5);
   gap: var(--space-5);
   overflow: hidden;
 }
 
-/* ─── Filters ───────────────────────────────────────────────────────────── */
-
 .filters-card {
   flex-shrink: 0;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .filters-card .p-card-body {
-  padding: var(--space-3);
+  padding: var(--space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.filters-card .p-card-content {
+  flex: 1;
 }
 
 .filters-row {
   display: flex;
-  gap: var(--space-5);
-  align-items: flex-end;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: stretch;
+  height: 100%;
 }
 
 .filter-item {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  min-width: var(--size-filter-min);
 }
 
 .filter-item label {
@@ -38,12 +45,8 @@
 }
 
 .filter-action {
-  padding-bottom: var(
-    --space-3xs
-  ); /* visual alignment with Select bottom border */
+  margin-top: var(--space-4);
 }
-
-/* ─── Grid container ────────────────────────────────────────────────────── */
 
 .grid-container {
   flex: 1;
@@ -55,7 +58,6 @@
   flex-direction: column;
 }
 
-/* Hide scrollbars for grid and table container */
 .grid-container,
 .grid-container .journal-table .p-datatable-table-container {
   scrollbar-width: none;
@@ -66,8 +68,6 @@
 .grid-container .journal-table .p-datatable-table-container::-webkit-scrollbar {
   display: none;
 }
-
-/* ─── Journal table ─────────────────────────────────────────────────────── */
 
 .journal-table {
   flex: 1;
@@ -94,8 +94,6 @@
   white-space: normal;
   word-wrap: break-word;
 }
-
-/* PrimeVue overrides: frozen column stacking context */
 
 .journal-table .p-datatable-thead {
   position: sticky;
@@ -134,8 +132,6 @@
   padding: 0 !important;
   box-sizing: border-box;
 }
-
-/* ─── Lesson header ─────────────────────────────────────────────────────── */
 
 .date-header-content {
   font-weight: normal;
@@ -182,7 +178,15 @@
   color: var(--p-surface-500);
 }
 
-/* ─── Cell ──────────────────────────────────────────────────────────────── */
+.lesson-teachers {
+  font-size: var(--fs-2xs);
+  color: var(--p-surface-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-style: italic;
+}
 
 .cell-content {
   position: relative;
@@ -228,13 +232,4 @@
   background: var(--p-surface-100);
   padding: var(--space-3xs) var(--space-xs);
   border-radius: var(--radius-sm);
-}
-
-.absent-mark {
-  position: absolute;
-  bottom: var(--space-3xs);
-  right: var(--space-2xs);
-  font-size: var(--fs-2xs);
-  font-weight: var(--fw-bold);
-  color: var(--p-red-500);
 }

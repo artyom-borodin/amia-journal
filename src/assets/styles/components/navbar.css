@@ -8,10 +8,33 @@
   box-shadow: var(--shadow-sm);
 }
 
-.navbar-brand {
+.navbar-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
+}
+
+.breadcrumb-item {
+  transition: opacity var(--duration-fast);
+}
+
+.breadcrumb-item.is-link {
   cursor: pointer;
+}
+
+.breadcrumb-item.is-link:hover {
+  opacity: var(--opacity-muted);
+}
+
+.breadcrumb-separator {
+  opacity: 0.5;
+  font-weight: normal;
+}
+
+.breadcrumb-item.current {
+  font-weight: normal;
 }
 
 .navbar-actions {
@@ -20,9 +43,20 @@
   gap: var(--space-5);
 }
 
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+
 .user-role {
   opacity: var(--opacity-muted);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
 }
 
 /* PrimeVue overrides for inverted navbar context */
