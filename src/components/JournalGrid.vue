@@ -44,10 +44,22 @@
         >
           <template #header>
             <div class="lesson-header-sub">
-              <span class="lesson-time">{{ getLessonTime(lesson.lesson_time) }}</span>
-              <span class="lesson-topic" :title="lesson.topic">{{ lesson.topic || APP_CONSTANTS.UI.NO_TOPIC }}</span>
-              <span class="lesson-kind" :title="getLessonType(lesson.lesson_type)">{{ getLessonType(lesson.lesson_type) }}</span>
-              <span class="lesson-teachers" :title="getLessonTeachers(lesson.teachers)">{{ getLessonTeachers(lesson.teachers) }}</span>
+              <span class="lesson-time">{{
+                getLessonTime(lesson.lesson_time)
+              }}</span>
+              <span class="lesson-topic" :title="lesson.topic">{{
+                lesson.topic || APP_CONSTANTS.UI.NO_TOPIC
+              }}</span>
+              <span
+                class="lesson-kind"
+                :title="getLessonType(lesson.lesson_type)"
+                >{{ getLessonType(lesson.lesson_type) }}</span
+              >
+              <span
+                class="lesson-teachers"
+                :title="getLessonTeachers(lesson.teachers)"
+                >{{ getLessonTeachers(lesson.teachers) }}</span
+              >
             </div>
           </template>
         </Column>
@@ -181,7 +193,7 @@ const getLessonType = (id) => props.dictsMap.lessonTypes[id]?.name || "";
 const getLessonTeachers = (teacherIds) => {
   if (!teacherIds || !teacherIds.length) return "";
   return teacherIds
-    .map(id => {
+    .map((id) => {
       const teacher = props.dictsMap.teachers[id];
       return teacher ? getPersonFullName(teacher) : "";
     })

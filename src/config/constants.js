@@ -31,15 +31,27 @@ export const APP_CONSTANTS = {
     TEACHERS: "/api/readonly-users/",
     SEMESTERS: "/api/semesters/",
     REPORTS_SUMMARY: "/api/reports/summary/",
+
+    // Documents
+    EXAMINATION_SHEET: "/api/documents/examination-sheet/",
+    SUMMARY_SHEET: "/api/documents/summary-sheet/",
+    STUDY_CARD_EXTRACT: "/api/documents/study-card-extract/",
   },
-  STORAGE_KEYS: { TOKEN: "kis_access_token", USER: "kis_user" },
-  STUDENT_TYPES: { CADET: "cadet", STUDENT: "student" },
+  STORAGE_KEYS: {
+    TOKEN: "kis_access_token",
+    USER: "kis_user",
+  },
+  STUDENT_TYPES: {
+    CADET: "cadet",
+    STUDENT: "student",
+  },
   HTTP_STATUS: {
     UNAUTHORIZED: 401,
   },
   GRID: {
     MIN_COLUMNS: 10,
     MIN_ROWS: 15,
+    DEFAULT_PAGINATION_ROWS: 10,
   },
   LOCALES: {
     RU: "ru-RU",
@@ -51,6 +63,7 @@ export const APP_CONSTANTS = {
   DATE_FORMAT: {
     TWO_DIGIT: "2-digit",
     PAD_CHAR: "0",
+    PAD_LENGTH: 2,
   },
   PREFIXES: {
     TEMP: "temp-",
@@ -64,11 +77,31 @@ export const APP_CONSTANTS = {
     UNIQUE_SET: "must make a unique set",
     LESSON_TIME: "lesson_time",
   },
+  API_ERROR_KEYS: {
+    DETAIL: "detail",
+    ERROR: "error",
+    NON_FIELD_ERRORS: "non_field_errors",
+  },
   CHART_COLORS: {
-    MARKS: '#3b82f6',
-    ABSENCES: '#ef4444',
-    GRID: '#e2e8f0',
-    TEXT: '#334155'
+    MARKS: "#3b82f6",
+    ABSENCES: "#ef4444",
+    GRID: "#e2e8f0",
+    TEXT: "#334155",
+  },
+  CHART_CONFIG: {
+    ASPECT_RATIO: 0.8,
+  },
+  FILES: {
+    DEFAULT_EXAM_SHEET_NAME: "examination_sheet.docx",
+    DEFAULT_SUMMARY_SHEET_NAME: "summary_sheet.docx",
+    DEFAULT_STUDY_CARD_EXTRACT_NAME: "study_card_extract.docx",
+    CONTENT_DISPOSITION: "content-disposition",
+    FILENAME_REGEX: /filename="?([^"]+)"?/,
+    RESPONSE_TYPE_BLOB: "blob",
+  },
+  REPORT_VIEWS: {
+    TABLE: "table",
+    CHART: "chart",
   },
   UI: {
     APP_TITLE: "Электронный журнал",
@@ -85,6 +118,7 @@ export const APP_CONSTANTS = {
       Documents: "Документы",
     },
     LABELS: {
+      HOME: "Главная",
       USERNAME: "Имя пользователя",
       PASSWORD: "Пароль",
       LOGIN_BTN: "Авторизоваться",
@@ -123,6 +157,10 @@ export const APP_CONSTANTS = {
       TOTAL_ABSENCES: "Всего пропусков",
       VIEW_TABLE: "Таблица",
       VIEW_CHART: "График",
+      EXAMINATION_SHEET: "Зачетно-экзаменационная ведомость",
+      SUMMARY_SHEET: "Сводная ведомость",
+      STUDY_CARD_EXTRACT: "Выписка для учебной карточки",
+      DOWNLOAD_DOC: "Скачать документ",
     },
     PLACEHOLDERS: {
       SELECT_GROUP: "-- Выберите группу --",
@@ -135,18 +173,24 @@ export const APP_CONSTANTS = {
       SELECT_TEACHER: "-- Выберите преподавателя --",
       SELECT_MARK: "-- Выберите оценку --",
       SELECT_REASON: "-- Выберите причину --",
+      SELECT_MARK_KIND: "-- Выберите вид контроля --",
     },
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
       LOADING: "Загрузка данных...",
       NO_MARKS: "Нет оценок",
       UNDER_CONSTRUCTION: "Раздел в разработке",
+      SELECT_REPORT_FILTERS:
+        'Выберите параметры и нажмите "Сформировать отчет"',
     },
     ERRORS: {
       LOGIN: "Ошибка авторизации. Попробуйте еще раз.",
       SAVE_DATA: "Ошибка при сохранении данных",
       ADD_LESSON: "Ошибка при добавлении занятия",
       LESSON_EXISTS: "Занятие на эту дату и пару уже существует.",
+      GENERATE_DOC:
+        "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
+      LOAD_STUDENTS: "Ошибка при загрузке списка обучающихся.",
     },
     ERROR_SUMMARY: "Ошибка",
   },

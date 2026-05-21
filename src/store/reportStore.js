@@ -1,20 +1,23 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { ReportService } from "../services/reportService";
-import { useJournalStore } from "./journalStore";
+import { useDictionaryStore } from "./dictionaryStore";
 
 export const useReportStore = defineStore("report", () => {
-  const journalStore = useJournalStore();
-  
+  const dictionaryStore = useDictionaryStore();
+
   const semesters = ref([]);
   const reportData = ref([]);
   const isLoading = ref(false);
 
   const fetchDictionaries = async () => {
-    if (journalStore.dicts.groups.length === 0) {
-      await journalStore.fetchFilters();
+    await dictionaryStore.fetchDictionaries();
+
+    try {
+      semesters.value = await ReportService.getSemesters();
+    } catch (error) {
+      console.error("Failed to fetch semesters:", error);
     }
-    semesters.value = await ReportService.getSemesters();
   };
 
   const generateReport = async (filters) => {
@@ -39,6 +42,6 @@ export const useReportStore = defineStore("report", () => {
     isLoading,
     fetchDictionaries,
     generateReport,
-    clearReport
+    clearReport,
   };
 });

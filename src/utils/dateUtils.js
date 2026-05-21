@@ -18,11 +18,11 @@ export const toApiDate = (date) => {
 
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(
-    2,
+    APP_CONSTANTS.DATE_FORMAT.PAD_LENGTH,
     APP_CONSTANTS.DATE_FORMAT.PAD_CHAR,
   );
   const day = String(d.getDate()).padStart(
-    2,
+    APP_CONSTANTS.DATE_FORMAT.PAD_LENGTH,
     APP_CONSTANTS.DATE_FORMAT.PAD_CHAR,
   );
 

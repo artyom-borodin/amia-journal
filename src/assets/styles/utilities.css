@@ -10,6 +10,10 @@
   margin-top: var(--space-3);
 }
 
+.mt-4 {
+  margin-top: var(--space-4);
+}
+
 .layout-wrapper {
   height: 100vh;
   display: flex;

@@ -10,12 +10,14 @@ export const extractErrorMessage = (error, fallback) => {
 
   if (typeof data === "string") {
     rawMessage = data;
-  } else if (data.detail) {
-    rawMessage = data.detail;
-  } else if (data.error) {
-    rawMessage = data.error;
-  } else if (data.non_field_errors) {
-    rawMessage = data.non_field_errors.join(APP_CONSTANTS.FORMATTING.SEPARATOR);
+  } else if (data[APP_CONSTANTS.API_ERROR_KEYS.DETAIL]) {
+    rawMessage = data[APP_CONSTANTS.API_ERROR_KEYS.DETAIL];
+  } else if (data[APP_CONSTANTS.API_ERROR_KEYS.ERROR]) {
+    rawMessage = data[APP_CONSTANTS.API_ERROR_KEYS.ERROR];
+  } else if (data[APP_CONSTANTS.API_ERROR_KEYS.NON_FIELD_ERRORS]) {
+    rawMessage = data[APP_CONSTANTS.API_ERROR_KEYS.NON_FIELD_ERRORS].join(
+      APP_CONSTANTS.FORMATTING.SEPARATOR,
+    );
   } else {
     const messages = [];
     for (const key in data) {

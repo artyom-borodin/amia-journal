@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { JournalService } from "../services/journalService";
+import { PersonService } from "../services/personService";
+import { useDictionaryStore } from "./dictionaryStore";
 import { APP_CONSTANTS } from "../config/constants";
 import {
-  createDictMap,
   sortLessons,
   buildRecordsMap,
   buildAttendancesMap,
@@ -11,24 +12,7 @@ import {
 } from "../utils/journalUtils";
 
 export const useJournalStore = defineStore("journal", () => {
-  const dicts = ref({
-    groups: [],
-    subjects: [],
-    markKinds: [],
-    markValues: [],
-    lessonTimes: [],
-    attendanceReasons: [],
-    lessonTypes: [],
-    teachers: [],
-  });
-
-  const dictsMap = computed(() => ({
-    lessonTimes: createDictMap(dicts.value.lessonTimes),
-    lessonTypes: createDictMap(dicts.value.lessonTypes),
-    markValues: createDictMap(dicts.value.markValues),
-    attendanceReasons: createDictMap(dicts.value.attendanceReasons),
-    teachers: createDictMap(dicts.value.teachers),
-  }));
+  const dictionaryStore = useDictionaryStore();
 
   const persons = ref([]);
   const lessons = ref([]);
@@ -36,10 +20,6 @@ export const useJournalStore = defineStore("journal", () => {
   const attendancesMap = ref({});
   const gridMatrix = ref({});
   const isLoading = ref(false);
-
-  const fetchFilters = async () => {
-    dicts.value = await JournalService.getDictionaries();
-  };
 
   const fetchGridData = async (groupId, subjectId, silent = false) => {
     if (!groupId || !subjectId) return;
@@ -50,14 +30,14 @@ export const useJournalStore = defineStore("journal", () => {
 
     try {
       const [personsData, journalData] = await Promise.all([
-        JournalService.getPersons(groupId),
+        PersonService.getPersonsByGroup(groupId),
         JournalService.getJournalData(groupId, subjectId),
       ]);
 
       persons.value = personsData;
       lessons.value = sortLessons(
         journalData.lessons,
-        dictsMap.value.lessonTimes,
+        dictionaryStore.dictsMap.lessonTimes,
       );
 
       recordsMap.value = buildRecordsMap(journalData.records, lessons.value);
@@ -74,7 +54,7 @@ export const useJournalStore = defineStore("journal", () => {
           );
           const attendance = attendancesMap.value[key];
           const reason = attendance
-            ? dictsMap.value.attendanceReasons[attendance.reason]
+            ? dictionaryStore.dictsMap.attendanceReasons[attendance.reason]
             : null;
 
           matrix[person.id][lesson.id] = {
@@ -112,7 +92,9 @@ export const useJournalStore = defineStore("journal", () => {
       mark_kind: m.mark_kind,
     }));
 
-    const reasonObj = reason ? dictsMap.value.attendanceReasons[reason] : null;
+    const reasonObj = reason
+      ? dictionaryStore.dictsMap.attendanceReasons[reason]
+      : null;
     if (gridMatrix.value[person.id] && gridMatrix.value[person.id][lesson.id]) {
       gridMatrix.value[person.id][lesson.id].records = recordsMap.value[key];
       gridMatrix.value[person.id][lesson.id].isAbsent = reasonObj
@@ -126,15 +108,12 @@ export const useJournalStore = defineStore("journal", () => {
   };
 
   return {
-    dicts,
-    dictsMap,
     persons,
     lessons,
     recordsMap,
     attendancesMap,
     gridMatrix,
     isLoading,
-    fetchFilters,
     fetchGridData,
     saveCellData,
     addLesson,

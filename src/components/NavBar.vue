@@ -6,10 +6,12 @@
         :class="{ 'is-link': !isDashboard }"
         @click="goHome"
       >
-        {{ APP_CONSTANTS.UI.APP_TITLE }}
+        {{ APP_CONSTANTS.UI.LABELS.HOME }}
       </span>
       <template v-if="!isDashboard && currentRouteLabel">
-        <span class="breadcrumb-separator">{{ APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR }}</span>
+        <span class="breadcrumb-separator">{{
+          APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR
+        }}</span>
         <span class="breadcrumb-item current">{{ currentRouteLabel }}</span>
       </template>
     </div>
@@ -43,8 +45,12 @@ const authStore = useAuthStore();
 const userRole = computed(() => authStore.userRole);
 const userName = computed(() => getPersonFullName(authStore.user));
 
-const isDashboard = computed(() => route.name === APP_CONSTANTS.ROUTE_NAMES.DASHBOARD);
-const currentRouteLabel = computed(() => APP_CONSTANTS.UI.PAGE_TITLES[route.name] || "");
+const isDashboard = computed(
+  () => route.name === APP_CONSTANTS.ROUTE_NAMES.DASHBOARD,
+);
+const currentRouteLabel = computed(
+  () => APP_CONSTANTS.UI.PAGE_TITLES[route.name] || "",
+);
 
 const goHome = () => {
   if (!isDashboard.value) {

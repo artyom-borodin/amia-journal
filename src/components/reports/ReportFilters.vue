@@ -2,7 +2,6 @@
   <Card class="report-filters-card">
     <template #content>
       <form @submit.prevent="onSubmit" class="filters-grid">
-        
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.SEMESTER }}</label>
           <Select
@@ -126,7 +125,7 @@ import { toApiDate } from "../../utils/dateUtils";
 const props = defineProps({
   dicts: Object,
   semesters: Array,
-  isLoading: Boolean
+  isLoading: Boolean,
 });
 
 const emit = defineEmits(["generate"]);
@@ -140,14 +139,14 @@ const filters = reactive({
   teacher: null,
   student: null,
   markValue: null,
-  reason: null
+  reason: null,
 });
 
 const onSemesterChange = () => {
   if (selectedSemester.value) {
     filters.dates = [
       new Date(selectedSemester.value.start_date),
-      new Date(selectedSemester.value.end_date)
+      new Date(selectedSemester.value.end_date),
     ];
   } else {
     filters.dates = null;
@@ -159,7 +158,7 @@ const onSubmit = () => {
   if (filters.dates && filters.dates.length === 2) {
     formattedFilters.dates = [
       filters.dates[0] ? toApiDate(filters.dates[0]) : null,
-      filters.dates[1] ? toApiDate(filters.dates[1]) : null
+      filters.dates[1] ? toApiDate(filters.dates[1]) : null,
     ];
   }
   emit("generate", formattedFilters);

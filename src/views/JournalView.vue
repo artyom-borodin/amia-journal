@@ -10,7 +10,7 @@
               <label>{{ APP_CONSTANTS.UI.LABELS.GROUP }}</label>
               <Select
                 v-model="selectedGroup"
-                :options="journalStore.dicts.groups"
+                :options="dictionaryStore.dicts.groups"
                 optionLabel="group_name"
                 optionValue="id"
                 filter
@@ -22,7 +22,7 @@
               <label>{{ APP_CONSTANTS.UI.LABELS.SUBJECT }}</label>
               <Select
                 v-model="selectedSubject"
-                :options="journalStore.dicts.subjects"
+                :options="dictionaryStore.dicts.subjects"
                 optionLabel="subject_name"
                 optionValue="id"
                 filter
@@ -59,7 +59,7 @@
           :lessons="journalStore.lessons"
           :records-map="journalStore.recordsMap"
           :attendances-map="journalStore.attendancesMap"
-          :dicts-map="journalStore.dictsMap"
+          :dicts-map="dictionaryStore.dictsMap"
           @cell-click="openCellModal"
         />
       </div>
@@ -71,7 +71,7 @@
         :lesson="selectedCell.lesson"
         :records="selectedCell.records"
         :attendance="selectedCell.attendance"
-        :dicts="journalStore.dicts"
+        :dicts="dictionaryStore.dicts"
         :is-saving="isSavingCell"
         @update:visible="selectedCell = null"
         @save="handleSaveCell"
@@ -79,8 +79,8 @@
 
       <AddLessonModal
         :visible="showAddLessonModal"
-        :dicts="journalStore.dicts"
-        :dicts-map="journalStore.dictsMap"
+        :dicts="dictionaryStore.dicts"
+        :dicts-map="dictionaryStore.dictsMap"
         @update:visible="showAddLessonModal = $event"
         @add="handleAddLesson"
       />
@@ -111,11 +111,13 @@ import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
 import AddLessonModal from "../components/AddLessonModal.vue";
 import { useJournalStore } from "../store/journalStore";
+import { useDictionaryStore } from "../store/dictionaryStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
 import { extractErrorMessage } from "../utils/errorUtils";
 
 const journalStore = useJournalStore();
+const dictionaryStore = useDictionaryStore();
 
 const selectedGroup = ref(null);
 const selectedSubject = ref(null);
@@ -195,6 +197,6 @@ watch([selectedGroup, selectedSubject], () => {
 });
 
 onMounted(() => {
-  journalStore.fetchFilters();
+  dictionaryStore.fetchDictionaries();
 });
 </script>
