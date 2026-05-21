@@ -30,20 +30,15 @@ export const APP_CONSTANTS = {
     LESSON_TYPES: "/api/lesson-types/",
     TEACHERS: "/api/readonly-users/",
     SEMESTERS: "/api/semesters/",
-    
-    // New endpoints for dictionaries
     FACULTIES: "/api/subdivision/",
     SPECIALTIES: "/api/speciality/",
-
-    // Reports
     REPORTS_PERFORMANCE: "/api/reports/performance/",
     REPORTS_ATTENDANCE: "/api/reports/attendance/",
-
-    // Documents
     EXAMINATION_SHEET: "/api/documents/examination-sheet/",
     SUMMARY_SHEET: "/api/documents/summary-sheet/",
     STUDY_CARD_EXTRACT: "/api/documents/study-card-extract/",
   },
+  API_FALLBACK_RESPONSE: { data: [] },
   STORAGE_KEYS: {
     TOKEN: "kis_access_token",
     USER: "kis_user",
@@ -71,6 +66,11 @@ export const APP_CONSTANTS = {
     TWO_DIGIT: "2-digit",
     PAD_CHAR: "0",
     PAD_LENGTH: 2,
+  },
+  RULES: {
+    DATE_RANGE_LENGTH: 2,
+    REGEX_MATCH_LENGTH: 2,
+    DEFAULT_LESSON_NUMBER: 0,
   },
   PREFIXES: {
     TEMP: "temp-",
@@ -184,14 +184,16 @@ export const APP_CONSTANTS = {
       LOADING: "Загрузка данных...",
       NO_MARKS: "Нет оценок",
       UNDER_CONSTRUCTION: "Раздел в разработке",
-      SELECT_REPORT_FILTERS: 'Выберите параметры и нажмите "Сформировать отчет"',
+      SELECT_REPORT_FILTERS:
+        'Выберите параметры и нажмите "Сформировать отчет"',
     },
     ERRORS: {
       LOGIN: "Ошибка авторизации. Попробуйте еще раз.",
       SAVE_DATA: "Ошибка при сохранении данных",
       ADD_LESSON: "Ошибка при добавлении занятия",
       LESSON_EXISTS: "Занятие на эту дату и пару уже существует.",
-      GENERATE_DOC: "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
+      GENERATE_DOC:
+        "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
       LOAD_STUDENTS: "Ошибка при загрузке списка обучающихся.",
     },
     ERROR_SUMMARY: "Ошибка",

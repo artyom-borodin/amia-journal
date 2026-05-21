@@ -8,13 +8,21 @@
         <Button
           :label="APP_CONSTANTS.UI.LABELS.TAB_PERFORMANCE"
           icon="pi pi-star"
-          :severity="activeTab === APP_CONSTANTS.REPORT_TABS.PERFORMANCE ? 'primary' : 'secondary'"
+          :severity="
+            activeTab === APP_CONSTANTS.REPORT_TABS.PERFORMANCE
+              ? 'primary'
+              : 'secondary'
+          "
           @click="switchTab(APP_CONSTANTS.REPORT_TABS.PERFORMANCE)"
         />
         <Button
           :label="APP_CONSTANTS.UI.LABELS.TAB_ATTENDANCE"
           icon="pi pi-calendar-times"
-          :severity="activeTab === APP_CONSTANTS.REPORT_TABS.ATTENDANCE ? 'primary' : 'secondary'"
+          :severity="
+            activeTab === APP_CONSTANTS.REPORT_TABS.ATTENDANCE
+              ? 'primary'
+              : 'secondary'
+          "
           @click="switchTab(APP_CONSTANTS.REPORT_TABS.ATTENDANCE)"
         />
       </div>
@@ -26,7 +34,10 @@
           :is-loading="reportStore.isLoading"
           @generate="handleGeneratePerformance"
         />
-        <div v-if="reportStore.performanceData.length > 0" class="view-container mt-3">
+        <div
+          v-if="reportStore.performanceData.length > 0"
+          class="view-container mt-3"
+        >
           <PerformanceTable :data="reportStore.performanceData" />
         </div>
         <div v-else-if="!reportStore.isLoading" class="empty-state mt-3">
@@ -42,7 +53,10 @@
           :is-loading="reportStore.isLoading"
           @generate="handleGenerateAttendance"
         />
-        <div v-if="reportStore.attendanceData.length > 0" class="view-container mt-3">
+        <div
+          v-if="reportStore.attendanceData.length > 0"
+          class="view-container mt-3"
+        >
           <AttendanceTable :data="reportStore.attendanceData" />
         </div>
         <div v-else-if="!reportStore.isLoading" class="empty-state mt-3">

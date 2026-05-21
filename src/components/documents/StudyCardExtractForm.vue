@@ -48,47 +48,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive } from "vue";
 import { APP_CONSTANTS } from "../../config/constants";
 import { DocumentService } from "../../services/documentService";
-import { PersonService } from "../../services/personService";
 import { useDictionaryStore } from "../../store/dictionaryStore";
-import { getPersonFullName } from "../../utils/journalUtils";
+import { useStudentFilter } from "../../composables/useStudentFilter";
 
 const emit = defineEmits(["error"]);
 const dictionaryStore = useDictionaryStore();
 
 const isGenerating = ref(false);
-const isStudentsLoading = ref(false);
-const students = ref([]);
 
 const filters = reactive({
   group: null,
   student: null,
 });
 
-watch(
-  () => filters.group,
-  async (newGroupId) => {
-    filters.student = null;
-    if (newGroupId) {
-      isStudentsLoading.value = true;
-      try {
-        const persons = await PersonService.getPersonsByGroup(newGroupId);
-        students.value = persons.map((p) => ({
-          ...p,
-          fullName: getPersonFullName(p),
-        }));
-      } catch (error) {
-        emit("error", error, APP_CONSTANTS.UI.ERRORS.LOAD_STUDENTS);
-      } finally {
-        isStudentsLoading.value = false;
-      }
-    } else {
-      students.value = [];
-    }
-  },
-);
+const { students, isStudentsLoading } = useStudentFilter(filters, (error) => {
+  emit("error", error, APP_CONSTANTS.UI.ERRORS.LOAD_STUDENTS);
+});
 
 const handleGenerate = async () => {
   isGenerating.value = true;

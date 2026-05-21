@@ -1,3 +1,5 @@
+import { APP_CONSTANTS } from "../config/constants";
+
 export const generateCellKey = (personId, date, lessonTime) => {
   return `${personId}_${date}_${lessonTime}`;
 };
@@ -23,8 +25,12 @@ export const createDictMap = (array, key = "id") => {
 export const sortLessons = (lessons, lessonTimesMap) => {
   return [...lessons].sort((a, b) => {
     if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-    const timeA = lessonTimesMap[a.lesson_time]?.number || 0;
-    const timeB = lessonTimesMap[b.lesson_time]?.number || 0;
+    const timeA =
+      lessonTimesMap[a.lesson_time]?.number ||
+      APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
+    const timeB =
+      lessonTimesMap[b.lesson_time]?.number ||
+      APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
     return timeA - timeB;
   });
 };

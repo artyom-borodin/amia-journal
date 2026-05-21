@@ -3,13 +3,18 @@ import { APP_CONSTANTS } from "../config/constants";
 
 export class ReportService {
   static async getSemesters() {
-    const response = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.SEMESTERS).catch(() => ({ data: [] }));
+    const response = await apiClient
+      .get(APP_CONSTANTS.API_ENDPOINTS.SEMESTERS)
+      .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
     return response.data.results || response.data;
   }
 
   static _buildBaseParams(filters) {
     const params = {};
-    if (filters.dates && filters.dates.length === 2) {
+    if (
+      filters.dates &&
+      filters.dates.length === APP_CONSTANTS.RULES.DATE_RANGE_LENGTH
+    ) {
       if (filters.dates[0]) params.start_date = filters.dates[0];
       if (filters.dates[1]) params.end_date = filters.dates[1];
     }
@@ -28,7 +33,9 @@ export class ReportService {
     if (filters.lessonType) params.lesson_type = filters.lessonType;
     if (filters.markKind) params.mark_kind = filters.markKind;
 
-    const response = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.REPORTS_PERFORMANCE, { params }).catch(() => ({ data: [] }));
+    const response = await apiClient
+      .get(APP_CONSTANTS.API_ENDPOINTS.REPORTS_PERFORMANCE, { params })
+      .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
     return response.data;
   }
 
@@ -36,7 +43,9 @@ export class ReportService {
     const params = this._buildBaseParams(filters);
     if (filters.reason) params.reason = filters.reason;
 
-    const response = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.REPORTS_ATTENDANCE, { params }).catch(() => ({ data: [] }));
+    const response = await apiClient
+      .get(APP_CONSTANTS.API_ENDPOINTS.REPORTS_ATTENDANCE, { params })
+      .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
     return response.data;
   }
 }

@@ -32,12 +32,18 @@ export const extractErrorMessage = (error, fallback) => {
     }
   }
 
+  return rawMessage || fallback;
+};
+
+export const extractLessonErrorMessage = (error, fallback) => {
+  const rawMessage = error?.response?.data
+    ? JSON.stringify(error.response.data)
+    : "";
   if (
     rawMessage.includes(APP_CONSTANTS.API_ERRORS.UNIQUE_SET) &&
     rawMessage.includes(APP_CONSTANTS.API_ERRORS.LESSON_TIME)
   ) {
     return APP_CONSTANTS.UI.ERRORS.LESSON_EXISTS;
   }
-
-  return rawMessage || fallback;
+  return extractErrorMessage(error, fallback);
 };

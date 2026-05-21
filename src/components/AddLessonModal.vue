@@ -121,9 +121,9 @@ const authStore = useAuthStore();
 
 const newLesson = ref({
   date: null,
-  lesson_time: "",
-  lesson_type: "",
-  topic: "",
+  lesson_time: null,
+  lesson_type: null,
+  topic: null,
   teachers: [],
 });
 
@@ -133,9 +133,9 @@ watch(
     if (newVal) {
       newLesson.value = {
         date: null,
-        lesson_time: "",
-        lesson_type: "",
-        topic: "",
+        lesson_time: null,
+        lesson_type: null,
+        topic: null,
         teachers: authStore.user?.id ? [authStore.user.id] : [],
       };
     }

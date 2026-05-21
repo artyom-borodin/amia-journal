@@ -17,7 +17,10 @@ export class DocumentService {
       const fileNameMatch = contentDisposition.match(
         APP_CONSTANTS.FILES.FILENAME_REGEX,
       );
-      if (fileNameMatch && fileNameMatch.length === 2) {
+      if (
+        fileNameMatch &&
+        fileNameMatch.length === APP_CONSTANTS.RULES.REGEX_MATCH_LENGTH
+      ) {
         fileName = fileNameMatch[1];
       }
     }

@@ -9,10 +9,14 @@ export class PersonService {
     const params = {};
     if (filters.group) params.group = filters.group;
     if (filters.faculty) params.subdivision = filters.faculty;
-   
+
     const [cadetsRes, studentsRes] = await Promise.all([
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.CADETS, { params }).catch(() => ({ data: [] })),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, { params }).catch(() => ({ data: [] })),
+      apiClient
+        .get(APP_CONSTANTS.API_ENDPOINTS.CADETS, { params })
+        .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE),
+      apiClient
+        .get(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, { params })
+        .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE),
     ]);
 
     const cadets = extractData(cadetsRes).map((p) => ({

@@ -86,21 +86,7 @@
       />
     </main>
 
-    <Dialog
-      v-model:visible="showErrorDialog"
-      modal
-      :header="APP_CONSTANTS.UI.ERROR_SUMMARY"
-      class="error-modal"
-      :closable="false"
-    >
-      <div class="error-dialog-content">
-        <i class="pi pi-exclamation-triangle error-icon"></i>
-        <span class="error-text">{{ errorMessage }}</span>
-      </div>
-      <template #footer>
-        <Button label="OK" @click="showErrorDialog = false" autofocus />
-      </template>
-    </Dialog>
+    <ErrorDialog v-model:visible="showErrorDialog" :message="errorMessage" />
   </div>
 </template>
 
@@ -110,11 +96,15 @@ import NavBar from "../components/NavBar.vue";
 import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
 import AddLessonModal from "../components/AddLessonModal.vue";
+import ErrorDialog from "../components/ErrorDialog.vue";
 import { useJournalStore } from "../store/journalStore";
 import { useDictionaryStore } from "../store/dictionaryStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
-import { extractErrorMessage } from "../utils/errorUtils";
+import {
+  extractErrorMessage,
+  extractLessonErrorMessage,
+} from "../utils/errorUtils";
 
 const journalStore = useJournalStore();
 const dictionaryStore = useDictionaryStore();
@@ -129,8 +119,12 @@ const isSavingCell = ref(false);
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
 
-const showError = (error, defaultMsg) => {
-  errorMessage.value = extractErrorMessage(error, defaultMsg);
+const showError = (errorOrMessage, defaultMsg) => {
+  if (typeof errorOrMessage === "string") {
+    errorMessage.value = errorOrMessage;
+  } else {
+    errorMessage.value = extractErrorMessage(errorOrMessage, defaultMsg);
+  }
   showErrorDialog.value = true;
 };
 
@@ -188,7 +182,9 @@ const handleAddLesson = async (lessonData) => {
     await loadGridData(true);
   } catch (error) {
     console.error("Failed to add lesson:", error);
-    showError(error, APP_CONSTANTS.UI.ERRORS.ADD_LESSON);
+    showError(
+      extractLessonErrorMessage(error, APP_CONSTANTS.UI.ERRORS.ADD_LESSON),
+    );
   }
 };
 

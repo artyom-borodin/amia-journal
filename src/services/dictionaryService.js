@@ -6,7 +6,8 @@ const extractData = (response) => response.data.results || response.data;
 
 export class DictionaryService {
   static async getDictionaries() {
-    const safeGet = (endpoint) => apiClient.get(endpoint).catch(() => ({ data: [] }));
+    const safeGet = (endpoint) =>
+      apiClient.get(endpoint).catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
 
     const endpoints = [
       apiClient.get(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
