@@ -6,20 +6,22 @@ const extractData = (response) => response.data.results || response.data;
 
 export class DictionaryService {
   static async getDictionaries() {
+    const safeGet = (endpoint) => apiClient.get(endpoint).catch(() => ({ data: [] }));
+
     const endpoints = [
-      APP_CONSTANTS.API_ENDPOINTS.GROUPS,
-      APP_CONSTANTS.API_ENDPOINTS.SUBJECTS,
-      APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS,
-      APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES,
-      APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES,
-      APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS,
-      APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES,
-      APP_CONSTANTS.API_ENDPOINTS.TEACHERS,
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES),
+      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.TEACHERS),
+      safeGet(APP_CONSTANTS.API_ENDPOINTS.FACULTIES),
+      safeGet(APP_CONSTANTS.API_ENDPOINTS.SPECIALTIES),
     ];
 
-    const responses = await Promise.all(
-      endpoints.map((ep) => apiClient.get(ep)),
-    );
+    const responses = await Promise.all(endpoints);
 
     const [
       groups,
@@ -30,6 +32,8 @@ export class DictionaryService {
       attendanceReasons,
       lessonTypes,
       teachers,
+      faculties,
+      specialties,
     ] = responses.map(extractData);
 
     return {
@@ -41,6 +45,8 @@ export class DictionaryService {
       attendanceReasons,
       lessonTypes,
       teachers,
+      faculties,
+      specialties,
     };
   }
 }

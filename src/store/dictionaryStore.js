@@ -13,6 +13,8 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     attendanceReasons: [],
     lessonTypes: [],
     teachers: [],
+    faculties: [],
+    specialties: [],
   });
 
   const dictsMap = computed(() => ({

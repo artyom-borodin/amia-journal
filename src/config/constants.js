@@ -30,7 +30,14 @@ export const APP_CONSTANTS = {
     LESSON_TYPES: "/api/lesson-types/",
     TEACHERS: "/api/readonly-users/",
     SEMESTERS: "/api/semesters/",
-    REPORTS_SUMMARY: "/api/reports/summary/",
+    
+    // New endpoints for dictionaries
+    FACULTIES: "/api/subdivision/",
+    SPECIALTIES: "/api/speciality/",
+
+    // Reports
+    REPORTS_PERFORMANCE: "/api/reports/performance/",
+    REPORTS_ATTENDANCE: "/api/reports/attendance/",
 
     // Documents
     EXAMINATION_SHEET: "/api/documents/examination-sheet/",
@@ -82,15 +89,6 @@ export const APP_CONSTANTS = {
     ERROR: "error",
     NON_FIELD_ERRORS: "non_field_errors",
   },
-  CHART_COLORS: {
-    MARKS: "#3b82f6",
-    ABSENCES: "#ef4444",
-    GRID: "#e2e8f0",
-    TEXT: "#334155",
-  },
-  CHART_CONFIG: {
-    ASPECT_RATIO: 0.8,
-  },
   FILES: {
     DEFAULT_EXAM_SHEET_NAME: "examination_sheet.docx",
     DEFAULT_SUMMARY_SHEET_NAME: "summary_sheet.docx",
@@ -99,9 +97,9 @@ export const APP_CONSTANTS = {
     FILENAME_REGEX: /filename="?([^"]+)"?/,
     RESPONSE_TYPE_BLOB: "blob",
   },
-  REPORT_VIEWS: {
-    TABLE: "table",
-    CHART: "chart",
+  REPORT_TABS: {
+    PERFORMANCE: "performance",
+    ATTENDANCE: "attendance",
   },
   UI: {
     APP_TITLE: "Электронный журнал",
@@ -127,11 +125,13 @@ export const APP_CONSTANTS = {
       REPORTS: "Отчетность",
       DOCUMENTS: "Документы",
       GROUP: "Группа",
+      FACULTY: "Факультет",
+      SPECIALTY: "Специальность",
       SUBJECT: "Дисциплина",
       DATE: "Дата",
       LESSON_TIME: "Пара",
-      LESSON_TYPE: "Тип занятия",
-      MARK_KIND: "Вид контроля",
+      LESSON_TYPE: "Вид занятия",
+      MARK_KIND: "Вид оценки",
       TOPIC: "Тема занятия",
       TEACHERS: "Преподаватели",
       ATTENDANCE: "Посещаемость",
@@ -146,17 +146,18 @@ export const APP_CONSTANTS = {
       ADD_LESSON: "Добавить",
       FILTERS: "Фильтры",
       CLEAR_FILTERS: "Очистить фильтры",
-      ATTENDANCE_REASONS: "Причины пропусков",
+      ATTENDANCE_REASONS: "Причина пропуска",
       SEMESTER: "Семестр",
       DATE_RANGE: "Период (С - ПО)",
       STUDENT: "Обучающийся",
       TEACHER: "Преподаватель",
       GENERATE_REPORT: "Сформировать отчет",
       AVERAGE_MARK: "Средний балл",
-      TOTAL_MARKS: "Всего оценок",
+      ALL_MARKS: "Все оценки",
       TOTAL_ABSENCES: "Всего пропусков",
-      VIEW_TABLE: "Таблица",
-      VIEW_CHART: "График",
+      ABSENCE_DATES: "Даты пропусков",
+      TAB_PERFORMANCE: "Успеваемость",
+      TAB_ATTENDANCE: "Посещаемость",
       EXAMINATION_SHEET: "Зачетно-экзаменационная ведомость",
       SUMMARY_SHEET: "Сводная ведомость",
       STUDY_CARD_EXTRACT: "Выписка для учебной карточки",
@@ -164,6 +165,8 @@ export const APP_CONSTANTS = {
     },
     PLACEHOLDERS: {
       SELECT_GROUP: "-- Выберите группу --",
+      SELECT_FACULTY: "-- Выберите факультет --",
+      SELECT_SPECIALTY: "-- Выберите специальность --",
       SELECT_SUBJECT: "-- Выберите дисциплину --",
       SELECT_LESSON_TIME: "Выберите пару",
       SELECT_DATE: "Выберите дату",
@@ -173,23 +176,22 @@ export const APP_CONSTANTS = {
       SELECT_TEACHER: "-- Выберите преподавателя --",
       SELECT_MARK: "-- Выберите оценку --",
       SELECT_REASON: "-- Выберите причину --",
-      SELECT_MARK_KIND: "-- Выберите вид контроля --",
+      SELECT_MARK_KIND: "-- Выберите вид оценки --",
+      SELECT_LESSON_TYPE: "-- Выберите вид занятия --",
     },
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
       LOADING: "Загрузка данных...",
       NO_MARKS: "Нет оценок",
       UNDER_CONSTRUCTION: "Раздел в разработке",
-      SELECT_REPORT_FILTERS:
-        'Выберите параметры и нажмите "Сформировать отчет"',
+      SELECT_REPORT_FILTERS: 'Выберите параметры и нажмите "Сформировать отчет"',
     },
     ERRORS: {
       LOGIN: "Ошибка авторизации. Попробуйте еще раз.",
       SAVE_DATA: "Ошибка при сохранении данных",
       ADD_LESSON: "Ошибка при добавлении занятия",
       LESSON_EXISTS: "Занятие на эту дату и пару уже существует.",
-      GENERATE_DOC:
-        "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
+      GENERATE_DOC: "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
       LOAD_STUDENTS: "Ошибка при загрузке списка обучающихся.",
     },
     ERROR_SUMMARY: "Ошибка",
