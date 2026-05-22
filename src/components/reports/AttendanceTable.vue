@@ -1,4 +1,3 @@
-<!-- src/components/reports/AttendanceTable.vue -->
 <template>
   <DataTable
     :value="data"

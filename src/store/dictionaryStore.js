@@ -15,6 +15,8 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     teachers: [],
     faculties: [],
     specialties: [],
+    years: [],
+    semesters: [],
   });
 
   const dictsMap = computed(() => ({
@@ -23,6 +25,11 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     markValues: createDictMap(dicts.value.markValues),
     attendanceReasons: createDictMap(dicts.value.attendanceReasons),
     teachers: createDictMap(dicts.value.teachers),
+    years: createDictMap(dicts.value.years),
+    semesters: createDictMap(dicts.value.semesters),
+    specialties: createDictMap(dicts.value.specialties),
+    subjects: createDictMap(dicts.value.subjects),
+    markKinds: createDictMap(dicts.value.markKinds),
   }));
 
   const isLoading = ref(false);

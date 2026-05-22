@@ -8,13 +8,21 @@
       >
         {{ APP_CONSTANTS.UI.LABELS.HOME }}
       </span>
-      <template v-if="!isDashboard && currentRouteLabel">
+
+      <template v-for="(crumb, index) in breadcrumbs" :key="index">
         <span class="breadcrumb-separator">{{
           APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR
         }}</span>
-        <span class="breadcrumb-item current">{{ currentRouteLabel }}</span>
+        <span
+          class="breadcrumb-item"
+          :class="{ 'is-link': crumb.route, current: !crumb.route }"
+          @click="crumb.route ? navigateTo(crumb.route) : null"
+        >
+          {{ crumb.label }}
+        </span>
       </template>
     </div>
+
     <div class="navbar-actions">
       <div class="user-info">
         <span class="user-name">{{ userName }}</span>
@@ -48,13 +56,36 @@ const userName = computed(() => getPersonFullName(authStore.user));
 const isDashboard = computed(
   () => route.name === APP_CONSTANTS.ROUTE_NAMES.DASHBOARD,
 );
-const currentRouteLabel = computed(
-  () => APP_CONSTANTS.UI.PAGE_TITLES[route.name] || "",
-);
+
+const breadcrumbs = computed(() => {
+  const crumbs = [];
+  if (isDashboard.value) return crumbs;
+
+  if (route.name === APP_CONSTANTS.ROUTE_NAMES.STUDY_PLAN_DETAIL) {
+    crumbs.push({
+      label:
+        APP_CONSTANTS.UI.PAGE_TITLES[APP_CONSTANTS.ROUTE_NAMES.STUDY_PLANS],
+      route: APP_CONSTANTS.ROUTES.STUDY_PLANS,
+    });
+  }
+
+  crumbs.push({
+    label: APP_CONSTANTS.UI.PAGE_TITLES[route.name] || "",
+    route: null,
+  });
+
+  return crumbs;
+});
 
 const goHome = () => {
   if (!isDashboard.value) {
     router.push(APP_CONSTANTS.ROUTES.DASHBOARD);
+  }
+};
+
+const navigateTo = (path) => {
+  if (path) {
+    router.push(path);
   }
 };
 

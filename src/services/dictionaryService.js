@@ -20,6 +20,8 @@ export class DictionaryService {
       apiClient.get(APP_CONSTANTS.API_ENDPOINTS.TEACHERS),
       safeGet(APP_CONSTANTS.API_ENDPOINTS.FACULTIES),
       safeGet(APP_CONSTANTS.API_ENDPOINTS.SPECIALTIES),
+      safeGet(APP_CONSTANTS.API_ENDPOINTS.YEARS),
+      safeGet(APP_CONSTANTS.API_ENDPOINTS.SEMESTERS),
     ];
 
     const responses = await Promise.all(endpoints);
@@ -35,6 +37,8 @@ export class DictionaryService {
       teachers,
       faculties,
       specialties,
+      years,
+      semesters,
     ] = responses.map(extractData);
 
     return {
@@ -48,6 +52,8 @@ export class DictionaryService {
       teachers,
       faculties,
       specialties,
+      years,
+      semesters,
     };
   }
 }

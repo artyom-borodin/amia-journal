@@ -28,3 +28,11 @@ export const toApiDate = (date) => {
 
   return `${year}-${month}-${day}`;
 };
+
+export const toApiTime = (date) => {
+  if (!date) return "";
+  if (typeof date === "string") return date;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return d.toTimeString().split(" ")[0];
+};

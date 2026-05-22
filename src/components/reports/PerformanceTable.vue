@@ -1,4 +1,3 @@
-<!-- src/components/reports/PerformanceTable.vue -->
 <template>
   <DataTable
     :value="data"
