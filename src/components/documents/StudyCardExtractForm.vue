@@ -27,7 +27,6 @@
             filter
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_STUDENT"
             :loading="isStudentsLoading"
-            :disabled="!filters.group"
             required
             class="w-full"
           />

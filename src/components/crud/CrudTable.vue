@@ -43,6 +43,9 @@
           <template v-else-if="col.type === APP_CONSTANTS.FIELD_TYPES.SELECT">
             {{ getOptionLabel(col, data[col.field]) }}
           </template>
+          <template v-else-if="col.type === APP_CONSTANTS.FIELD_TYPES.TIME">
+            {{ formatTimeDisplay(data[col.field]) }}
+          </template>
           <template v-else>
             {{ data[col.field] }}
           </template>
@@ -101,6 +104,7 @@
             v-else-if="col.type === APP_CONSTANTS.FIELD_TYPES.NUMBER"
             v-model="formData[col.field]"
             :required="col.required"
+            :useGrouping="false"
           />
 
           <div
@@ -115,6 +119,7 @@
             v-else-if="col.type === APP_CONSTANTS.FIELD_TYPES.TIME"
             v-model="formData[col.field]"
             timeOnly
+            hourFormat="24"
             :required="col.required"
           />
 
@@ -170,7 +175,7 @@ const props = defineProps({
   basePayload: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(["error"]);
+const emit = defineEmits(["error", "saved", "deleted"]);
 
 const items = ref([]);
 const isLoading = ref(false);
@@ -198,6 +203,17 @@ const getOptionLabel = (col, value) => {
   if (!col.options) return value;
   const option = col.options.find((opt) => opt[col.optionValue] === value);
   return option ? option[col.optionLabel] : value;
+};
+
+const formatTimeDisplay = (timeStr) => {
+  if (!timeStr) return "";
+  if (typeof timeStr === "string" && timeStr.includes(":")) {
+    const parts = timeStr.split(":");
+    if (parts.length >= 2) {
+      return `${parts[0]}:${parts[1]}`;
+    }
+  }
+  return timeStr;
 };
 
 const openNew = () => {
@@ -257,6 +273,7 @@ const saveItem = async () => {
     }
     hideDialog();
     await loadData();
+    emit("saved");
   } catch (error) {
     emit(
       "error",
@@ -275,6 +292,7 @@ const confirmDelete = async (item) => {
     try {
       await CrudService.delete(props.endpoint, item.id);
       await loadData();
+      emit("deleted");
     } catch (error) {
       emit("error", error, APP_CONSTANTS.UI.ERRORS.CRUD_DELETE);
     }

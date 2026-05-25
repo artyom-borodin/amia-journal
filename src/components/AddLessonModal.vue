@@ -16,6 +16,7 @@
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_DATE"
             showIcon
             iconDisplay="input"
+            :disabled="isSaving"
           />
         </div>
         <div class="field">
@@ -27,6 +28,7 @@
             optionValue="id"
             class="w-full"
             required
+            :disabled="isSaving"
           >
             <template #value="slotProps">
               <span v-if="slotProps.value">{{
@@ -52,6 +54,7 @@
           optionValue="id"
           class="w-full"
           required
+          :disabled="isSaving"
         />
       </div>
 
@@ -66,6 +69,7 @@
           filter
           :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_TEACHERS"
           class="w-full"
+          :disabled="isSaving"
         >
           <template #option="slotProps">
             {{ getPersonFullName(slotProps.option) }}
@@ -81,7 +85,12 @@
 
       <div class="field">
         <label>{{ APP_CONSTANTS.UI.LABELS.TOPIC }}</label>
-        <Textarea v-model="newLesson.topic" rows="3" class="w-full" />
+        <Textarea
+          v-model="newLesson.topic"
+          rows="3"
+          class="w-full"
+          :disabled="isSaving"
+        />
       </div>
 
       <div class="dialog-footer">
@@ -91,11 +100,13 @@
           text
           severity="secondary"
           @click="$emit('update:visible', false)"
+          :disabled="isSaving"
         />
         <Button
           type="submit"
           :label="APP_CONSTANTS.UI.LABELS.ADD"
           icon="pi pi-check"
+          :loading="isSaving"
         />
       </div>
     </form>
@@ -114,6 +125,7 @@ const props = defineProps({
   visible: Boolean,
   dicts: Object,
   dictsMap: Object,
+  isSaving: Boolean,
 });
 
 const emit = defineEmits(["update:visible", "add"]);

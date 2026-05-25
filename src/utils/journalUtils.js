@@ -72,11 +72,20 @@ export const sortPersonsByFullName = (persons) => {
 
 export const sortMarkValues = (marks) => {
   return [...marks].sort((a, b) => {
-    const numA = Number(a.value);
-    const numB = Number(b.value);
-    if (!isNaN(numA) && !isNaN(numB)) {
+    const valA = String(a.value || "").trim();
+    const valB = String(b.value || "").trim();
+    const numA = Number(valA);
+    const numB = Number(valB);
+
+    const isNumA = valA !== "" && !isNaN(numA);
+    const isNumB = valB !== "" && !isNaN(numB);
+
+    if (isNumA && isNumB) {
       return numA - numB;
     }
-    return a.value.localeCompare(b.value, undefined, { numeric: true });
+    if (isNumA && !isNumB) return -1;
+    if (!isNumA && isNumB) return 1;
+
+    return valA.localeCompare(valB, undefined, { numeric: true });
   });
 };

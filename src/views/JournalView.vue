@@ -81,6 +81,7 @@
         :visible="showAddLessonModal"
         :dicts="dictionaryStore.dicts"
         :dicts-map="dictionaryStore.dictsMap"
+        :is-saving="isAddingLesson"
         @update:visible="showAddLessonModal = $event"
         @add="handleAddLesson"
       />
@@ -115,6 +116,7 @@ const selectedSubject = ref(null);
 const showAddLessonModal = ref(false);
 const selectedCell = ref(null);
 const isSavingCell = ref(false);
+const isAddingLesson = ref(false);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
@@ -172,6 +174,7 @@ const handleSaveCell = async ({ reason, marks }) => {
 };
 
 const handleAddLesson = async (lessonData) => {
+  isAddingLesson.value = true;
   try {
     await journalStore.addLesson({
       ...lessonData,
@@ -185,6 +188,8 @@ const handleAddLesson = async (lessonData) => {
     showError(
       extractLessonErrorMessage(error, APP_CONSTANTS.UI.ERRORS.ADD_LESSON),
     );
+  } finally {
+    isAddingLesson.value = false;
   }
 };
 

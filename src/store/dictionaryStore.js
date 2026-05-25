@@ -34,8 +34,8 @@ export const useDictionaryStore = defineStore("dictionary", () => {
 
   const isLoading = ref(false);
 
-  const fetchDictionaries = async () => {
-    if (dicts.value.groups.length > 0) return;
+  const fetchDictionaries = async (force = false) => {
+    if (!force && dicts.value.groups.length > 0) return;
 
     isLoading.value = true;
     try {

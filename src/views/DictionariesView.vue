@@ -28,6 +28,8 @@
             :endpoint="currentConfig.endpoint"
             :columns="currentConfig.columns"
             @error="showError"
+            @saved="refreshDictionaries"
+            @deleted="refreshDictionaries"
           />
         </template>
       </Card>
@@ -65,6 +67,11 @@ onMounted(async () => {
 const currentConfig = computed(() => {
   return configs.value.find((c) => c.id === selectedConfigId.value);
 });
+
+const refreshDictionaries = async () => {
+  await dictionaryStore.fetchDictionaries(true);
+  configs.value = getDictionaryConfigs(dictionaryStore);
+};
 
 const showError = (error, defaultMsg) => {
   errorMessage.value = extractErrorMessage(error, defaultMsg);
