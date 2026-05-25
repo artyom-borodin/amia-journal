@@ -168,7 +168,7 @@ export const APP_CONSTANTS = {
       EDIT: "Редактировать",
       DELETE: "Удалить",
       ACTIONS: "Действия",
-      ADD_LESSON: "Добавить",
+      ADD_LESSON: "Добавить занятие",
       FILTERS: "Фильтры",
       CLEAR_FILTERS: "Очистить фильтры",
       ATTENDANCE_REASONS: "Причина пропуска",

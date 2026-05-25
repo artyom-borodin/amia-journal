@@ -37,4 +37,34 @@ apiClient.interceptors.response.use(
   },
 );
 
+export const fetchAllPages = async (endpoint, params = {}) => {
+  let results = [];
+  let currentUrl = endpoint;
+  let currentParams = { ...params };
+
+  while (currentUrl) {
+    const response = await apiClient.get(currentUrl, { params: currentParams });
+    const data = response.data;
+
+    if (data && Array.isArray(data.results)) {
+      results = [...results, ...data.results];
+      if (data.next) {
+        if (data.next.startsWith("http")) {
+          const urlObj = new URL(data.next);
+          currentUrl = urlObj.pathname + urlObj.search;
+        } else {
+          currentUrl = data.next;
+        }
+        currentParams = {};
+      } else {
+        currentUrl = null;
+      }
+    } else {
+      results = Array.isArray(data) ? data : data.results || [];
+      currentUrl = null;
+    }
+  }
+  return results;
+};
+
 export default apiClient;

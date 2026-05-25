@@ -1,26 +1,26 @@
-import apiClient from "./api";
+import apiClient, { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
-
-const extractData = (response) => response.data.results || response.data;
 
 export class JournalService {
   static async getJournalData(groupId, subjectId) {
-    const [lessonsRes, recordsRes, attendancesRes] = await Promise.all([
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSONS, {
-        params: { group: groupId, subject: subjectId },
+    const [lessons, records, attendances] = await Promise.all([
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.LESSONS, {
+        group: groupId,
+        subject: subjectId,
       }),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS, {
-        params: { lesson__group: groupId, lesson__subject: subjectId },
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS, {
+        lesson__group: groupId,
+        lesson__subject: subjectId,
       }),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, {
-        params: { group: groupId },
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCES, {
+        group: groupId,
       }),
     ]);
 
     return {
-      lessons: extractData(lessonsRes),
-      records: extractData(recordsRes),
-      attendances: extractData(attendancesRes),
+      lessons,
+      records,
+      attendances,
     };
   }
 

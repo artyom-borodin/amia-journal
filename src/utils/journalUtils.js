@@ -69,3 +69,14 @@ export const sortPersonsByFullName = (persons) => {
     getPersonFullName(a).localeCompare(getPersonFullName(b)),
   );
 };
+
+export const sortMarkValues = (marks) => {
+  return [...marks].sort((a, b) => {
+    const numA = Number(a.value);
+    const numB = Number(b.value);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.value.localeCompare(b.value, undefined, { numeric: true });
+  });
+};

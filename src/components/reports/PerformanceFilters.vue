@@ -49,7 +49,7 @@
           <Select
             v-model="filters.specialty"
             :options="dicts.specialties"
-            optionLabel="speciality_name"
+            optionLabel="displayName"
             optionValue="id"
             filter
             showClear

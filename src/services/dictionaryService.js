@@ -1,23 +1,20 @@
-import apiClient from "./api";
+import { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
-import { sortGroupsByName } from "../utils/journalUtils";
-
-const extractData = (response) => response.data.results || response.data;
+import { sortGroupsByName, sortMarkValues } from "../utils/journalUtils";
 
 export class DictionaryService {
   static async getDictionaries() {
-    const safeGet = (endpoint) =>
-      apiClient.get(endpoint).catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
+    const safeGet = (endpoint) => fetchAllPages(endpoint).catch(() => []);
 
     const endpoints = [
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES),
-      apiClient.get(APP_CONSTANTS.API_ENDPOINTS.TEACHERS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.LESSON_TYPES),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.TEACHERS),
       safeGet(APP_CONSTANTS.API_ENDPOINTS.FACULTIES),
       safeGet(APP_CONSTANTS.API_ENDPOINTS.SPECIALTIES),
       safeGet(APP_CONSTANTS.API_ENDPOINTS.YEARS),
@@ -39,19 +36,26 @@ export class DictionaryService {
       specialties,
       years,
       semesters,
-    ] = responses.map(extractData);
+    ] = responses;
+
+    const formattedSpecialties = specialties.map((s) => ({
+      ...s,
+      displayName: s.speciality_code
+        ? `${s.speciality_code} ${s.speciality_name}`
+        : s.speciality_name,
+    }));
 
     return {
       groups: sortGroupsByName(groups),
       subjects,
       markKinds,
-      markValues,
+      markValues: sortMarkValues(markValues),
       lessonTimes,
       attendanceReasons,
       lessonTypes,
       teachers,
       faculties,
-      specialties,
+      specialties: formattedSpecialties,
       years,
       semesters,
     };

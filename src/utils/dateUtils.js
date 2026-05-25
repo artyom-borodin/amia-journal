@@ -31,8 +31,13 @@ export const toApiDate = (date) => {
 
 export const toApiTime = (date) => {
   if (!date) return "";
-  if (typeof date === "string") return date;
+  if (typeof date === "string") {
+    return date.length === 5 ? `${date}:00` : date;
+  }
   const d = new Date(date);
   if (isNaN(d.getTime())) return "";
-  return d.toTimeString().split(" ")[0];
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const seconds = String(d.getSeconds()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
 };

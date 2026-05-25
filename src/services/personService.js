@@ -1,8 +1,6 @@
-import apiClient from "./api";
+import { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
 import { sortPersonsByFullName } from "../utils/journalUtils";
-
-const extractData = (response) => response.data.results || response.data;
 
 export class PersonService {
   static async getPersons(filters = {}) {
@@ -11,19 +9,17 @@ export class PersonService {
     if (filters.faculty) params.subdivision = filters.faculty;
 
     const [cadetsRes, studentsRes] = await Promise.all([
-      apiClient
-        .get(APP_CONSTANTS.API_ENDPOINTS.CADETS, { params })
-        .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE),
-      apiClient
-        .get(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, { params })
-        .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.CADETS, params).catch(() => []),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, params).catch(
+        () => [],
+      ),
     ]);
 
-    const cadets = extractData(cadetsRes).map((p) => ({
+    const cadets = cadetsRes.map((p) => ({
       ...p,
       personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
     }));
-    const students = extractData(studentsRes).map((p) => ({
+    const students = studentsRes.map((p) => ({
       ...p,
       personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
     }));

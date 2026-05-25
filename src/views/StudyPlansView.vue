@@ -57,7 +57,7 @@ const columns = computed(() => [
     header: APP_CONSTANTS.UI.LABELS.SPECIALTY,
     type: APP_CONSTANTS.FIELD_TYPES.SELECT,
     options: dictionaryStore.dicts.specialties,
-    optionLabel: "speciality_name",
+    optionLabel: "displayName",
     optionValue: "id",
     required: true,
   },

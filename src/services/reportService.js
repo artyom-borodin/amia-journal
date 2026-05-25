@@ -1,12 +1,11 @@
-import apiClient from "./api";
+import apiClient, { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
 
 export class ReportService {
   static async getSemesters() {
-    const response = await apiClient
-      .get(APP_CONSTANTS.API_ENDPOINTS.SEMESTERS)
-      .catch(() => APP_CONSTANTS.API_FALLBACK_RESPONSE);
-    return response.data.results || response.data;
+    return await fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.SEMESTERS).catch(
+      () => [],
+    );
   }
 
   static _buildBaseParams(filters) {

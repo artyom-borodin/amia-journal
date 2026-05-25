@@ -213,10 +213,12 @@ const editItem = (item) => {
       col.type === APP_CONSTANTS.FIELD_TYPES.TIME &&
       formData.value[col.field]
     ) {
-      const [hours, minutes] = formData.value[col.field].split(":");
-      const d = new Date();
-      d.setHours(hours, minutes, 0);
-      formData.value[col.field] = d;
+      if (typeof formData.value[col.field] === "string") {
+        const parts = formData.value[col.field].split(":");
+        const d = new Date();
+        d.setHours(parts[0] || 0, parts[1] || 0, parts[2] || 0);
+        formData.value[col.field] = d;
+      }
     } else if (
       col.type === APP_CONSTANTS.FIELD_TYPES.DATE &&
       formData.value[col.field]

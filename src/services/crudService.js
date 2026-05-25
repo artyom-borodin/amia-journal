@@ -1,4 +1,4 @@
-import apiClient from "./api";
+import apiClient, { fetchAllPages } from "./api";
 
 export class CrudService {
   static _formatEndpoint(endpoint) {
@@ -6,10 +6,7 @@ export class CrudService {
   }
 
   static async getAll(endpoint, params = {}) {
-    const response = await apiClient.get(this._formatEndpoint(endpoint), {
-      params,
-    });
-    return response.data.results || response.data;
+    return await fetchAllPages(this._formatEndpoint(endpoint), params);
   }
 
   static async create(endpoint, data) {
