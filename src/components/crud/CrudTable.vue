@@ -166,6 +166,7 @@ import { CrudService } from "../../services/crudService";
 import { toApiDate, toApiTime } from "../../utils/dateUtils";
 import Checkbox from "primevue/checkbox";
 import InputNumber from "primevue/inputnumber";
+import { sortMarkValues } from "../../utils/journalUtils"; // Добавь импорт
 
 const props = defineProps({
   title: String,
@@ -188,7 +189,14 @@ const loadData = async () => {
   if (!props.endpoint) return;
   isLoading.value = true;
   try {
-    items.value = await CrudService.getAll(props.endpoint, props.baseFilters);
+      //items.value = await CrudService.getAll(props.endpoint, props.baseFilters);
+      let data = await CrudService.getAll(props.endpoint, props.baseFilters);
+      
+      if (props.endpoint.includes('mark-values')) {
+        data = sortMarkValues(data);
+      }
+      
+      items.value = data;
   } catch (error) {
     emit("error", error, APP_CONSTANTS.UI.ERRORS.CRUD_FETCH);
   } finally {
