@@ -124,7 +124,11 @@ const addMark = () => {
 };
 
 const removeMark = (index) => {
-  formData.value.marks.splice(index, 1);
+  if (index === 0) {
+    formData.value.marks = [];
+  } else {
+    formData.value.marks.splice(index, 1);
+  }
 };
 
 const handleSave = () => {

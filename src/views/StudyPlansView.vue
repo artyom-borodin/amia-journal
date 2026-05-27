@@ -4,6 +4,21 @@
     <main class="reports-main">
       <h1 class="dashboard-title">{{ APP_CONSTANTS.UI.LABELS.STUDY_PLANS }}</h1>
 
+      <div class="view-toggles mb-4">
+        <div class="field max-w-30rem">
+          <label>{{ APP_CONSTANTS.UI.LABELS.YEAR }}</label>
+          <Select
+            v-model="selectedYear"
+            :options="dictionaryStore.dicts.years"
+            optionLabel="year_str"
+            optionValue="id"
+            showClear
+            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_YEAR"
+            class="w-full"
+          />
+        </div>
+      </div>
+
       <Card class="flex-1">
         <template #content>
           <CrudTable
@@ -11,6 +26,7 @@
             :title="APP_CONSTANTS.UI.LABELS.STUDY_PLANS"
             :endpoint="APP_CONSTANTS.API_ENDPOINTS.STUDY_PLANS"
             :columns="columns"
+            :baseFilters="{ year: selectedYear }"
             @error="showError"
           >
             <template #actions="{ data }">
@@ -46,6 +62,7 @@ const dictionaryStore = useDictionaryStore();
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
+const selectedYear = ref(null);
 
 onMounted(async () => {
   await dictionaryStore.fetchDictionaries();

@@ -24,7 +24,20 @@
     <Column
       field="marks_list"
       :header="APP_CONSTANTS.UI.LABELS.ALL_MARKS"
-    ></Column>
+    >
+      <template #body="{ data }">
+        <div class="marks-container">
+          <span
+            v-for="(mark, idx) in data.marks_list"
+            :key="idx"
+            class="mark-badge"
+            :class="mark.is_final ? 'is-final' : 'is-retake'"
+          >
+            {{ mark.value }}
+          </span>
+        </div>
+      </template>
+    </Column>
     <Column
       field="average_mark"
       :header="APP_CONSTANTS.UI.LABELS.AVERAGE_MARK"

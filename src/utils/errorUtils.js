@@ -19,6 +19,10 @@ export const extractErrorMessage = (error, fallback) => {
   let rawMessage = "";
 
   if (typeof data === "string") {
+    const lowerData = data.trim().toLowerCase();
+    if (lowerData.startsWith("<!doctype html") || lowerData.startsWith("<html")) {
+      return translateError(fallback || APP_CONSTANTS.UI.ERRORS.UNKNOWN_SERVER_ERROR);
+    }
     rawMessage = data;
   } else if (data[APP_CONSTANTS.API_ERROR_KEYS.DETAIL]) {
     rawMessage = data[APP_CONSTANTS.API_ERROR_KEYS.DETAIL];

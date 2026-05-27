@@ -47,3 +47,28 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
+
+.marks-container {
+  display: flex;
+  gap: var(--space-2xs);
+  flex-wrap: wrap;
+}
+
+.mark-badge {
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-base);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-sm);
+}
+
+.mark-badge.is-final {
+  background: var(--p-green-100);
+  color: var(--p-green-700);
+  border: 1px solid var(--p-green-300);
+}
+
+.mark-badge.is-retake {
+  background: var(--p-surface-200);
+  color: var(--p-surface-600);
+  border: 1px solid var(--p-surface-300);
+}

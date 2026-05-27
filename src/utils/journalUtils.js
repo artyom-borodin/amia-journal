@@ -4,11 +4,16 @@ export const generateCellKey = (personId, date, lessonTime) => {
   return `${personId}_${date}_${lessonTime}`;
 };
 
+const capitalizeWord = (word) => {
+  if (!word) return "";
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+};
+
 export const getPersonFullName = (person) => {
   if (!person) return "";
-  const lastName = person.last_name_rus || person.last_name || "";
-  const firstName = person.first_name_rus || person.first_name || "";
-  const patronymic = person.patronymic_rus || person.patronymic || "";
+  const lastName = capitalizeWord(person.last_name_rus || person.last_name || "");
+  const firstName = capitalizeWord(person.first_name_rus || person.first_name || "");
+  const patronymic = capitalizeWord(person.patronymic_rus || person.patronymic || "");
 
   const fullName = `${lastName} ${firstName} ${patronymic}`.trim();
   return fullName || person.username || "";

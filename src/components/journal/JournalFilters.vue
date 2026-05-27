@@ -28,24 +28,6 @@
             class="w-full"
           />
         </div>
-        <div class="filter-item">
-          <label>{{ APP_CONSTANTS.UI.LABELS.PERIOD }}</label>
-          <DatePicker 
-            :modelValue="dateFilter" 
-            @update:modelValue="$emit('update:dateFilter', $event)" 
-            selectionMode="range" 
-            showIcon 
-            :dateFormat="APP_CONSTANTS.LOCALE_CONFIG.dateFormat" 
-          />
-        </div>
-        <div class="filter-item">
-          <label>{{ APP_CONSTANTS.UI.LABELS.SEARCH_BY_NAME }}</label>
-          <InputText 
-            :modelValue="nameFilter" 
-            @update:modelValue="$emit('update:nameFilter', $event)" 
-            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.ENTER_LAST_NAME" 
-          />
-        </div>
         <div class="filter-action">
           <Button
             v-if="group && subject"
@@ -67,8 +49,6 @@ import { APP_CONSTANTS } from "../../config/constants";
 defineProps({
   group: Number,
   subject: Number,
-  dateFilter: Array,
-  nameFilter: String,
   groups: Array,
   subjects: Array
 });
@@ -76,8 +56,6 @@ defineProps({
 defineEmits([
   'update:group', 
   'update:subject', 
-  'update:dateFilter', 
-  'update:nameFilter', 
   'add-lesson'
 ]);
 </script>

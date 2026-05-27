@@ -136,6 +136,10 @@ export const APP_CONSTANTS = {
     ERROR: "error",
     NON_FIELD_ERRORS: "non_field_errors",
   },
+  REPORT_FILTERS: {
+    ALLOWED_FACULTIES: [2, 3, 8, 13, 15],
+    ALLOWED_SPECIALTIES: [1, 2, 10],
+  },
   ERROR_TRANSLATIONS: {
     "This field is required.": "Это поле обязательно для заполнения.",
     "must make a unique set": "Запись с такими параметрами уже существует.",
@@ -259,7 +263,7 @@ export const APP_CONSTANTS = {
       SELECT_DICTIONARY: "-- Выберите справочник --",
       SELECT_YEAR: "-- Выберите год --",
       SELECT_HOURS: "Выберите кол-во учебных часов",
-      ENTER_LAST_NAME: "Введите фамилию",
+      SEARCH_BY_NAME: "Поиск по ФИО...",
     },
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
@@ -283,6 +287,7 @@ export const APP_CONSTANTS = {
       CRUD_CREATE: "Ошибка при создании записи",
       CRUD_UPDATE: "Ошибка при обновлении записи",
       CRUD_DELETE: "Ошибка при удалении записи",
+      UNKNOWN_SERVER_ERROR: "Неизвестная ошибка сервера. Обратитесь к администратору.",
     },
     ERROR_SUMMARY: "Ошибка",
   },

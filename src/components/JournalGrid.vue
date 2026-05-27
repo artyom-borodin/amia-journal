@@ -10,12 +10,23 @@
     <ColumnGroup type="header">
       <Row>
         <Column
-          :header="APP_CONSTANTS.UI.LABELS.FULL_NAME"
           :rowspan="2"
           frozen
           alignFrozen="left"
           class="fio-column"
-        />
+        >
+          <template #header>
+            <div class="flex-col w-full gap-2 p-2">
+              <span class="font-semibold">{{ APP_CONSTANTS.UI.LABELS.FULL_NAME }}</span>
+              <InputText
+                :modelValue="nameFilter"
+                @update:modelValue="$emit('update:nameFilter', $event)"
+                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SEARCH_BY_NAME"
+                class="w-full p-inputtext-sm"
+              />
+            </div>
+          </template>
+        </Column>
         <Column
           v-for="group in groupedLessons"
           :key="group.date"
@@ -105,10 +116,11 @@
               v-model="inlineMarkValue"
               :suggestions="filteredMarkValues"
               :disabled="isSavingInline"
+              @update:modelValue="handleInlineInput($event, data, lesson)"
               @complete="searchMarkValues"
-              @item-select="saveInlineMark(data, lesson)"
+              @item-select="saveInlineMark(data, lesson, $event)"
               @blur="closeInlineEdit"
-              @keyup.enter="saveInlineMark(data, lesson)"
+              @keyup.enter="handleEnter(data, lesson)"
               @click.stop
               optionLabel="value"
               class="inline-editor"
@@ -161,7 +173,7 @@ const props = defineProps({
   nameFilter: String,
 });
 
-const emit = defineEmits(["cell-click"]);
+const emit = defineEmits(["cell-click", "update:nameFilter"]);
 
 const journalStore = useJournalStore();
 
@@ -174,7 +186,9 @@ const {
   openCellModal,
   searchMarkValues,
   saveInlineMark,
-  closeInlineEdit
+  closeInlineEdit,
+  handleInlineInput,
+  handleEnter
 } = useInlineEdit(props.dictsMap, journalStore, emit);
 
 const {

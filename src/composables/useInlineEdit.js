@@ -7,7 +7,9 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
   const inlineMarkValue = ref('');
   const filteredMarkValues = ref([]);
   const isSavingInline = ref(false);
+  
   let clickTimer = null;
+  let blurTimer = null; 
 
   const isEditing = (personId, lessonId) => {
     return editingCell.value?.personId === personId && editingCell.value?.lessonId === lessonId;
@@ -17,6 +19,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     if (isEditing(person.id, lesson.id)) return;
 
     if (clickTimer) clearTimeout(clickTimer);
+    if (blurTimer) clearTimeout(blurTimer);
 
     clickTimer = setTimeout(async () => {
       editingCell.value = { personId: person.id, lessonId: lesson.id };
@@ -32,6 +35,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
 
   const openCellModal = (person, lesson) => {
     if (clickTimer) clearTimeout(clickTimer);
+    if (blurTimer) clearTimeout(blurTimer);
     editingCell.value = null;
     emit('cell-click', { person, lesson });
   };
@@ -42,10 +46,17 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       .filter(m => m.value.toLowerCase().includes(query));
   };
 
-  const saveInlineMark = async (person, lesson) => {
+  const saveInlineMark = async (person, lesson, eventPayload = null) => {
+    if (blurTimer) clearTimeout(blurTimer);
+    
     if (isSavingInline.value) return;
 
     let markObj = inlineMarkValue.value;
+    
+    if (eventPayload) {
+      markObj = eventPayload.value !== undefined ? eventPayload.value : eventPayload;
+    }
+
     if (!markObj) {
       editingCell.value = null;
       return;
@@ -53,12 +64,23 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
 
     if (typeof markObj === 'string') {
       const query = markObj.toLowerCase().trim();
-      markObj = Object.values(dictsMap.markValues).find(m => m.value.toLowerCase() === query)
-             || Object.values(dictsMap.markValues).find(m => m.value.toLowerCase().startsWith(query));
+      const allMarks = Object.values(dictsMap.markValues);
+      
+      let found = allMarks.find(m => m.value.toLowerCase() === query);
+      
+      if (!found) {
+        const matches = allMarks.filter(m => m.value.toLowerCase().startsWith(query));
+        if (matches.length === 1) {
+          found = matches[0];
+        }
+      }
+      markObj = found;
     }
 
     if (markObj && markObj.id) {
       isSavingInline.value = true;
+      inlineMarkValue.value = markObj;
+      
       const existingRecords = journalStore.gridMatrix[person.id]?.[lesson.id]?.records || [];
       const marks = [...existingRecords];
 
@@ -86,12 +108,44 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     }
   };
 
-  const closeInlineEdit = () => {
+  const handleInlineInput = (val, person, lesson) => {
+    if (blurTimer) clearTimeout(blurTimer);
+
+    if (!val || isSavingInline.value || typeof val !== 'string') return;
+    
+    const query = val.toLowerCase().trim();
+    const allMarks = Object.values(dictsMap.markValues);
+    
+    const exactMatch = allMarks.find(m => m.value.toLowerCase() === query);
+    
+    if (exactMatch) {
+      const isPrefixForOthers = allMarks.some(m => 
+        m.id !== exactMatch.id && m.value.toLowerCase().startsWith(query)
+      );
+      
+      if (!isPrefixForOthers) {
+        saveInlineMark(person, lesson, exactMatch);
+      }
+    }
+  };
+
+  const handleEnter = (person, lesson) => {
+    if (blurTimer) clearTimeout(blurTimer);
     setTimeout(() => {
+      if (!isSavingInline.value) {
+        saveInlineMark(person, lesson);
+      }
+    }, 50);
+  };
+
+  const closeInlineEdit = () => {
+    if (blurTimer) clearTimeout(blurTimer);
+    
+    blurTimer = setTimeout(() => {
       if (!isSavingInline.value) {
         editingCell.value = null;
       }
-    }, APP_CONSTANTS.TIMERS.INLINE_EDIT_CLOSE);
+    }, 300); 
   };
 
   return {
@@ -104,6 +158,8 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     openCellModal,
     searchMarkValues,
     saveInlineMark,
-    closeInlineEdit
+    closeInlineEdit,
+    handleInlineInput,
+    handleEnter
   };
 }

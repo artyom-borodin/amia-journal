@@ -6,8 +6,6 @@
       <JournalFilters
         v-model:group="selectedGroup"
         v-model:subject="selectedSubject"
-        v-model:dateFilter="dateFilter"
-        v-model:nameFilter="nameFilter"
         :groups="dictionaryStore.dicts.groups"
         :subjects="dictionaryStore.dicts.subjects"
         @add-lesson="showAddLessonModal = true"
@@ -22,17 +20,33 @@
         <span>{{ APP_CONSTANTS.UI.MESSAGES.LOADING }}</span>
       </div>
 
-      <div v-else class="grid-container">
-        <JournalGrid
-          :persons="journalStore.persons"
-          :lessons="journalStore.lessons"
-          :records-map="journalStore.recordsMap"
-          :attendances-map="journalStore.attendancesMap"
-          :dicts-map="dictionaryStore.dictsMap"
-          :date-filter="dateFilter"
-          :name-filter="nameFilter"
-          @cell-click="openCellModal"
-        />
+      <div v-else class="flex-col flex-1 overflow-hidden">
+        <div class="flex-row gap-4 mb-4 align-end flex-shrink-0">
+          <div class="field max-w-30rem">
+            <label>{{ APP_CONSTANTS.UI.LABELS.PERIOD }}</label>
+            <DatePicker 
+              v-model="dateFilter" 
+              selectionMode="range" 
+              showIcon 
+              :dateFormat="APP_CONSTANTS.LOCALE_CONFIG.dateFormat" 
+              class="w-full"
+            />
+          </div>
+        </div>
+
+        <div class="grid-container">
+          <JournalGrid
+            :persons="journalStore.persons"
+            :lessons="journalStore.lessons"
+            :records-map="journalStore.recordsMap"
+            :attendances-map="journalStore.attendancesMap"
+            :dicts-map="dictionaryStore.dictsMap"
+            :date-filter="dateFilter"
+            :name-filter="nameFilter"
+            @update:nameFilter="nameFilter = $event"
+            @cell-click="openCellModal"
+          />
+        </div>
       </div>
 
       <CellModal

@@ -14,7 +14,7 @@
             class="w-full"
           >
             <template #option="slotProps">
-              {{ slotProps.option.year }} - {{ slotProps.option.semester }}
+              {{ dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str }} - {{ slotProps.option.semester }}
             </template>
           </Select>
         </div>
@@ -34,7 +34,7 @@
           <label>{{ APP_CONSTANTS.UI.LABELS.FACULTY }}</label>
           <Select
             v-model="filters.faculty"
-            :options="dicts.faculties"
+            :options="filteredFaculties"
             optionLabel="subdivision_name"
             optionValue="id"
             filter
@@ -48,7 +48,7 @@
           <label>{{ APP_CONSTANTS.UI.LABELS.SPECIALTY }}</label>
           <Select
             v-model="filters.specialty"
-            :options="dicts.specialties"
+            :options="filteredSpecialties"
             optionLabel="displayName"
             optionValue="id"
             filter
@@ -115,18 +115,20 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { APP_CONSTANTS } from "../../config/constants";
 import { toApiDate } from "../../utils/dateUtils";
 import { useStudentFilter } from "../../composables/useStudentFilter";
+import { useDictionaryStore } from "../../store/dictionaryStore";
 
-defineProps({
+const props = defineProps({
   dicts: Object,
   semesters: Array,
   isLoading: Boolean,
 });
 
 const emit = defineEmits(["generate"]);
+const dictionaryStore = useDictionaryStore();
 
 const selectedSemester = ref(null);
 
@@ -138,6 +140,14 @@ const filters = reactive({
   group: null,
   student: null,
   reason: null,
+});
+
+const filteredFaculties = computed(() => {
+  return props.dicts.faculties.filter(f => APP_CONSTANTS.REPORT_FILTERS.ALLOWED_FACULTIES.includes(f.id));
+});
+
+const filteredSpecialties = computed(() => {
+  return props.dicts.specialties.filter(s => APP_CONSTANTS.REPORT_FILTERS.ALLOWED_SPECIALTIES.includes(s.id));
 });
 
 const { students, isStudentsLoading } = useStudentFilter(filters);
