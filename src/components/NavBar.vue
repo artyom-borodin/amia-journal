@@ -6,7 +6,7 @@
         :class="{ 'is-link': !isDashboard }"
         @click="goHome"
       >
-        <i class="pi pi-home" style="margin-right: 4px;"></i>{{ APP_CONSTANTS.UI.LABELS.HOME }}
+        <i class="pi pi-home mr-1"></i>{{ APP_CONSTANTS.UI.LABELS.HOME }}
       </span>
 
       <template v-for="(crumb, index) in breadcrumbs" :key="index">
@@ -24,8 +24,8 @@
     </div>
 
     <div class="navbar-actions">
-      <div class="user-info" style="flex-direction: row; align-items: center; gap: 10px;">
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+      <div class="user-info flex-row align-center gap-2">
+        <div class="flex-col align-end">
           <span class="user-name">{{ userName }}</span>
           <span class="user-role">{{ userRole }}</span>
         </div>

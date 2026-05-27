@@ -45,8 +45,9 @@
 
 .user-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .user-name {
@@ -62,8 +63,4 @@
 /* PrimeVue overrides for inverted navbar context */
 .navbar .p-button.p-button-secondary.p-button-text {
   color: var(--p-primary-contrast-color);
-}
-
-.navbar .p-button.p-button-secondary.p-button-text:hover {
-  background: var(--color-overlay-light);
 }

@@ -7,6 +7,7 @@ import "primeicons/primeicons.css";
 import App from "./App.vue";
 import router from "./router";
 import "./assets/styles/main.css";
+import { APP_CONSTANTS } from "./config/constants";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -37,18 +38,7 @@ app.use(PrimeVue, {
       darkModeSelector: "none",
     },
   },
-  locale: {
-    firstDayOfWeek: 1,
-    dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-    dayNamesShort: ['Вск', 'Пнд', 'Втр', 'Срд', 'Чтв', 'Птн', 'Сбт'],
-    dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-    monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-    monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-    today: 'Сегодня',
-    clear: 'Очистить',
-    dateFormat: 'dd.mm.yy',
-    weekHeader: 'Нед'
-  }
+  locale: APP_CONSTANTS.LOCALE_CONFIG
 });
 
 app.component("Button", Button);

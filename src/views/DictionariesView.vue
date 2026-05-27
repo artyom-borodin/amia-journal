@@ -27,6 +27,7 @@
             :title="currentConfig.label"
             :endpoint="currentConfig.endpoint"
             :columns="currentConfig.columns"
+            :transform-data="currentConfig.transformData"
             @error="showError"
             @saved="refreshDictionaries"
             @deleted="refreshDictionaries"

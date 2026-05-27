@@ -12,7 +12,7 @@
       <span class="error-text">{{ message }}</span>
     </div>
     <template #footer>
-      <Button label="OK" @click="$emit('update:visible', false)" autofocus />
+      <Button :label="APP_CONSTANTS.UI.LABELS.OK" @click="$emit('update:visible', false)" autofocus />
     </template>
   </Dialog>
 </template>

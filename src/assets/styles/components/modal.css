@@ -43,6 +43,17 @@
   margin-bottom: var(--space-2);
 }
 
+.mark-label {
+  width: 120px;
+  font-size: 0.85rem;
+}
+
+.marks-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
 .mark-select {
   flex: 1;
 }

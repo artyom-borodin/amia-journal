@@ -23,11 +23,11 @@
           <label>{{ APP_CONSTANTS.UI.LABELS.HOURS }}</label>
           <Select
             v-model="newLesson.hours"
-            :options="[2, 4, 6, 8]"
+            :options="APP_CONSTANTS.LESSON_HOURS_OPTIONS"
             class="w-full"
             required
             :disabled="isSaving"
-            placeholder="Выберите кол-во часов"
+            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_HOURS"
           />
         </div>
       </div>

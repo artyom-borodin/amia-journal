@@ -32,12 +32,12 @@ export const toApiDate = (date) => {
 export const toApiTime = (date) => {
   if (!date) return "";
   if (typeof date === "string") {
-    return date.length === 5 ? `${date}:00` : date;
+    return date.length === APP_CONSTANTS.RULES.TIME_STRING_LENGTH ? `${date}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}00` : date;
   }
   const d = new Date(date);
   if (isNaN(d.getTime())) return "";
-  const hours = String(d.getHours()).padStart(2, "0");
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-  const seconds = String(d.getSeconds()).padStart(2, "0");
-  return `${hours}:${minutes}:${seconds}`;
+  const hours = String(d.getHours()).padStart(APP_CONSTANTS.DATE_FORMAT.PAD_LENGTH, APP_CONSTANTS.DATE_FORMAT.PAD_CHAR);
+  const minutes = String(d.getMinutes()).padStart(APP_CONSTANTS.DATE_FORMAT.PAD_LENGTH, APP_CONSTANTS.DATE_FORMAT.PAD_CHAR);
+  const seconds = String(d.getSeconds()).padStart(APP_CONSTANTS.DATE_FORMAT.PAD_LENGTH, APP_CONSTANTS.DATE_FORMAT.PAD_CHAR);
+  return `${hours}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}${minutes}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}${seconds}`;
 };

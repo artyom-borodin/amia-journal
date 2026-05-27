@@ -3,54 +3,15 @@
     <NavBar />
 
     <main class="journal-main">
-      <Card class="filters-card">
-        <template #content>
-          <div class="filters-row">
-            <div class="filter-item">
-              <label>{{ APP_CONSTANTS.UI.LABELS.GROUP }}</label>
-              <Select
-                v-model="selectedGroup"
-                :options="dictionaryStore.dicts.groups"
-                optionLabel="group_name"
-                optionValue="id"
-                filter
-                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_GROUP"
-                class="w-full"
-              />
-            </div>
-            <div class="filter-item">
-              <label>{{ APP_CONSTANTS.UI.LABELS.SUBJECT }}</label>
-              <Select
-                v-model="selectedSubject"
-                :options="dictionaryStore.dicts.subjects"
-                optionLabel="subject_name"
-                optionValue="id"
-                filter
-                :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SUBJECT"
-                class="w-full"
-              />
-            </div>
-            <div class="filter-item">
-              <label>Период</label>
-              <DatePicker v-model="dateFilter" selectionMode="range" showIcon dateFormat="dd.mm.yy" />
-            </div>
-            <div class="filter-item">
-              <label>Поиск по ФИО</label>
-              <InputText v-model="nameFilter" placeholder="Введите фамилию" />
-            </div>
-            <div class="filter-action">
-              <Button
-                v-if="selectedGroup && selectedSubject"
-                :label="APP_CONSTANTS.UI.LABELS.ADD_LESSON"
-                icon="pi pi-plus"
-                severity="success"
-                class="w-full"
-                @click="showAddLessonModal = true"
-              />
-            </div>
-          </div>
-        </template>
-      </Card>
+      <JournalFilters
+        v-model:group="selectedGroup"
+        v-model:subject="selectedSubject"
+        v-model:dateFilter="dateFilter"
+        v-model:nameFilter="nameFilter"
+        :groups="dictionaryStore.dicts.groups"
+        :subjects="dictionaryStore.dicts.subjects"
+        @add-lesson="showAddLessonModal = true"
+      />
 
       <div v-if="!selectedGroup || !selectedSubject" class="empty-state">
         <i class="pi pi-search empty-state-icon"></i>
@@ -104,6 +65,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import NavBar from "../components/NavBar.vue";
+import JournalFilters from "../components/journal/JournalFilters.vue";
 import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
 import AddLessonModal from "../components/AddLessonModal.vue";

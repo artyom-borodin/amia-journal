@@ -1,10 +1,12 @@
 import { APP_CONSTANTS } from "./constants";
+import { sortMarkValues } from "../utils/journalUtils";
 
 export const getDictionaryConfigs = (dictionaryStore) => [
   {
     id: "markValues",
     label: APP_CONSTANTS.UI.LABELS.MARK_VALUE,
     endpoint: APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES,
+    transformData: sortMarkValues,
     columns: [
       {
         field: "value",
