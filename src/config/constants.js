@@ -196,7 +196,7 @@ export const APP_CONSTANTS = {
       SUBJECT: "Дисциплина",
       DATE: "Дата",
       LESSON_TIME: "Пара",
-      LESSON_TYPE: "Вид учебного занятия",
+      LESSON_TYPE: "Вид учебного занятия / форма аттестации",
       TOPIC: "Тема учебного занятия",
       TEACHERS: "Преподаватели",
       ATTENDANCE: "Посещаемость",
