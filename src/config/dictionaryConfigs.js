@@ -2,19 +2,6 @@ import { APP_CONSTANTS } from "./constants";
 
 export const getDictionaryConfigs = (dictionaryStore) => [
   {
-    id: "markKinds",
-    label: APP_CONSTANTS.UI.LABELS.MARK_KIND,
-    endpoint: APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS,
-    columns: [
-      {
-        field: "mark_kind",
-        header: APP_CONSTANTS.UI.LABELS.MARK_KIND,
-        type: APP_CONSTANTS.FIELD_TYPES.TEXT,
-        required: true,
-      },
-    ],
-  },
-  {
     id: "markValues",
     label: APP_CONSTANTS.UI.LABELS.MARK_VALUE,
     endpoint: APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES,

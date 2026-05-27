@@ -58,17 +58,6 @@
   flex-direction: column;
 }
 
-.grid-container,
-.grid-container .journal-table .p-datatable-table-container {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.grid-container::-webkit-scrollbar,
-.grid-container .journal-table .p-datatable-table-container::-webkit-scrollbar {
-  display: none;
-}
-
 .journal-table {
   flex: 1;
   display: flex;
@@ -232,4 +221,30 @@
   background: var(--p-surface-100);
   padding: var(--space-3xs) var(--space-xs);
   border-radius: var(--radius-sm);
+}
+
+.mark-badge.is-retake {
+  background: var(--p-primary-100);
+  color: var(--p-primary-700);
+  border: 1px solid var(--p-primary-300);
+}
+
+.inline-editor {
+  width: 100%;
+  height: 100%;
+}
+
+.inline-editor .p-inputtext {
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem;
+  text-align: center;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.inline-editor .p-inputtext:focus {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: -2px;
 }

@@ -22,6 +22,8 @@ import Textarea from "primevue/textarea";
 import Message from "primevue/message";
 import Card from "primevue/card";
 import DatePicker from "primevue/datepicker";
+import AutoComplete from "primevue/autocomplete";
+import Avatar from "primevue/avatar";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -35,6 +37,18 @@ app.use(PrimeVue, {
       darkModeSelector: "none",
     },
   },
+  locale: {
+    firstDayOfWeek: 1,
+    dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+    dayNamesShort: ['Вск', 'Пнд', 'Втр', 'Срд', 'Чтв', 'Птн', 'Сбт'],
+    dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+    monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+    today: 'Сегодня',
+    clear: 'Очистить',
+    dateFormat: 'dd.mm.yy',
+    weekHeader: 'Нед'
+  }
 });
 
 app.component("Button", Button);
@@ -51,5 +65,7 @@ app.component("Textarea", Textarea);
 app.component("Message", Message);
 app.component("Card", Card);
 app.component("DatePicker", DatePicker);
+app.component("AutoComplete", AutoComplete);
+app.component("Avatar", Avatar);
 
 app.mount("#app");

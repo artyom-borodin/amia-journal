@@ -9,7 +9,6 @@ export class DictionaryService {
     const endpoints = [
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.MARK_KINDS),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.ATTENDANCE_REASONS),
@@ -26,7 +25,6 @@ export class DictionaryService {
     const [
       groups,
       subjects,
-      markKinds,
       markValues,
       lessonTimes,
       attendanceReasons,
@@ -48,7 +46,6 @@ export class DictionaryService {
     return {
       groups: sortGroupsByName(groups),
       subjects,
-      markKinds,
       markValues: sortMarkValues(markValues),
       lessonTimes,
       attendanceReasons,

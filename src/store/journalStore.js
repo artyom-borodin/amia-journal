@@ -87,9 +87,8 @@ export const useJournalStore = defineStore("journal", () => {
     }
 
     recordsMap.value[key] = marks.map((m, i) => ({
-      id: `${APP_CONSTANTS.PREFIXES.TEMP}${Date.now()}-${i}`,
+      id: m.id || `${APP_CONSTANTS.PREFIXES.TEMP}${Date.now()}-${i}`,
       mark_value: m.mark_value,
-      mark_kind: m.mark_kind,
     }));
 
     const reasonObj = reason

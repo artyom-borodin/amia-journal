@@ -6,7 +6,7 @@
         :class="{ 'is-link': !isDashboard }"
         @click="goHome"
       >
-        {{ APP_CONSTANTS.UI.LABELS.HOME }}
+        <i class="pi pi-home" style="margin-right: 4px;"></i>{{ APP_CONSTANTS.UI.LABELS.HOME }}
       </span>
 
       <template v-for="(crumb, index) in breadcrumbs" :key="index">
@@ -24,9 +24,13 @@
     </div>
 
     <div class="navbar-actions">
-      <div class="user-info">
-        <span class="user-name">{{ userName }}</span>
-        <span class="user-role">{{ userRole }}</span>
+      <div class="user-info" style="flex-direction: row; align-items: center; gap: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <span class="user-name">{{ userName }}</span>
+          <span class="user-role">{{ userRole }}</span>
+        </div>
+        <Avatar v-if="authStore.user?.avatar" :image="authStore.user.avatar" shape="circle" />
+        <Avatar v-else icon="pi pi-user" shape="circle" />
       </div>
       <Button
         :label="APP_CONSTANTS.UI.LABELS.LOGOUT_BTN"

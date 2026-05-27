@@ -115,19 +115,6 @@
         </div>
 
         <div class="field">
-          <label>{{ APP_CONSTANTS.UI.LABELS.MARK_KIND }}</label>
-          <Select
-            v-model="filters.markKind"
-            :options="dicts.markKinds"
-            optionLabel="mark_kind"
-            optionValue="id"
-            showClear
-            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_MARK_KIND"
-            class="w-full"
-          />
-        </div>
-
-        <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.MARK_VALUE }}</label>
           <Select
             v-model="filters.markValue"
@@ -179,7 +166,6 @@ const filters = reactive({
   student: null,
   subject: null,
   lessonType: null,
-  markKind: null,
   markValue: null,
 });
 

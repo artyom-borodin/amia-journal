@@ -49,13 +49,13 @@
         </div>
 
         <div class="field">
-          <label>{{ APP_CONSTANTS.UI.LABELS.MARK_KIND }} *</label>
+          <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TYPE }} *</label>
           <Select
-            v-model="filters.mark_kind"
-            :options="dictionaryStore.dicts.markKinds"
-            optionLabel="mark_kind"
+            v-model="filters.lesson_type"
+            :options="dictionaryStore.dicts.lessonTypes"
+            optionLabel="name"
             optionValue="id"
-            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_MARK_KIND"
+            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_LESSON_TYPE"
             required
             class="w-full"
           />
@@ -109,7 +109,7 @@ const filters = reactive({
   semester: null,
   group: null,
   subject: null,
-  mark_kind: null,
+  lesson_type: null,
   teacher: null,
 });
 

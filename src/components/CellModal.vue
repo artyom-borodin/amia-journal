@@ -24,13 +24,6 @@
       <div class="field">
         <div class="marks-header">
           <label>{{ APP_CONSTANTS.UI.LABELS.MARK }}</label>
-          <Button
-            icon="pi pi-plus"
-            size="small"
-            text
-            @click="addMark"
-            :disabled="isSaving"
-          />
         </div>
 
         <div
@@ -38,6 +31,7 @@
           :key="index"
           class="mark-row"
         >
+          <span style="width: 120px; font-size: 0.85rem;">{{ index === 0 ? 'Основная:' : `Пересдача ${index}:` }}</span>
           <Select
             v-model="mark.mark_value"
             :options="dicts.markValues"
@@ -45,16 +39,6 @@
             optionValue="id"
             :placeholder="APP_CONSTANTS.UI.LABELS.MARK_VALUE"
             class="mark-select"
-            required
-            :disabled="isSaving"
-          />
-          <Select
-            v-model="mark.mark_kind"
-            :options="dicts.markKinds"
-            optionLabel="mark_kind"
-            optionValue="id"
-            :placeholder="APP_CONSTANTS.UI.LABELS.MARK_KIND_TYPE"
-            class="kind-select"
             required
             :disabled="isSaving"
           />
@@ -68,6 +52,10 @@
         </div>
         <div v-if="formData.marks.length === 0" class="no-marks-text">
           {{ APP_CONSTANTS.UI.MESSAGES.NO_MARKS }}
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+            <Button v-if="formData.marks.length > 0" label="Добавить пересдачу" icon="pi pi-plus" text size="small" @click="addMark" :disabled="isSaving" />
+            <Button v-else label="Добавить оценку" icon="pi pi-plus" text size="small" @click="addMark" :disabled="isSaving" />
         </div>
       </div>
 
@@ -122,8 +110,8 @@ watch(
       formData.value.reason = newAttendance?.reason ?? null;
       formData.value.marks = newRecords
         ? newRecords.map((r) => ({
+            id: r.id,
             mark_value: r.mark_value,
-            mark_kind: r.mark_kind,
           }))
         : [];
     }
@@ -132,7 +120,7 @@ watch(
 );
 
 const addMark = () => {
-  formData.value.marks.push({ mark_value: null, mark_kind: null });
+  formData.value.marks.push({ mark_value: null });
 };
 
 const removeMark = (index) => {

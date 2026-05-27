@@ -1,8 +1,28 @@
 import { APP_CONSTANTS } from "../config/constants";
 
+const ERROR_TRANSLATIONS = {
+  "This field is required.": "Это поле обязательно для заполнения.",
+  "must make a unique set": "Запись с такими параметрами уже существует.",
+  "lesson_time": "Время занятия",
+  "date": "Дата",
+  "subject": "Дисциплина",
+  "group": "Группа",
+  "hours": "Количество часов"
+};
+
+const translateError = (msg) => {
+  let translated = msg;
+  for (const [en, ru] of Object.entries(ERROR_TRANSLATIONS)) {
+    if (translated.includes(en)) {
+      translated = translated.replace(new RegExp(en, 'g'), ru);
+    }
+  }
+  return translated;
+};
+
 export const extractErrorMessage = (error, fallback) => {
   if (!error?.response?.data) {
-    return error?.message || fallback;
+    return translateError(error?.message || fallback);
   }
 
   const data = error.response.data;
@@ -32,7 +52,7 @@ export const extractErrorMessage = (error, fallback) => {
     }
   }
 
-  return rawMessage || fallback;
+  return translateError(rawMessage || fallback);
 };
 
 export const extractLessonErrorMessage = (error, fallback) => {

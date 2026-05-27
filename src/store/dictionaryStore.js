@@ -7,7 +7,6 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   const dicts = ref({
     groups: [],
     subjects: [],
-    markKinds: [],
     markValues: [],
     lessonTimes: [],
     attendanceReasons: [],
@@ -29,7 +28,6 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     semesters: createDictMap(dicts.value.semesters),
     specialties: createDictMap(dicts.value.specialties),
     subjects: createDictMap(dicts.value.subjects),
-    markKinds: createDictMap(dicts.value.markKinds),
   }));
 
   const isLoading = ref(false);

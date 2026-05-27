@@ -37,7 +37,8 @@ export const sortLessons = (lessons, lessonTimesMap) => {
 
 export const buildRecordsMap = (records, lessons) => {
   const rMap = {};
-  records.forEach((r) => {
+  const sortedRecords = [...records].sort((a, b) => a.id - b.id);
+  sortedRecords.forEach((r) => {
     const personId = r.cadet || r.student;
     const lesson = lessons.find((l) => l.id === r.lesson);
     if (lesson) {

@@ -30,6 +30,14 @@
                 class="w-full"
               />
             </div>
+            <div class="filter-item">
+              <label>Период</label>
+              <DatePicker v-model="dateFilter" selectionMode="range" showIcon dateFormat="dd.mm.yy" />
+            </div>
+            <div class="filter-item">
+              <label>Поиск по ФИО</label>
+              <InputText v-model="nameFilter" placeholder="Введите фамилию" />
+            </div>
             <div class="filter-action">
               <Button
                 v-if="selectedGroup && selectedSubject"
@@ -60,6 +68,8 @@
           :records-map="journalStore.recordsMap"
           :attendances-map="journalStore.attendancesMap"
           :dicts-map="dictionaryStore.dictsMap"
+          :date-filter="dateFilter"
+          :name-filter="nameFilter"
           @cell-click="openCellModal"
         />
       </div>
@@ -112,6 +122,8 @@ const dictionaryStore = useDictionaryStore();
 
 const selectedGroup = ref(null);
 const selectedSubject = ref(null);
+const dateFilter = ref(null);
+const nameFilter = ref("");
 
 const showAddLessonModal = ref(false);
 const selectedCell = ref(null);

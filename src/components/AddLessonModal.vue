@@ -20,28 +20,15 @@
           />
         </div>
         <div class="field">
-          <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TIME }}</label>
+          <label>{{ APP_CONSTANTS.UI.LABELS.HOURS }}</label>
           <Select
-            v-model="newLesson.lesson_time"
-            :options="dicts.lessonTimes"
-            optionLabel="number"
-            optionValue="id"
+            v-model="newLesson.hours"
+            :options="[2, 4, 6, 8]"
             class="w-full"
             required
             :disabled="isSaving"
-          >
-            <template #value="slotProps">
-              <span v-if="slotProps.value">{{
-                getLessonTimeLabel(slotProps.value)
-              }}</span>
-              <span v-else>{{
-                APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_LESSON_TIME
-              }}</span>
-            </template>
-            <template #option="slotProps">
-              {{ slotProps.option.number }} {{ APP_CONSTANTS.UI.LESSON_SUFFIX }}
-            </template>
-          </Select>
+            placeholder="Выберите кол-во часов"
+          />
         </div>
       </div>
 
@@ -133,7 +120,7 @@ const authStore = useAuthStore();
 
 const newLesson = ref({
   date: null,
-  lesson_time: null,
+  hours: null,
   lesson_type: null,
   topic: null,
   teachers: [],
@@ -145,7 +132,7 @@ watch(
     if (newVal) {
       newLesson.value = {
         date: null,
-        lesson_time: null,
+        hours: null,
         lesson_type: null,
         topic: null,
         teachers: authStore.user?.id ? [authStore.user.id] : [],
@@ -154,14 +141,10 @@ watch(
   },
 );
 
-const getLessonTimeLabel = (id) => {
-  const time = props.dictsMap?.lessonTimes?.[id];
-  return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
-};
-
 const handleSubmit = () => {
   emit("add", {
     ...newLesson.value,
+    lesson_time: props.dicts.lessonTimes[0]?.id,
     date: toApiDate(newLesson.value.date),
   });
 };

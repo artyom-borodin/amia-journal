@@ -32,9 +32,9 @@ export class JournalService {
     return res.data;
   }
 
-  static async bulkUpdateMarks(payload) {
+  static async syncMarks(payload) {
     const res = await apiClient.post(
-      `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}bulk-update/`,
+      `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}sync-marks/`,
       payload,
     );
     return res.data;
@@ -95,11 +95,11 @@ export class JournalService {
       lesson_id: lesson.id,
       ...personIdPayload,
       marks: marks.map((m) => ({
-        mark_value_id: m.mark_value,
-        mark_kind_id: m.mark_kind,
+        id: m.id && !m.id.toString().startsWith(APP_CONSTANTS.PREFIXES.TEMP) ? m.id : null,
+        mark_value: m.mark_value,
       })),
     };
-    return this.bulkUpdateMarks(marksPayload);
+    return this.syncMarks(marksPayload);
   }
 
   static async saveCellData({ reason, marks, person, lesson, attendance }) {
