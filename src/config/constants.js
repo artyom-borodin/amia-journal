@@ -165,7 +165,7 @@ export const APP_CONSTANTS = {
     APP_TITLE: "Электронный журнал",
     LOGIN_SUBTITLE: "Войдите в свой аккаунт",
     DASHBOARD_TITLE: "Выберите раздел",
-    LESSON_SUFFIX: "пара",
+    LESSON_SUFFIX: "",
     DEFAULT_ATTENDANCE: "Не указано (Присутствует)",
     DEFAULT_MARK: "Нет отметки",
     NO_TOPIC: "Без темы",
