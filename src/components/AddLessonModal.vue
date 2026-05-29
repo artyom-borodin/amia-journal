@@ -25,7 +25,7 @@
             v-model="newLesson.hours"
             :options="APP_CONSTANTS.LESSON_HOURS_OPTIONS"
             class="w-full"
-            required
+            showClear
             :disabled="isSaving"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_HOURS"
           />
@@ -144,6 +144,7 @@ watch(
 const handleSubmit = () => {
   emit("add", {
     ...newLesson.value,
+    hours: newLesson.value.hours || 0,
     lesson_time: props.dicts.lessonTimes[0]?.id,
     date: toApiDate(newLesson.value.date),
   });
