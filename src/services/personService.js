@@ -24,7 +24,11 @@ export class PersonService {
       personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
     }));
 
-    return sortPersonsByFullName([...cadets, ...students]);
+    const activePersons = [...cadets, ...students].filter(
+      (p) => p.is_active !== false
+    );
+
+    return sortPersonsByFullName(activePersons);
   }
 
   static async getPersonsByGroup(groupId) {
