@@ -127,17 +127,14 @@ const loadGridData = async (silent = false) => {
 };
 
 const openCellModal = ({ person, lesson }) => {
+  const attendanceKey = generateCellKey(person.id, lesson.date, lesson.lesson_time);
+  const recordKey = `${person.id}_${lesson.id}`;
+
   selectedCell.value = {
     person,
     lesson,
-    records:
-      journalStore.recordsMap[
-        generateCellKey(person.id, lesson.date, lesson.lesson_time)
-      ] || [],
-    attendance:
-      journalStore.attendancesMap[
-        generateCellKey(person.id, lesson.date, lesson.lesson_time)
-      ],
+    records: journalStore.recordsMap[recordKey] || [],
+    attendance: journalStore.attendancesMap[attendanceKey],
   };
 };
 

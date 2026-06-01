@@ -47,18 +47,20 @@ export const useJournalStore = defineStore("journal", () => {
       personsData.forEach((person) => {
         matrix[person.id] = {};
         lessons.value.forEach((lesson) => {
-          const key = generateCellKey(
+          const attendanceKey = generateCellKey(
             person.id,
             lesson.date,
             lesson.lesson_time,
           );
-          const attendance = attendancesMap.value[key];
+          const recordKey = `${person.id}_${lesson.id}`;
+
+          const attendance = attendancesMap.value[attendanceKey];
           const reason = attendance
             ? dictionaryStore.dictsMap.attendanceReasons[attendance.reason]
             : null;
 
           matrix[person.id][lesson.id] = {
-            records: recordsMap.value[key] || [],
+            records: recordsMap.value[recordKey] || [],
             isAbsent: reason ? reason.is_absent : false,
           };
         });
@@ -75,18 +77,19 @@ export const useJournalStore = defineStore("journal", () => {
     const savedAttendance = await JournalService.saveCellData(cellData);
 
     const { person, lesson, reason, marks } = cellData;
-    const key = generateCellKey(person.id, lesson.date, lesson.lesson_time);
+    const attendanceKey = generateCellKey(person.id, lesson.date, lesson.lesson_time);
+    const recordKey = `${person.id}_${lesson.id}`;
 
     if (reason != null) {
-      attendancesMap.value[key] = savedAttendance || {
+      attendancesMap.value[attendanceKey] = savedAttendance || {
         ...cellData.attendance,
         reason,
       };
     } else {
-      delete attendancesMap.value[key];
+      delete attendancesMap.value[attendanceKey];
     }
 
-    recordsMap.value[key] = marks.map((m, i) => ({
+    recordsMap.value[recordKey] = marks.map((m, i) => ({
       id: m.id || `${APP_CONSTANTS.PREFIXES.TEMP}${Date.now()}-${i}`,
       mark_value: m.mark_value,
     }));
@@ -95,7 +98,7 @@ export const useJournalStore = defineStore("journal", () => {
       ? dictionaryStore.dictsMap.attendanceReasons[reason]
       : null;
     if (gridMatrix.value[person.id] && gridMatrix.value[person.id][lesson.id]) {
-      gridMatrix.value[person.id][lesson.id].records = recordsMap.value[key];
+      gridMatrix.value[person.id][lesson.id].records = recordsMap.value[recordKey];
       gridMatrix.value[person.id][lesson.id].isAbsent = reasonObj
         ? reasonObj.is_absent
         : false;

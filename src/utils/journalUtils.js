@@ -45,12 +45,10 @@ export const buildRecordsMap = (records, lessons) => {
   const sortedRecords = [...records].sort((a, b) => a.id - b.id);
   sortedRecords.forEach((r) => {
     const personId = r.cadet || r.student;
-    const lesson = lessons.find((l) => l.id === r.lesson);
-    if (lesson) {
-      const key = generateCellKey(personId, lesson.date, lesson.lesson_time);
-      if (!rMap[key]) rMap[key] = [];
-      rMap[key].push(r);
-    }
+    // ID ЗАНЯТИЯ ВМЕСТО ДАТЫ И ВРЕМЕНИ
+    const key = `${personId}_${r.lesson}`; 
+    if (!rMap[key]) rMap[key] = [];
+    rMap[key].push(r);
   });
   return rMap;
 };
