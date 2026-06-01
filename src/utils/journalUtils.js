@@ -29,14 +29,22 @@ export const createDictMap = (array, key = "id") => {
 
 export const sortLessons = (lessons, lessonTimesMap) => {
   return [...lessons].sort((a, b) => {
+    // 1. Сортируем по дате
     if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
+    
+    // 2. Сортируем по номеру пары
     const timeA =
       lessonTimesMap[a.lesson_time]?.number ||
       APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
     const timeB =
       lessonTimesMap[b.lesson_time]?.number ||
       APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
-    return timeA - timeB;
+      
+    if (timeA !== timeB) return timeA - timeB;
+
+    // 3. если дата и пара одинаковые (или пара не указана),
+    // сортируем по ID (кто раньше создан, тот левее)
+    return a.id - b.id;
   });
 };
 
