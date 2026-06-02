@@ -199,8 +199,15 @@ const {
 } = useJournalGrid(props);
 
 const getLessonTime = (id) => {
+  if (!id) return "";
+  
   const time = props.dictsMap.lessonTimes[id];
-  return time ? `${time.number} ${APP_CONSTANTS.UI.LESSON_SUFFIX}` : "";
+  if (!time) return "";
+  
+  const start = time.start_time ? time.start_time.substring(0, 5) : "";
+  const end = time.end_time ? time.end_time.substring(0, 5) : "";
+  
+  return `${start} - ${end}`;
 };
 
 const getLessonType = (id) => props.dictsMap.lessonTypes[id]?.name || "";

@@ -33,6 +33,31 @@
       </div>
 
       <div class="field">
+        <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TIME }}</label>
+        <Select
+          v-model="newLesson.lesson_time"
+          :options="dicts.lessonTimes"
+          optionValue="id"
+          class="w-full"
+          showClear
+          :disabled="isSaving"
+          :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_LESSON_TIME"
+        >
+          <template #value="slotProps">
+            <span v-if="slotProps.value">
+              {{ formatTimeDisplay(dictsMap.lessonTimes[slotProps.value]) }}
+            </span>
+            <span v-else>
+              {{ APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_LESSON_TIME }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            {{ formatTimeDisplay(slotProps.option) }}
+          </template>
+        </Select>
+      </div>
+
+      <div class="field">
         <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TYPE }}</label>
         <Select
           v-model="newLesson.lesson_type"
@@ -121,10 +146,18 @@ const authStore = useAuthStore();
 const newLesson = ref({
   date: null,
   hours: null,
+  lesson_time: null,
   lesson_type: null,
   topic: null,
   teachers: [],
 });
+
+const formatTimeDisplay = (timeObj) => {
+  if (!timeObj) return "";
+  const start = timeObj.start_time ? timeObj.start_time.substring(0, 5) : "";
+  const end = timeObj.end_time ? timeObj.end_time.substring(0, 5) : "";
+  return `${timeObj.number} пара (${start} - ${end})`;
+};
 
 watch(
   () => props.visible,
@@ -133,6 +166,7 @@ watch(
       newLesson.value = {
         date: null,
         hours: null,
+        lesson_time: null,
         lesson_type: null,
         topic: null,
         teachers: authStore.user?.id ? [authStore.user.id] : [],
@@ -145,7 +179,6 @@ const handleSubmit = () => {
   emit("add", {
     ...newLesson.value,
     hours: newLesson.value.hours || 0,
-    lesson_time: props.dicts.lessonTimes[0]?.id,
     date: toApiDate(newLesson.value.date),
   });
 };
