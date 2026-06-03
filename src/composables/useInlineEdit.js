@@ -16,6 +16,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
   };
 
   const handleSingleClick = (person, lesson) => {
+    if (isSavingInline.value) return;
     if (isEditing(person.id, lesson.id)) return;
 
     if (clickTimer) clearTimeout(clickTimer);
@@ -26,14 +27,18 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       inlineMarkValue.value = '';
 
       await nextTick();
-      const inputElement = document.querySelector(APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT);
-      if (inputElement) {
-        inputElement.focus();
-      }
+      setTimeout(() => {
+        const inputElement = document.querySelector(APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT);
+        if (inputElement) {
+          inputElement.focus();
+        }
+      }, 50);
     }, APP_CONSTANTS.TIMERS.INLINE_EDIT_DELAY);
   };
 
   const openCellModal = (person, lesson) => {
+    if (isSavingInline.value) return;
+
     if (clickTimer) clearTimeout(clickTimer);
     if (blurTimer) clearTimeout(blurTimer);
     editingCell.value = null;

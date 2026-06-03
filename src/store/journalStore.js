@@ -74,7 +74,7 @@ export const useJournalStore = defineStore("journal", () => {
   };
 
   const saveCellData = async (cellData) => {
-    const savedAttendance = await JournalService.saveCellData(cellData);
+    const { savedAttendance, savedMarks } = await JournalService.saveCellData(cellData);
 
     const { person, lesson, reason, marks } = cellData;
     const attendanceKey = generateCellKey(person.id, lesson.date, lesson.lesson_time);
@@ -89,14 +89,19 @@ export const useJournalStore = defineStore("journal", () => {
       delete attendancesMap.value[attendanceKey];
     }
 
-    recordsMap.value[recordKey] = marks.map((m, i) => ({
-      id: m.id || `${APP_CONSTANTS.PREFIXES.TEMP}${Date.now()}-${i}`,
-      mark_value: m.mark_value,
-    }));
+    if (savedMarks && Array.isArray(savedMarks)) {
+      recordsMap.value[recordKey] = savedMarks;
+    } else {
+      recordsMap.value[recordKey] = marks.map((m, i) => ({
+        id: m.id || `${APP_CONSTANTS.PREFIXES.TEMP}${Date.now()}-${i}`,
+        mark_value: m.mark_value,
+      }));
+    }
 
     const reasonObj = reason
       ? dictionaryStore.dictsMap.attendanceReasons[reason]
       : null;
+      
     if (gridMatrix.value[person.id] && gridMatrix.value[person.id][lesson.id]) {
       gridMatrix.value[person.id][lesson.id].records = recordsMap.value[recordKey];
       gridMatrix.value[person.id][lesson.id].isAbsent = reasonObj
