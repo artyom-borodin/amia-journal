@@ -278,8 +278,8 @@ export const APP_CONSTANTS = {
       SEARCH_BY_NAME: "Поиск по ФИО",
       OK: "OK",
       LEGEND: "",
-      CURRENT_MARK: "Текущая (итоговая) отметка",
-      RETAKEN_MARK: "Пересданная (старая) отметка",
+      CURRENT_MARK: "Текущая отметка",
+      RETAKEN_MARK: "Пересданная отметка",
     },
     PLACEHOLDERS: {
       SELECT_GROUP: "-- Выберите группу --",
