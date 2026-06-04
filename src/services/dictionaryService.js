@@ -7,7 +7,7 @@ export class DictionaryService {
     const safeGet = (endpoint) => fetchAllPages(endpoint).catch(() => []);
 
     const endpoints = [
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.GROUPS),
+      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.ACTIVE_GROUPS),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.SUBJECTS),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.MARK_VALUES),
       fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.LESSON_TIMES),

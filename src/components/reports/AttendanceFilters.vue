@@ -32,13 +32,13 @@
 
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.FACULTY }}</label>
-          <Select
+          <MultiSelect
             v-model="filters.faculty"
             :options="filteredFaculties"
             optionLabel="subdivision_name"
             optionValue="id"
             filter
-            showClear
+            display="chip"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_FACULTY"
             class="w-full"
           />
@@ -46,13 +46,13 @@
 
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.SPECIALTY }}</label>
-          <Select
+          <MultiSelect
             v-model="filters.specialty"
             :options="filteredSpecialties"
             optionLabel="displayName"
             optionValue="id"
             filter
-            showClear
+            display="chip"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SPECIALTY"
             class="w-full"
           />
@@ -60,13 +60,13 @@
 
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.GROUP }}</label>
-          <Select
+          <MultiSelect
             v-model="filters.group"
             :options="dicts.groups"
             optionLabel="group_name"
             optionValue="id"
             filter
-            showClear
+            display="chip"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_GROUP"
             class="w-full"
           />
@@ -74,13 +74,13 @@
 
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.STUDENT }}</label>
-          <Select
+          <MultiSelect
             v-model="filters.student"
             :options="students"
             optionLabel="displayName"
             optionValue="id"
             filter
-            showClear
+            display="chip"
             :loading="isStudentsLoading"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_STUDENT"
             class="w-full"
@@ -89,12 +89,12 @@
 
         <div class="field">
           <label>{{ APP_CONSTANTS.UI.LABELS.ATTENDANCE_REASONS }}</label>
-          <Select
+          <MultiSelect
             v-model="filters.reason"
             :options="dicts.attendanceReasons"
             optionLabel="name"
             optionValue="id"
-            showClear
+            display="chip"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_REASON"
             class="w-full"
           />
@@ -135,11 +135,11 @@ const selectedSemester = ref(null);
 const filters = reactive({
   dates: null,
   semester: null,
-  faculty: null,
-  specialty: null,
-  group: null,
-  student: null,
-  reason: null,
+  faculty: [],
+  specialty: [],
+  group: [],
+  student: [],
+  reason: [],
 });
 
 const filteredFaculties = computed(() => {
@@ -167,15 +167,22 @@ const onSemesterChange = () => {
 
 const onSubmit = () => {
   const formattedFilters = { ...filters };
-  if (
-    filters.dates &&
-    filters.dates.length === APP_CONSTANTS.RULES.DATE_RANGE_LENGTH
-  ) {
+  
+  if (filters.dates && filters.dates.length === APP_CONSTANTS.RULES.DATE_RANGE_LENGTH) {
     formattedFilters.dates = [
       filters.dates[0] ? toApiDate(filters.dates[0]) : null,
       filters.dates[1] ? toApiDate(filters.dates[1]) : null,
     ];
   }
+
+  ['faculty', 'specialty', 'group', 'student', 'reason'].forEach(key => {
+    if (Array.isArray(formattedFilters[key]) && formattedFilters[key].length > 0) {
+      formattedFilters[key] = formattedFilters[key].join(',');
+    } else {
+      formattedFilters[key] = null;
+    }
+  });
+
   emit("generate", formattedFilters);
 };
 </script>

@@ -23,6 +23,7 @@ export const APP_CONSTANTS = {
     TOKEN: "/api/token/",
     ME: "/api/users/me/",
     GROUPS: "/api/group/",
+    ACTIVE_GROUPS: "/api/group/get_active_groups/",
     SUBJECTS: "/api/subjects/",
     CADETS: "/api/cadet/",
     STUDENTS: "/api/student/",
@@ -268,10 +269,10 @@ export const APP_CONSTANTS = {
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
       LOADING: "Загрузка данных...",
+      SAVING: "Сохранение...",
       NO_MARKS: "Нет отметок",
       UNDER_CONSTRUCTION: "Раздел в разработке",
-      SELECT_REPORT_FILTERS:
-        'Выберите параметры и нажмите "Сформировать отчет"',
+      SELECT_REPORT_FILTERS: 'Выберите параметры и нажмите "Сформировать отчет"',
       CONFIRM_DELETE: "Вы уверены, что хотите удалить эту запись?",
       NO_DATA: "Нет данных для отображения",
     },
@@ -280,8 +281,7 @@ export const APP_CONSTANTS = {
       SAVE_DATA: "Ошибка при сохранении данных",
       ADD_LESSON: "Ошибка при добавлении занятия",
       LESSON_EXISTS: "Учебное занятие на эту дату и пару уже существует.",
-      GENERATE_DOC:
-        "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
+      GENERATE_DOC: "Не удалось сгенерировать документ. Проверьте наличие шаблона на сервере.",
       LOAD_STUDENTS: "Ошибка при загрузке списка обучающихся.",
       CRUD_FETCH: "Ошибка при загрузке данных",
       CRUD_CREATE: "Ошибка при создании записи",

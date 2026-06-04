@@ -4,31 +4,39 @@ import { sortPersonsByFullName } from "../utils/journalUtils";
 
 export class PersonService {
   static async getPersons(filters = {}) {
-    const params = {};
-    if (filters.group) params.group = filters.group;
-    if (filters.faculty) params.subdivision = filters.faculty;
+    const groups = filters.group ? filters.group.toString().split(',') : [null];
+    const faculties = filters.faculty ? filters.faculty.toString().split(',') : [null];
 
-    const [cadetsRes, studentsRes] = await Promise.all([
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.CADETS, params).catch(() => []),
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, params).catch(
-        () => [],
-      ),
-    ]);
+    const promises = [];
 
-    const cadets = cadetsRes.map((p) => ({
-      ...p,
-      personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
-    }));
-    const students = studentsRes.map((p) => ({
-      ...p,
-      personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
-    }));
+    groups.forEach(g => {
+      faculties.forEach(f => {
+        const params = {};
+        if (g) params.group = g;
+        if (f) params.subdivision = f;
 
-    const activePersons = [...cadets, ...students].filter(
-      (p) => p.is_active !== false
-    );
+        promises.push(fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.CADETS, params).catch(() => []));
+        promises.push(fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, params).catch(() => []));
+      });
+    });
 
-    return sortPersonsByFullName(activePersons);
+    const results = await Promise.all(promises);
+    const allPersons = results.flat();
+
+    const uniquePersonsMap = new Map();
+    
+    allPersons.forEach(p => {
+      if (p.is_active !== false) {
+        const personType = p.military_rank ? APP_CONSTANTS.STUDENT_TYPES.CADET : APP_CONSTANTS.STUDENT_TYPES.STUDENT;
+        const key = `${p.id}-${personType}`;
+        
+        if (!uniquePersonsMap.has(key)) {
+          uniquePersonsMap.set(key, { ...p, personType });
+        }
+      }
+    });
+
+    return sortPersonsByFullName(Array.from(uniquePersonsMap.values()));
   }
 
   static async getPersonsByGroup(groupId) {
