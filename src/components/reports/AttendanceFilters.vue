@@ -86,6 +86,7 @@
             display="chip"
             :loading="isStudentsLoading"
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_STUDENT"
+            :virtualScrollerOptions="{ itemSize: 40 }"
             class="w-full"
           />
         </div>
