@@ -23,7 +23,7 @@
             v-model="filters.student"
             :options="students"
             optionLabel="fullName"
-            optionValue="id"
+            optionValue="uniqueId"
             filter
             :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_STUDENT"
             :loading="isStudentsLoading"
@@ -70,7 +70,13 @@ const { students, isStudentsLoading } = useStudentFilter(filters, (error) => {
 const handleGenerate = async () => {
   isGenerating.value = true;
   try {
-    await DocumentService.downloadStudyCardExtract(filters);
+    const payload = { ...filters };
+    if (payload.student) {
+      const [type, id] = payload.student.split('_');
+      payload.student = id;
+      payload.student_type = type; 
+    }
+    await DocumentService.downloadStudyCardExtract(payload);
   } catch (error) {
     emit("error", error, APP_CONSTANTS.UI.ERRORS.GENERATE_DOC);
   } finally {

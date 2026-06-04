@@ -52,9 +52,11 @@ export const buildRecordsMap = (records, lessons) => {
   const rMap = {};
   const sortedRecords = [...records].sort((a, b) => a.id - b.id);
   sortedRecords.forEach((r) => {
+    const personType = r.cadet ? 'cadet' : 'student';
     const personId = r.cadet || r.student;
-    // ID ЗАНЯТИЯ ВМЕСТО ДАТЫ И ВРЕМЕНИ
-    const key = `${personId}_${r.lesson}`; 
+    const uniqueId = `${personType}_${personId}`;
+    
+    const key = `${uniqueId}_${r.lesson}`; 
     if (!rMap[key]) rMap[key] = [];
     rMap[key].push(r);
   });
@@ -64,8 +66,11 @@ export const buildRecordsMap = (records, lessons) => {
 export const buildAttendancesMap = (attendances) => {
   const aMap = {};
   attendances.forEach((a) => {
+    const personType = a.cadet ? 'cadet' : 'student';
     const personId = a.cadet || a.student;
-    aMap[generateCellKey(personId, a.date, a.lesson_time)] = a;
+    const uniqueId = `${personType}_${personId}`;
+    
+    aMap[generateCellKey(uniqueId, a.date, a.lesson_time)] = a;
   });
   return aMap;
 };

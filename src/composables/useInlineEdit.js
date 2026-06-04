@@ -11,19 +11,19 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
   let clickTimer = null;
   let blurTimer = null; 
 
-  const isEditing = (personId, lessonId) => {
-    return editingCell.value?.personId === personId && editingCell.value?.lessonId === lessonId;
+  const isEditing = (personUniqueId, lessonId) => {
+    return editingCell.value?.personUniqueId === personUniqueId && editingCell.value?.lessonId === lessonId;
   };
 
   const handleSingleClick = (person, lesson) => {
     if (isSavingInline.value) return;
-    if (isEditing(person.id, lesson.id)) return;
+    if (isEditing(person.uniqueId, lesson.id)) return;
 
     if (clickTimer) clearTimeout(clickTimer);
     if (blurTimer) clearTimeout(blurTimer);
 
     clickTimer = setTimeout(async () => {
-      editingCell.value = { personId: person.id, lessonId: lesson.id };
+      editingCell.value = { personUniqueId: person.uniqueId, lessonId: lesson.id };
       inlineMarkValue.value = '';
 
       await nextTick();
@@ -86,7 +86,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       isSavingInline.value = true;
       inlineMarkValue.value = markObj;
       
-      const existingRecords = journalStore.gridMatrix[person.id]?.[lesson.id]?.records || [];
+      const existingRecords = journalStore.gridMatrix[person.uniqueId]?.[lesson.id]?.records || [];
       const marks = [...existingRecords];
 
       if (marks.length > 0) {
@@ -100,7 +100,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
           person,
           lesson,
           marks,
-          reason: journalStore.attendancesMap[generateCellKey(person.id, lesson.date, lesson.lesson_time)]?.reason
+          reason: journalStore.attendancesMap[generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time)]?.reason
         });
       } catch (err) {
         console.error("Ошибка при сохранении:", err);

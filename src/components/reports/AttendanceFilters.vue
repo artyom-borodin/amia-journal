@@ -78,7 +78,7 @@
             v-model="filters.student"
             :options="students"
             optionLabel="displayName"
-            optionValue="id"
+            optionValue="uniqueId"
             filter
             display="chip"
             :loading="isStudentsLoading"

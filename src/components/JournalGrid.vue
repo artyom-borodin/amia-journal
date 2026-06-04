@@ -107,12 +107,12 @@
             v-if="!data.isEmptyRow"
             class="cell-content"
             :class="{
-              'is-absent': journalStore.gridMatrix[data.id]?.[lesson.id]?.isAbsent,
+              'is-absent': journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
             }"
             @click="handleSingleClick(data, lesson)"
             @dblclick="openCellModal(data, lesson)"
           >
-            <template v-if="isEditing(data.id, lesson.id)">
+            <template v-if="isEditing(data.uniqueId, lesson.id)">
               <AutoComplete
                 v-model="inlineMarkValue"
                 :suggestions="filteredMarkValues"
@@ -130,7 +130,7 @@
             <template v-else>
               <div class="marks-container">
                 <span
-                  v-for="(record, idx) in journalStore.gridMatrix[data.id]?.[lesson.id]?.records"
+                  v-for="(record, idx) in journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.records"
                   :key="record.id"
                   class="mark-badge"
                   :class="{'is-retake': idx > 0}"

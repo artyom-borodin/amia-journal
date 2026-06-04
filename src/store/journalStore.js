@@ -45,21 +45,21 @@ export const useJournalStore = defineStore("journal", () => {
 
       const matrix = {};
       personsData.forEach((person) => {
-        matrix[person.id] = {};
+        matrix[person.uniqueId] = {};
         lessons.value.forEach((lesson) => {
           const attendanceKey = generateCellKey(
-            person.id,
+            person.uniqueId,
             lesson.date,
             lesson.lesson_time,
           );
-          const recordKey = `${person.id}_${lesson.id}`;
+          const recordKey = `${person.uniqueId}_${lesson.id}`;
 
           const attendance = attendancesMap.value[attendanceKey];
           const reason = attendance
             ? dictionaryStore.dictsMap.attendanceReasons[attendance.reason]
             : null;
 
-          matrix[person.id][lesson.id] = {
+          matrix[person.uniqueId][lesson.id] = {
             records: recordsMap.value[recordKey] || [],
             isAbsent: reason ? reason.is_absent : false,
           };
@@ -77,8 +77,8 @@ export const useJournalStore = defineStore("journal", () => {
     const { savedAttendance, savedMarks } = await JournalService.saveCellData(cellData);
 
     const { person, lesson, reason, marks } = cellData;
-    const attendanceKey = generateCellKey(person.id, lesson.date, lesson.lesson_time);
-    const recordKey = `${person.id}_${lesson.id}`;
+    const attendanceKey = generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time);
+    const recordKey = `${person.uniqueId}_${lesson.id}`;
 
     if (reason != null) {
       attendancesMap.value[attendanceKey] = savedAttendance || {
@@ -102,9 +102,9 @@ export const useJournalStore = defineStore("journal", () => {
       ? dictionaryStore.dictsMap.attendanceReasons[reason]
       : null;
       
-    if (gridMatrix.value[person.id] && gridMatrix.value[person.id][lesson.id]) {
-      gridMatrix.value[person.id][lesson.id].records = recordsMap.value[recordKey];
-      gridMatrix.value[person.id][lesson.id].isAbsent = reasonObj
+    if (gridMatrix.value[person.uniqueId] && gridMatrix.value[person.uniqueId][lesson.id]) {
+      gridMatrix.value[person.uniqueId][lesson.id].records = recordsMap.value[recordKey];
+      gridMatrix.value[person.uniqueId][lesson.id].isAbsent = reasonObj
         ? reasonObj.is_absent
         : false;
     }
