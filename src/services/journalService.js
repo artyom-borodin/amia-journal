@@ -95,7 +95,10 @@ export class JournalService {
       lesson_id: lesson.id,
       ...personIdPayload,
       marks: marks.map((m) => ({
-        id: m.id && !m.id.toString().startsWith(APP_CONSTANTS.PREFIXES.TEMP) ? m.id : null,
+        id:
+          m.id && !m.id.toString().startsWith(APP_CONSTANTS.PREFIXES.TEMP)
+            ? m.id
+            : null,
         mark_value: m.mark_value,
       })),
     };

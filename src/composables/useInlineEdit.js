@@ -4,15 +4,18 @@ import { generateCellKey } from "../utils/journalUtils";
 
 export function useInlineEdit(dictsMap, journalStore, emit) {
   const editingCell = ref(null);
-  const inlineMarkValue = ref('');
+  const inlineMarkValue = ref("");
   const filteredMarkValues = ref([]);
   const isSavingInline = ref(false);
-  
+
   let clickTimer = null;
-  let blurTimer = null; 
+  let blurTimer = null;
 
   const isEditing = (personUniqueId, lessonId) => {
-    return editingCell.value?.personUniqueId === personUniqueId && editingCell.value?.lessonId === lessonId;
+    return (
+      editingCell.value?.personUniqueId === personUniqueId &&
+      editingCell.value?.lessonId === lessonId
+    );
   };
 
   const handleSingleClick = (person, lesson) => {
@@ -23,12 +26,17 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     if (blurTimer) clearTimeout(blurTimer);
 
     clickTimer = setTimeout(async () => {
-      editingCell.value = { personUniqueId: person.uniqueId, lessonId: lesson.id };
-      inlineMarkValue.value = '';
+      editingCell.value = {
+        personUniqueId: person.uniqueId,
+        lessonId: lesson.id,
+      };
+      inlineMarkValue.value = "";
 
       await nextTick();
       setTimeout(() => {
-        const inputElement = document.querySelector(APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT);
+        const inputElement = document.querySelector(
+          APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT,
+        );
         if (inputElement) {
           inputElement.focus();
         }
@@ -42,24 +50,26 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     if (clickTimer) clearTimeout(clickTimer);
     if (blurTimer) clearTimeout(blurTimer);
     editingCell.value = null;
-    emit('cell-click', { person, lesson });
+    emit("cell-click", { person, lesson });
   };
 
   const searchMarkValues = (event) => {
     const query = event.query.toLowerCase();
-    filteredMarkValues.value = Object.values(dictsMap.markValues)
-      .filter(m => m.value.toLowerCase().includes(query));
+    filteredMarkValues.value = Object.values(dictsMap.markValues).filter((m) =>
+      m.value.toLowerCase().includes(query),
+    );
   };
 
   const saveInlineMark = async (person, lesson, eventPayload = null) => {
     if (blurTimer) clearTimeout(blurTimer);
-    
+
     if (isSavingInline.value) return;
 
     let markObj = inlineMarkValue.value;
-    
+
     if (eventPayload) {
-      markObj = eventPayload.value !== undefined ? eventPayload.value : eventPayload;
+      markObj =
+        eventPayload.value !== undefined ? eventPayload.value : eventPayload;
     }
 
     if (!markObj) {
@@ -67,14 +77,16 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       return;
     }
 
-    if (typeof markObj === 'string') {
+    if (typeof markObj === "string") {
       const query = markObj.toLowerCase().trim();
       const allMarks = Object.values(dictsMap.markValues);
-      
-      let found = allMarks.find(m => m.value.toLowerCase() === query);
-      
+
+      let found = allMarks.find((m) => m.value.toLowerCase() === query);
+
       if (!found) {
-        const matches = allMarks.filter(m => m.value.toLowerCase().startsWith(query));
+        const matches = allMarks.filter((m) =>
+          m.value.toLowerCase().startsWith(query),
+        );
         if (matches.length === 1) {
           found = matches[0];
         }
@@ -85,8 +97,9 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     if (markObj && markObj.id) {
       isSavingInline.value = true;
       inlineMarkValue.value = markObj;
-      
-      const existingRecords = journalStore.gridMatrix[person.uniqueId]?.[lesson.id]?.records || [];
+
+      const existingRecords =
+        journalStore.gridMatrix[person.uniqueId]?.[lesson.id]?.records || [];
       const marks = [...existingRecords];
 
       if (marks.length > 0) {
@@ -100,7 +113,10 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
           person,
           lesson,
           marks,
-          reason: journalStore.attendancesMap[generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time)]?.reason
+          reason:
+            journalStore.attendancesMap[
+              generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time)
+            ]?.reason,
         });
       } catch (err) {
         console.error("Ошибка при сохранении:", err);
@@ -116,18 +132,19 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
   const handleInlineInput = (val, person, lesson) => {
     if (blurTimer) clearTimeout(blurTimer);
 
-    if (!val || isSavingInline.value || typeof val !== 'string') return;
-    
+    if (!val || isSavingInline.value || typeof val !== "string") return;
+
     const query = val.toLowerCase().trim();
     const allMarks = Object.values(dictsMap.markValues);
-    
-    const exactMatch = allMarks.find(m => m.value.toLowerCase() === query);
-    
+
+    const exactMatch = allMarks.find((m) => m.value.toLowerCase() === query);
+
     if (exactMatch) {
-      const isPrefixForOthers = allMarks.some(m => 
-        m.id !== exactMatch.id && m.value.toLowerCase().startsWith(query)
+      const isPrefixForOthers = allMarks.some(
+        (m) =>
+          m.id !== exactMatch.id && m.value.toLowerCase().startsWith(query),
       );
-      
+
       if (!isPrefixForOthers) {
         saveInlineMark(person, lesson, exactMatch);
       }
@@ -145,12 +162,12 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
 
   const closeInlineEdit = () => {
     if (blurTimer) clearTimeout(blurTimer);
-    
+
     blurTimer = setTimeout(() => {
       if (!isSavingInline.value) {
         editingCell.value = null;
       }
-    }, 300); 
+    }, 300);
   };
 
   return {
@@ -165,6 +182,6 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     saveInlineMark,
     closeInlineEdit,
     handleInlineInput,
-    handleEnter
+    handleEnter,
   };
 }

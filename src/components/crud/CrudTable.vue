@@ -119,8 +119,8 @@ const loadData = async () => {
   if (!props.endpoint) return;
   isLoading.value = true;
   try {
-      let data = await CrudService.getAll(props.endpoint, props.baseFilters);
-      items.value = props.transformData(data);
+    let data = await CrudService.getAll(props.endpoint, props.baseFilters);
+    items.value = props.transformData(data);
   } catch (error) {
     emit("error", error, APP_CONSTANTS.UI.ERRORS.CRUD_FETCH);
   } finally {
@@ -139,7 +139,10 @@ const getOptionLabel = (col, value) => {
 
 const formatTimeDisplay = (timeStr) => {
   if (!timeStr) return "";
-  if (typeof timeStr === "string" && timeStr.includes(APP_CONSTANTS.FORMATTING.TIME_SEPARATOR)) {
+  if (
+    typeof timeStr === "string" &&
+    timeStr.includes(APP_CONSTANTS.FORMATTING.TIME_SEPARATOR)
+  ) {
     const parts = timeStr.split(APP_CONSTANTS.FORMATTING.TIME_SEPARATOR);
     if (parts.length >= 2) {
       return `${parts[0]}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}${parts[1]}`;

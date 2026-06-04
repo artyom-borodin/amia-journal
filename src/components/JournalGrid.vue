@@ -10,15 +10,12 @@
     >
       <ColumnGroup type="header">
         <Row>
-          <Column
-            :rowspan="2"
-            frozen
-            alignFrozen="left"
-            class="fio-column"
-          >
+          <Column :rowspan="2" frozen alignFrozen="left" class="fio-column">
             <template #header>
               <div class="flex-col w-full gap-2 p-2">
-                <span class="font-semibold">{{ APP_CONSTANTS.UI.LABELS.FULL_NAME }}</span>
+                <span class="font-semibold">{{
+                  APP_CONSTANTS.UI.LABELS.FULL_NAME
+                }}</span>
                 <InputText
                   :modelValue="nameFilter"
                   @update:modelValue="$emit('update:nameFilter', $event)"
@@ -35,7 +32,9 @@
             class="date-group-header"
           >
             <template #header>
-              <div class="date-header-content">{{ formatDate(group.date) }}</div>
+              <div class="date-header-content">
+                {{ formatDate(group.date) }}
+              </div>
             </template>
           </Column>
           <Column
@@ -101,13 +100,18 @@
         </template>
       </Column>
 
-      <Column v-for="lesson in filteredLessons" :key="lesson.id" class="lesson-column">
+      <Column
+        v-for="lesson in filteredLessons"
+        :key="lesson.id"
+        class="lesson-column"
+      >
         <template #body="{ data }">
           <div
             v-if="!data.isEmptyRow"
             class="cell-content"
             :class="{
-              'is-absent': journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
+              'is-absent':
+                journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
             }"
             @click="handleSingleClick(data, lesson)"
             @dblclick="openCellModal(data, lesson)"
@@ -130,10 +134,12 @@
             <template v-else>
               <div class="marks-container">
                 <span
-                  v-for="(record, idx) in journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.records"
+                  v-for="(record, idx) in journalStore.gridMatrix[
+                    data.uniqueId
+                  ]?.[lesson.id]?.records"
                   :key="record.id"
                   class="mark-badge"
-                  :class="{'is-retake': idx > 0}"
+                  :class="{ 'is-retake': idx > 0 }"
                 >
                   {{ dictsMap.markValues[record.mark_value]?.value }}
                 </span>
@@ -197,25 +203,21 @@ const {
   saveInlineMark,
   closeInlineEdit,
   handleInlineInput,
-  handleEnter
+  handleEnter,
 } = useInlineEdit(props.dictsMap, journalStore, emit);
 
-const {
-  filteredLessons,
-  groupedLessons,
-  emptyColumnsCount,
-  paddedPersons
-} = useJournalGrid(props);
+const { filteredLessons, groupedLessons, emptyColumnsCount, paddedPersons } =
+  useJournalGrid(props);
 
 const getLessonTime = (id) => {
   if (!id) return "";
-  
+
   const time = props.dictsMap.lessonTimes[id];
   if (!time) return "";
-  
+
   const start = time.start_time ? time.start_time.substring(0, 5) : "";
   const end = time.end_time ? time.end_time.substring(0, 5) : "";
-  
+
   return `${start} - ${end}`;
 };
 

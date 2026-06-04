@@ -50,12 +50,8 @@ defineProps({
   group: Number,
   subject: Number,
   groups: Array,
-  subjects: Array
+  subjects: Array,
 });
 
-defineEmits([
-  'update:group', 
-  'update:subject', 
-  'add-lesson'
-]);
+defineEmits(["update:group", "update:subject", "add-lesson"]);
 </script>

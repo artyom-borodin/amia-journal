@@ -38,7 +38,7 @@ app.use(PrimeVue, {
       darkModeSelector: "none",
     },
   },
-  locale: APP_CONSTANTS.LOCALE_CONFIG
+  locale: APP_CONSTANTS.LOCALE_CONFIG,
 });
 
 app.component("Button", Button);

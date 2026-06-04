@@ -11,9 +11,15 @@ const capitalizeWord = (word) => {
 
 export const getPersonFullName = (person) => {
   if (!person) return "";
-  const lastName = capitalizeWord(person.last_name_rus || person.last_name || "");
-  const firstName = capitalizeWord(person.first_name_rus || person.first_name || "");
-  const patronymic = capitalizeWord(person.patronymic_rus || person.patronymic || "");
+  const lastName = capitalizeWord(
+    person.last_name_rus || person.last_name || "",
+  );
+  const firstName = capitalizeWord(
+    person.first_name_rus || person.first_name || "",
+  );
+  const patronymic = capitalizeWord(
+    person.patronymic_rus || person.patronymic || "",
+  );
 
   const fullName = `${lastName} ${firstName} ${patronymic}`.trim();
   return fullName || person.username || "";
@@ -31,7 +37,7 @@ export const sortLessons = (lessons, lessonTimesMap) => {
   return [...lessons].sort((a, b) => {
     // 1. Сортируем по дате
     if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-    
+
     // 2. Сортируем по номеру пары
     const timeA =
       lessonTimesMap[a.lesson_time]?.number ||
@@ -39,7 +45,7 @@ export const sortLessons = (lessons, lessonTimesMap) => {
     const timeB =
       lessonTimesMap[b.lesson_time]?.number ||
       APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
-      
+
     if (timeA !== timeB) return timeA - timeB;
 
     // 3. если дата и пара одинаковые (или пара не указана),
@@ -52,11 +58,11 @@ export const buildRecordsMap = (records, lessons) => {
   const rMap = {};
   const sortedRecords = [...records].sort((a, b) => a.id - b.id);
   sortedRecords.forEach((r) => {
-    const personType = r.cadet ? 'cadet' : 'student';
+    const personType = r.cadet ? "cadet" : "student";
     const personId = r.cadet || r.student;
     const uniqueId = `${personType}_${personId}`;
-    
-    const key = `${uniqueId}_${r.lesson}`; 
+
+    const key = `${uniqueId}_${r.lesson}`;
     if (!rMap[key]) rMap[key] = [];
     rMap[key].push(r);
   });
@@ -66,10 +72,10 @@ export const buildRecordsMap = (records, lessons) => {
 export const buildAttendancesMap = (attendances) => {
   const aMap = {};
   attendances.forEach((a) => {
-    const personType = a.cadet ? 'cadet' : 'student';
+    const personType = a.cadet ? "cadet" : "student";
     const personId = a.cadet || a.student;
     const uniqueId = `${personType}_${personId}`;
-    
+
     aMap[generateCellKey(uniqueId, a.date, a.lesson_time)] = a;
   });
   return aMap;

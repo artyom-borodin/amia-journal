@@ -15,7 +15,10 @@
             class="w-full"
           >
             <template #option="slotProps">
-              {{ dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str }} - {{ slotProps.option.semester }}
+              {{
+                dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str
+              }}
+              - {{ slotProps.option.semester }}
             </template>
           </Select>
         </div>

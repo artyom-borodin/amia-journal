@@ -11,17 +11,19 @@ export function useJournalGrid(props) {
         APP_CONSTANTS.RULES.START_OF_DAY_HOURS,
         APP_CONSTANTS.RULES.START_OF_DAY_MINUTES,
         APP_CONSTANTS.RULES.START_OF_DAY_SECONDS,
-        APP_CONSTANTS.RULES.START_OF_DAY_MS
+        APP_CONSTANTS.RULES.START_OF_DAY_MS,
       );
-      const end = props.dateFilter[1] ? new Date(props.dateFilter[1]) : new Date(start);
+      const end = props.dateFilter[1]
+        ? new Date(props.dateFilter[1])
+        : new Date(start);
       end.setHours(
         APP_CONSTANTS.RULES.END_OF_DAY_HOURS,
         APP_CONSTANTS.RULES.END_OF_DAY_MINUTES,
         APP_CONSTANTS.RULES.END_OF_DAY_SECONDS,
-        APP_CONSTANTS.RULES.END_OF_DAY_MS
+        APP_CONSTANTS.RULES.END_OF_DAY_MS,
       );
 
-      list = list.filter(l => {
+      list = list.filter((l) => {
         const d = new Date(l.date);
         return d >= start && d <= end;
       });
@@ -33,7 +35,7 @@ export function useJournalGrid(props) {
     let list = props.persons || [];
     if (props.nameFilter) {
       const q = props.nameFilter.toLowerCase();
-      list = list.filter(p => getPersonFullName(p).toLowerCase().includes(q));
+      list = list.filter((p) => getPersonFullName(p).toLowerCase().includes(q));
     }
     return list;
   });
@@ -80,6 +82,6 @@ export function useJournalGrid(props) {
     filteredPersons,
     groupedLessons,
     emptyColumnsCount,
-    paddedPersons
+    paddedPersons,
   };
 }

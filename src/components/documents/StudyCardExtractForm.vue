@@ -72,9 +72,9 @@ const handleGenerate = async () => {
   try {
     const payload = { ...filters };
     if (payload.student) {
-      const [type, id] = payload.student.split('_');
+      const [type, id] = payload.student.split("_");
       payload.student = id;
-      payload.student_type = type; 
+      payload.student_type = type;
     }
     await DocumentService.downloadStudyCardExtract(payload);
   } catch (error) {

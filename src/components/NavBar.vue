@@ -29,7 +29,11 @@
           <span class="user-name">{{ userName }}</span>
           <span class="user-role">{{ userRole }}</span>
         </div>
-        <Avatar v-if="authStore.user?.avatar" :image="authStore.user.avatar" shape="circle" />
+        <Avatar
+          v-if="authStore.user?.avatar"
+          :image="authStore.user.avatar"
+          shape="circle"
+        />
         <Avatar v-else icon="pi pi-user" shape="circle" />
       </div>
       <Button

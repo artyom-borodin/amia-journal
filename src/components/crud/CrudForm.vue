@@ -2,7 +2,9 @@
   <Dialog
     :visible="visible"
     :style="{ width: APP_CONSTANTS.UI.CRUD_DIALOG_WIDTH }"
-    :header="isEditing ? APP_CONSTANTS.UI.LABELS.EDIT : APP_CONSTANTS.UI.LABELS.ADD"
+    :header="
+      isEditing ? APP_CONSTANTS.UI.LABELS.EDIT : APP_CONSTANTS.UI.LABELS.ADD
+    "
     modal
     @update:visible="$emit('update:visible', $event)"
   >
@@ -103,23 +105,31 @@ watch(
     if (isVisible) {
       formData.value = { ...props.basePayload, ...props.initialData };
       props.columns.forEach((col) => {
-        if (col.type === APP_CONSTANTS.FIELD_TYPES.TIME && formData.value[col.field]) {
+        if (
+          col.type === APP_CONSTANTS.FIELD_TYPES.TIME &&
+          formData.value[col.field]
+        ) {
           if (typeof formData.value[col.field] === "string") {
-            const parts = formData.value[col.field].split(APP_CONSTANTS.FORMATTING.TIME_SEPARATOR);
+            const parts = formData.value[col.field].split(
+              APP_CONSTANTS.FORMATTING.TIME_SEPARATOR,
+            );
             const d = new Date();
             d.setHours(
-              parts[0] || APP_CONSTANTS.RULES.START_OF_DAY_HOURS, 
-              parts[1] || APP_CONSTANTS.RULES.START_OF_DAY_MINUTES, 
-              parts[2] || APP_CONSTANTS.RULES.START_OF_DAY_SECONDS
+              parts[0] || APP_CONSTANTS.RULES.START_OF_DAY_HOURS,
+              parts[1] || APP_CONSTANTS.RULES.START_OF_DAY_MINUTES,
+              parts[2] || APP_CONSTANTS.RULES.START_OF_DAY_SECONDS,
             );
             formData.value[col.field] = d;
           }
-        } else if (col.type === APP_CONSTANTS.FIELD_TYPES.DATE && formData.value[col.field]) {
+        } else if (
+          col.type === APP_CONSTANTS.FIELD_TYPES.DATE &&
+          formData.value[col.field]
+        ) {
           formData.value[col.field] = new Date(formData.value[col.field]);
         }
       });
     }
-  }
+  },
 );
 
 const handleSubmit = () => {

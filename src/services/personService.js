@@ -18,16 +18,16 @@ export class PersonService {
     const cadets = cadetsRes.map((p) => ({
       ...p,
       personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
-      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.CADET}_${p.id}`
+      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.CADET}_${p.id}`,
     }));
     const students = studentsRes.map((p) => ({
       ...p,
       personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
-      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.STUDENT}_${p.id}`
+      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.STUDENT}_${p.id}`,
     }));
 
     const activePersons = [...cadets, ...students].filter(
-      (p) => p.is_active !== false
+      (p) => p.is_active !== false,
     );
 
     return sortPersonsByFullName(activePersons);

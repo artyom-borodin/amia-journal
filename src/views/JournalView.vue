@@ -24,11 +24,11 @@
         <div class="flex-row gap-4 mb-4 align-end flex-shrink-0">
           <div class="field max-w-30rem">
             <label>{{ APP_CONSTANTS.UI.LABELS.PERIOD }}</label>
-            <DatePicker 
-              v-model="dateFilter" 
-              selectionMode="range" 
-              showIcon 
-              :dateFormat="APP_CONSTANTS.LOCALE_CONFIG.dateFormat" 
+            <DatePicker
+              v-model="dateFilter"
+              selectionMode="range"
+              showIcon
+              :dateFormat="APP_CONSTANTS.LOCALE_CONFIG.dateFormat"
               class="w-full"
             />
           </div>
@@ -127,8 +127,12 @@ const loadGridData = async (silent = false) => {
 };
 
 const openCellModal = ({ person, lesson }) => {
-  const attendanceKey = generateCellKey(person.id, lesson.date, lesson.lesson_time);
-  const recordKey = `${person.id}_${lesson.id}`;
+  const attendanceKey = generateCellKey(
+    person.uniqueId,
+    lesson.date,
+    lesson.lesson_time,
+  );
+  const recordKey = `${person.uniqueId}_${lesson.id}`;
 
   selectedCell.value = {
     person,

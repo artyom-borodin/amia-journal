@@ -14,7 +14,10 @@
             class="w-full"
           >
             <template #option="slotProps">
-              {{ dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str }} - {{ slotProps.option.semester }}
+              {{
+                dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str
+              }}
+              - {{ slotProps.option.semester }}
             </template>
           </Select>
         </div>
@@ -172,11 +175,15 @@ const filters = reactive({
 });
 
 const filteredFaculties = computed(() => {
-  return props.dicts.faculties.filter(f => APP_CONSTANTS.REPORT_FILTERS.ALLOWED_FACULTIES.includes(f.id));
+  return props.dicts.faculties.filter((f) =>
+    APP_CONSTANTS.REPORT_FILTERS.ALLOWED_FACULTIES.includes(f.id),
+  );
 });
 
 const filteredSpecialties = computed(() => {
-  return props.dicts.specialties.filter(s => APP_CONSTANTS.REPORT_FILTERS.ALLOWED_SPECIALTIES.includes(s.id));
+  return props.dicts.specialties.filter((s) =>
+    APP_CONSTANTS.REPORT_FILTERS.ALLOWED_SPECIALTIES.includes(s.id),
+  );
 });
 
 const { students, isStudentsLoading } = useStudentFilter(filters);
@@ -196,17 +203,31 @@ const onSemesterChange = () => {
 
 const onSubmit = () => {
   const formattedFilters = { ...filters };
-  
-  if (filters.dates && filters.dates.length === APP_CONSTANTS.RULES.DATE_RANGE_LENGTH) {
+
+  if (
+    filters.dates &&
+    filters.dates.length === APP_CONSTANTS.RULES.DATE_RANGE_LENGTH
+  ) {
     formattedFilters.dates = [
       filters.dates[0] ? toApiDate(filters.dates[0]) : null,
       filters.dates[1] ? toApiDate(filters.dates[1]) : null,
     ];
   }
 
-  ['faculty', 'specialty', 'group', 'student', 'subject', 'lessonType', 'markValue'].forEach(key => {
-    if (Array.isArray(formattedFilters[key]) && formattedFilters[key].length > 0) {
-      formattedFilters[key] = formattedFilters[key].join(',');
+  [
+    "faculty",
+    "specialty",
+    "group",
+    "student",
+    "subject",
+    "lessonType",
+    "markValue",
+  ].forEach((key) => {
+    if (
+      Array.isArray(formattedFilters[key]) &&
+      formattedFilters[key].length > 0
+    ) {
+      formattedFilters[key] = formattedFilters[key].join(",");
     } else {
       formattedFilters[key] = null;
     }

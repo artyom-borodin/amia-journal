@@ -74,10 +74,15 @@ export const useJournalStore = defineStore("journal", () => {
   };
 
   const saveCellData = async (cellData) => {
-    const { savedAttendance, savedMarks } = await JournalService.saveCellData(cellData);
+    const { savedAttendance, savedMarks } =
+      await JournalService.saveCellData(cellData);
 
     const { person, lesson, reason, marks } = cellData;
-    const attendanceKey = generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time);
+    const attendanceKey = generateCellKey(
+      person.uniqueId,
+      lesson.date,
+      lesson.lesson_time,
+    );
     const recordKey = `${person.uniqueId}_${lesson.id}`;
 
     if (reason != null) {
@@ -101,9 +106,13 @@ export const useJournalStore = defineStore("journal", () => {
     const reasonObj = reason
       ? dictionaryStore.dictsMap.attendanceReasons[reason]
       : null;
-      
-    if (gridMatrix.value[person.uniqueId] && gridMatrix.value[person.uniqueId][lesson.id]) {
-      gridMatrix.value[person.uniqueId][lesson.id].records = recordsMap.value[recordKey];
+
+    if (
+      gridMatrix.value[person.uniqueId] &&
+      gridMatrix.value[person.uniqueId][lesson.id]
+    ) {
+      gridMatrix.value[person.uniqueId][lesson.id].records =
+        recordsMap.value[recordKey];
       gridMatrix.value[person.uniqueId][lesson.id].isAbsent = reasonObj
         ? reasonObj.is_absent
         : false;

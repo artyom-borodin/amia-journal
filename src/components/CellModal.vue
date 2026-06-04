@@ -31,7 +31,11 @@
           :key="index"
           class="mark-row"
         >
-          <span class="mark-label">{{ index === 0 ? APP_CONSTANTS.UI.LABELS.MAIN_MARK : `${APP_CONSTANTS.UI.LABELS.RETAKE_MARK} ${index}:` }}</span>
+          <span class="mark-label">{{
+            index === 0
+              ? APP_CONSTANTS.UI.LABELS.MAIN_MARK
+              : `${APP_CONSTANTS.UI.LABELS.RETAKE_MARK} ${index}:`
+          }}</span>
           <Select
             v-model="mark.mark_value"
             :options="dicts.markValues"
@@ -54,8 +58,24 @@
           {{ APP_CONSTANTS.UI.MESSAGES.NO_MARKS }}
         </div>
         <div class="marks-actions">
-            <Button v-if="formData.marks.length > 0" :label="APP_CONSTANTS.UI.LABELS.ADD_RETAKE" icon="pi pi-plus" text size="small" @click="addMark" :disabled="isSaving" />
-            <Button v-else :label="APP_CONSTANTS.UI.LABELS.ADD_MARK" icon="pi pi-plus" text size="small" @click="addMark" :disabled="isSaving" />
+          <Button
+            v-if="formData.marks.length > 0"
+            :label="APP_CONSTANTS.UI.LABELS.ADD_RETAKE"
+            icon="pi pi-plus"
+            text
+            size="small"
+            @click="addMark"
+            :disabled="isSaving"
+          />
+          <Button
+            v-else
+            :label="APP_CONSTANTS.UI.LABELS.ADD_MARK"
+            icon="pi pi-plus"
+            text
+            size="small"
+            @click="addMark"
+            :disabled="isSaving"
+          />
         </div>
       </div>
 

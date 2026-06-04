@@ -12,22 +12,29 @@
       sortable
     ></Column>
     <Column
+      field="faculty_name"
+      :header="APP_CONSTANTS.UI.LABELS.FACULTY"
+      sortable
+    ></Column>
+    <Column
+      field="specialty_name"
+      :header="APP_CONSTANTS.UI.LABELS.SPECIALTY"
+      sortable
+    ></Column>
+    <Column
       field="group_name"
       :header="APP_CONSTANTS.UI.LABELS.GROUP"
       sortable
     ></Column>
     <Column
-      field="absences_count"
-      :header="APP_CONSTANTS.UI.LABELS.TOTAL_ABSENCES"
+      field="date"
+      :header="APP_CONSTANTS.UI.LABELS.DATE"
       sortable
     ></Column>
     <Column
-      field="absence_dates"
-      :header="APP_CONSTANTS.UI.LABELS.ABSENCE_DATES"
-    ></Column>
-    <Column
-      field="reasons_list"
-      :header="APP_CONSTANTS.UI.LABELS.ATTENDANCE_REASONS"
+      field="reason"
+      :header="APP_CONSTANTS.UI.LABELS.REASON"
+      sortable
     ></Column>
   </DataTable>
 </template>
