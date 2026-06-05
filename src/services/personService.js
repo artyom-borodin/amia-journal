@@ -1,4 +1,4 @@
-import { fetchAllPages } from "./api";
+import apiClient from "./api";
 import { APP_CONSTANTS } from "../config/constants";
 import { sortPersonsByFullName } from "../utils/journalUtils";
 
@@ -8,29 +8,44 @@ export class PersonService {
     if (filters.group) params.group = filters.group;
     if (filters.faculty) params.subdivision = filters.faculty;
 
-    const [cadetsRes, studentsRes] = await Promise.all([
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.CADETS, params).catch(() => []),
-      fetchAllPages(APP_CONSTANTS.API_ENDPOINTS.STUDENTS, params).catch(
-        () => [],
-      ),
-    ]);
+    try {
+      const [cadetsRes, studentsRes] = await Promise.all([
+        apiClient
+          .get(APP_CONSTANTS.API_ENDPOINTS.CADETS_SHORT, { params })
+          .catch(() => ({ data: [] })),
+        apiClient
+          .get(APP_CONSTANTS.API_ENDPOINTS.STUDENTS_SHORT, { params })
+          .catch(() => ({ data: [] })),
+      ]);
 
-    const cadets = cadetsRes.map((p) => ({
-      ...p,
-      personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
-      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.CADET}_${p.id}`,
-    }));
-    const students = studentsRes.map((p) => ({
-      ...p,
-      personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
-      uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.STUDENT}_${p.id}`,
-    }));
+      const cadets = (cadetsRes.data || []).map((p) => ({
+        ...p,
+        group: p.group_id,
+        group_name: p.group__group_name,
+        subdivision: p.subdivision_id,
+        speciality: p.speciality_id,
+        personType: APP_CONSTANTS.STUDENT_TYPES.CADET,
+        uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.CADET}_${p.id}`,
+      }));
+      const students = (studentsRes.data || []).map((p) => ({
+        ...p,
+        group: p.group_id,
+        group_name: p.group__group_name,
+        subdivision: p.subdivision_id,
+        speciality: p.speciality_id,
+        personType: APP_CONSTANTS.STUDENT_TYPES.STUDENT,
+        uniqueId: `${APP_CONSTANTS.STUDENT_TYPES.STUDENT}_${p.id}`,
+      }));
 
-    const activePersons = [...cadets, ...students].filter(
-      (p) => p.is_active !== false,
-    );
+      const activePersons = [...cadets, ...students].filter(
+        (p) => p.is_active !== false,
+      );
 
-    return sortPersonsByFullName(activePersons);
+      return sortPersonsByFullName(activePersons);
+    } catch (error) {
+      console.error("Failed to fetch persons:", error);
+      return [];
+    }
   }
 
   static async getPersonsByGroup(groupId) {

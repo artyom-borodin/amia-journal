@@ -27,6 +27,8 @@ export const APP_CONSTANTS = {
     SUBJECTS: "/api/subjects/",
     CADETS: "/api/cadet/",
     STUDENTS: "/api/student/",
+    CADETS_SHORT: "/api/cadet/short-list/",
+    STUDENTS_SHORT: "/api/student/short-list/",
     MARK_VALUES: "/api/mark-values/",
     LESSON_TIMES: "/api/lesson-times/",
     ATTENDANCE_REASONS: "/api/attendance-reasons/",
