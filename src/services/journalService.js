@@ -1,5 +1,6 @@
 import apiClient, { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
+import { downloadBlob } from "../utils/fileUtils";
 
 export class JournalService {
   static async getJournalData(groupId, subjectId) {
@@ -114,5 +115,29 @@ export class JournalService {
     ]);
 
     return { savedAttendance, savedMarks };
+  }
+
+  static async downloadVedomost(lessonId) {
+    const response = await apiClient.get(
+      `/api/lessons/${lessonId}/download-vedomost/`,
+      {
+        responseType: "blob",
+      },
+    );
+
+    let fileName = `vedomost_${lessonId}.docx`;
+    const contentDisposition = response.headers["content-disposition"];
+
+    if (contentDisposition) {
+      const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utf8Match && utf8Match[1]) {
+        fileName = decodeURIComponent(utf8Match[1]);
+      } else {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) fileName = match[1];
+      }
+    }
+
+    downloadBlob(response.data, fileName);
   }
 }

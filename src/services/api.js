@@ -23,7 +23,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const isUnauthorized =
-      error.response?.status === APP_CONSTANTS.HTTP_STATUS.UNAUTHORIZED;
+      error.response?.status === APP_CONSTANTS.HTTP_STATUS.UNAUTHORIZED ||
+      error.response?.status === APP_CONSTANTS.HTTP_STATUS.FORBIDDEN;
     const isAuthRequest =
       error.config?.url === APP_CONSTANTS.API_ENDPOINTS.TOKEN;
 

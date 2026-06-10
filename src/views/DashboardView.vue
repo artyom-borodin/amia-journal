@@ -40,27 +40,6 @@ const dashboardCards = [
     icon: "pi pi-chart-bar",
     severity: "info",
   },
-  {
-    route: APP_CONSTANTS.ROUTES.DOCUMENTS,
-    label: APP_CONSTANTS.UI.LABELS.DOCUMENTS,
-    icon: "pi pi-file",
-    severity: "help",
-    disabled: true,
-  },
-  {
-    route: APP_CONSTANTS.ROUTES.DICTIONARIES,
-    label: APP_CONSTANTS.UI.LABELS.DICTIONARIES,
-    icon: "pi pi-database",
-    severity: "warning",
-    disabled: true,
-  },
-  {
-    route: APP_CONSTANTS.ROUTES.STUDY_PLANS,
-    label: APP_CONSTANTS.UI.LABELS.STUDY_PLANS,
-    icon: "pi pi-sitemap",
-    severity: "success",
-    disabled: true,
-  },
 ];
 
 const goTo = (route) => {

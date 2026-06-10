@@ -45,6 +45,7 @@
             :name-filter="nameFilter"
             @update:nameFilter="nameFilter = $event"
             @cell-click="openCellModal"
+            @error="showError"
           />
         </div>
       </div>

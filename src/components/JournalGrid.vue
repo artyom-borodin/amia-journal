@@ -71,6 +71,15 @@
                   :title="getLessonTeachers(lesson.teachers)"
                   >{{ getLessonTeachers(lesson.teachers) }}</span
                 >
+                <Button
+                  icon="pi pi-file-word"
+                  text
+                  rounded
+                  size="small"
+                  class="mt-1 p-0 w-2rem h-2rem text-primary"
+                  title="Скачать ведомость"
+                  @click.stop="downloadVedomost(lesson.id)"
+                />
               </div>
             </template>
           </Column>
@@ -113,7 +122,8 @@
               'is-absent':
                 journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
             }"
-            @click="handleSingleClick(data, lesson)"
+            title="Быстро нажмите два раза чтобы увидеть расширенную информацию"
+            @click="handleCellClick(data, lesson)"
             @dblclick="openCellModal(data, lesson)"
           >
             <template v-if="isEditing(data.uniqueId, lesson.id)">
@@ -132,7 +142,26 @@
               />
             </template>
             <template v-else>
-              <div class="marks-container">
+              <span
+                v-if="
+                  journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent
+                "
+                class="absent-label"
+              >
+                отсутств.
+              </span>
+              <div
+                v-if="
+                  journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.records
+                    ?.length
+                "
+                class="marks-container"
+                :class="{
+                  'has-absent':
+                    journalStore.gridMatrix[data.uniqueId]?.[lesson.id]
+                      ?.isAbsent,
+                }"
+              >
                 <span
                   v-for="(record, idx) in journalStore.gridMatrix[
                     data.uniqueId
@@ -177,6 +206,7 @@ import { getPersonFullName } from "../utils/journalUtils";
 import { useJournalStore } from "../store/journalStore";
 import { useInlineEdit } from "../composables/useInlineEdit";
 import { useJournalGrid } from "../composables/useJournalGrid";
+import { JournalService } from "../services/journalService";
 
 const props = defineProps({
   persons: Array,
@@ -188,7 +218,7 @@ const props = defineProps({
   nameFilter: String,
 });
 
-const emit = defineEmits(["cell-click", "update:nameFilter"]);
+const emit = defineEmits(["cell-click", "update:nameFilter", "error"]);
 
 const journalStore = useJournalStore();
 
@@ -208,6 +238,13 @@ const {
 
 const { filteredLessons, groupedLessons, emptyColumnsCount, paddedPersons } =
   useJournalGrid(props);
+
+const handleCellClick = (data, lesson) => {
+  const isAbsent =
+    journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent;
+  if (isAbsent) return;
+  handleSingleClick(data, lesson);
+};
 
 const getLessonTime = (id) => {
   if (!id) return "";
@@ -232,5 +269,14 @@ const getLessonTeachers = (teacherIds) => {
     })
     .filter(Boolean)
     .join(APP_CONSTANTS.FORMATTING.SEPARATOR);
+};
+
+const downloadVedomost = async (lessonId) => {
+  try {
+    await JournalService.downloadVedomost(lessonId);
+  } catch (error) {
+    console.error("Ошибка при скачивании ведомости", error);
+    emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST);
+  }
 };
 </script>

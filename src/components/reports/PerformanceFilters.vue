@@ -13,6 +13,17 @@
             @change="onSemesterChange"
             class="w-full"
           >
+            <template #value="slotProps">
+              <span v-if="slotProps.value">
+                {{
+                  dictionaryStore.dictsMap.years[slotProps.value.year]?.year_str
+                }}
+                - {{ slotProps.value.semester }}
+              </span>
+              <span v-else>
+                {{ APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SEMESTER }}
+              </span>
+            </template>
             <template #option="slotProps">
               {{
                 dictionaryStore.dictsMap.years[slotProps.option.year]?.year_str

@@ -238,11 +238,29 @@
 }
 
 .cell-content.is-absent {
-  background-color: var(--p-red-50);
+  background-color: var(--p-red-100);
+  border: 1px solid var(--p-red-200);
+  flex-direction: column;
+  gap: var(--space-3xs);
+  justify-content: center;
+  padding: var(--space-2xs) var(--space-xs);
 }
 
 .cell-content.is-absent:hover {
-  background-color: var(--p-red-100);
+  background-color: var(--p-red-200);
+}
+
+.absent-label {
+  font-size: var(--fs-2xs);
+  color: var(--p-red-700);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.marks-container.has-absent {
+  margin-top: var(--space-3xs);
 }
 
 .disabled-cell,

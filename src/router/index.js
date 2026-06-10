@@ -27,30 +27,6 @@ const routes = [
     component: () => import("../views/ReportsView.vue"),
     meta: { requiresAuth: true },
   },
-  {
-    path: APP_CONSTANTS.ROUTES.DOCUMENTS,
-    name: APP_CONSTANTS.ROUTE_NAMES.DOCUMENTS,
-    component: () => import("../views/DocumentsView.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: APP_CONSTANTS.ROUTES.DICTIONARIES,
-    name: APP_CONSTANTS.ROUTE_NAMES.DICTIONARIES,
-    component: () => import("../views/DictionariesView.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: APP_CONSTANTS.ROUTES.STUDY_PLANS,
-    name: APP_CONSTANTS.ROUTE_NAMES.STUDY_PLANS,
-    component: () => import("../views/StudyPlansView.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: APP_CONSTANTS.ROUTES.STUDY_PLAN_DETAIL,
-    name: APP_CONSTANTS.ROUTE_NAMES.STUDY_PLAN_DETAIL,
-    component: () => import("../views/StudyPlanDetailView.vue"),
-    meta: { requiresAuth: true },
-  },
 ];
 
 const router = createRouter({

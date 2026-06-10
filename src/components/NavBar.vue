@@ -69,14 +69,6 @@ const breadcrumbs = computed(() => {
   const crumbs = [];
   if (isDashboard.value) return crumbs;
 
-  if (route.name === APP_CONSTANTS.ROUTE_NAMES.STUDY_PLAN_DETAIL) {
-    crumbs.push({
-      label:
-        APP_CONSTANTS.UI.PAGE_TITLES[APP_CONSTANTS.ROUTE_NAMES.STUDY_PLANS],
-      route: APP_CONSTANTS.ROUTES.STUDY_PLANS,
-    });
-  }
-
   crumbs.push({
     label: APP_CONSTANTS.UI.PAGE_TITLES[route.name] || "",
     route: null,
