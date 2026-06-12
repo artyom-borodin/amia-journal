@@ -154,9 +154,19 @@ const newLesson = ref({
 
 const formatTimeDisplay = (timeObj) => {
   if (!timeObj) return "";
-  const start = timeObj.start_time ? timeObj.start_time.substring(0, 5) : "";
-  const end = timeObj.end_time ? timeObj.end_time.substring(0, 5) : "";
-  return `${timeObj.number} пара (${start} - ${end})`;
+  const start = timeObj.start_time
+    ? timeObj.start_time.substring(
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
+      )
+    : "";
+  const end = timeObj.end_time
+    ? timeObj.end_time.substring(
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
+      )
+    : "";
+  return `${timeObj.number} ${APP_CONSTANTS.UI.LABELS.LESSON_NUMBER_SUFFIX} (${start} - ${end})`;
 };
 
 watch(

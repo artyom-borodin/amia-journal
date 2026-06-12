@@ -35,10 +35,8 @@ export const createDictMap = (array, key = "id") => {
 
 export const sortLessons = (lessons, lessonTimesMap) => {
   return [...lessons].sort((a, b) => {
-    // 1. Сортируем по дате
     if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
 
-    // 2. Сортируем по номеру пары
     const timeA =
       lessonTimesMap[a.lesson_time]?.number ||
       APP_CONSTANTS.RULES.DEFAULT_LESSON_NUMBER;
@@ -48,8 +46,6 @@ export const sortLessons = (lessons, lessonTimesMap) => {
 
     if (timeA !== timeB) return timeA - timeB;
 
-    // 3. если дата и пара одинаковые (или пара не указана),
-    // сортируем по ID (кто раньше создан, тот левее)
     return a.id - b.id;
   });
 };
@@ -58,7 +54,9 @@ export const buildRecordsMap = (records, lessons) => {
   const rMap = {};
   const sortedRecords = [...records].sort((a, b) => a.id - b.id);
   sortedRecords.forEach((r) => {
-    const personType = r.cadet ? "cadet" : "student";
+    const personType = r.cadet
+      ? APP_CONSTANTS.STUDENT_TYPES.CADET
+      : APP_CONSTANTS.STUDENT_TYPES.STUDENT;
     const personId = r.cadet || r.student;
     const uniqueId = `${personType}_${personId}`;
 
@@ -72,7 +70,9 @@ export const buildRecordsMap = (records, lessons) => {
 export const buildAttendancesMap = (attendances) => {
   const aMap = {};
   attendances.forEach((a) => {
-    const personType = a.cadet ? "cadet" : "student";
+    const personType = a.cadet
+      ? APP_CONSTANTS.STUDENT_TYPES.CADET
+      : APP_CONSTANTS.STUDENT_TYPES.STUDENT;
     const personId = a.cadet || a.student;
     const uniqueId = `${personType}_${personId}`;
 

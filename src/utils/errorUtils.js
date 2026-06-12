@@ -21,8 +21,8 @@ export const extractErrorMessage = (error, fallback) => {
   if (typeof data === "string") {
     const lowerData = data.trim().toLowerCase();
     if (
-      lowerData.startsWith("<!doctype html") ||
-      lowerData.startsWith("<html")
+      lowerData.startsWith(APP_CONSTANTS.RULES.HTML_DOCTYPE) ||
+      lowerData.startsWith(APP_CONSTANTS.RULES.HTML_TAG)
     ) {
       return translateError(
         fallback || APP_CONSTANTS.UI.ERRORS.UNKNOWN_SERVER_ERROR,

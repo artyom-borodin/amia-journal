@@ -36,6 +36,16 @@ export const APP_CONSTANTS = {
     REPORTS_PERFORMANCE: "/api/reports/performance/",
     REPORTS_ATTENDANCE: "/api/reports/attendance/",
   },
+  ENDPOINTS_SUFFIX: {
+    SYNC_MARKS: "sync-marks/",
+    DOWNLOAD_VEDOMOST: "/download-vedomost/",
+  },
+  NETWORK: {
+    AUTH_PREFIX: "Bearer ",
+    CONTENT_TYPE_JSON: "application/json",
+    RESPONSE_TYPE_BLOB: "blob",
+    HEADER_CONTENT_DISPOSITION: "content-disposition",
+  },
   FIELD_TYPES: {
     TEXT: "text",
     NUMBER: "number",
@@ -65,6 +75,8 @@ export const APP_CONSTANTS = {
   TIMERS: {
     INLINE_EDIT_DELAY: 250,
     INLINE_EDIT_CLOSE: 150,
+    INLINE_EDIT_FOCUS: 50,
+    INLINE_EDIT_SAVE: 50,
   },
   LESSON_HOURS_OPTIONS: [2, 4, 6, 8],
   LOCALES: {
@@ -118,6 +130,7 @@ export const APP_CONSTANTS = {
   },
   FORMATTING: {
     SEPARATOR: ", ",
+    COMMA: ",",
     NEWLINE: "\n",
     TIME_SEPARATOR: ":",
     HOUR_FORMAT_24: "24",
@@ -132,6 +145,8 @@ export const APP_CONSTANTS = {
     REGEX_MATCH_LENGTH: 2,
     DEFAULT_LESSON_NUMBER: 0,
     TIME_STRING_LENGTH: 5,
+    TIME_SUBSTRING_START: 0,
+    TIME_SUBSTRING_END: 5,
     START_OF_DAY_HOURS: 0,
     START_OF_DAY_MINUTES: 0,
     START_OF_DAY_SECONDS: 0,
@@ -140,6 +155,14 @@ export const APP_CONSTANTS = {
     END_OF_DAY_MINUTES: 59,
     END_OF_DAY_SECONDS: 59,
     END_OF_DAY_MS: 999,
+    HTML_DOCTYPE: "<!doctype html",
+    HTML_TAG: "<html",
+  },
+  FILES: {
+    VEDOMOST_PREFIX: "vedomost_",
+    VEDOMOST_EXT: ".docx",
+    REGEX_UTF8_FILENAME: /filename\*=UTF-8''([^;]+)/i,
+    REGEX_FALLBACK_FILENAME: /filename="?([^"]+)"?/,
   },
   PREFIXES: {
     TEMP: "temp-",
@@ -162,8 +185,12 @@ export const APP_CONSTANTS = {
     NON_FIELD_ERRORS: "non_field_errors",
   },
   REPORT_FILTERS: {
-    ALLOWED_FACULTIES: [2, 3, 8, 13, 15],
-    ALLOWED_SPECIALTIES: [1, 2, 10],
+    ALLOWED_FACULTIES: import.meta.env.VITE_ALLOWED_FACULTIES
+      ? import.meta.env.VITE_ALLOWED_FACULTIES.split(",").map(Number)
+      : [],
+    ALLOWED_SPECIALTIES: import.meta.env.VITE_ALLOWED_SPECIALTIES
+      ? import.meta.env.VITE_ALLOWED_SPECIALTIES.split(",").map(Number)
+      : [],
   },
   ERROR_TRANSLATIONS: {
     "This field is required.": "Это поле обязательно для заполнения.",
@@ -218,6 +245,7 @@ export const APP_CONSTANTS = {
       ADD_MARK: "Добавить отметку",
       FULL_NAME: "ФИО",
       ABSENT: "Отсутствует",
+      ABSENT_SHORT: "отсутств.",
       CANCEL: "Отмена",
       SAVE: "Сохранить",
       ADD: "Добавить",
@@ -250,6 +278,8 @@ export const APP_CONSTANTS = {
       LEGEND: "",
       CURRENT_MARK: "Текущая отметка",
       RETAKEN_MARK: "Пересданная отметка",
+      DOWNLOAD_VEDOMOST_TITLE: "Скачать ведомость",
+      LESSON_NUMBER_SUFFIX: "пара",
     },
     PLACEHOLDERS: {
       SELECT_GROUP: "-- Выберите группу --",
@@ -278,10 +308,13 @@ export const APP_CONSTANTS = {
         'Выберите параметры и нажмите "Сформировать отчет"',
       CONFIRM_DELETE: "Вы уверены, что хотите удалить эту запись?",
       NO_DATA: "Нет данных для отображения",
+      DBL_CLICK_HINT:
+        "Быстро нажмите два раза чтобы увидеть расширенную информацию",
     },
     ERRORS: {
       LOGIN: "Ошибка авторизации. Попробуйте еще раз.",
       SAVE_DATA: "Ошибка при сохранении данных",
+      SAVE_CONSOLE: "Ошибка при сохранении:",
       ADD_LESSON: "Ошибка при добавлении занятия",
       LESSON_EXISTS: "Учебное занятие на эту дату и пару уже существует.",
       DOWNLOAD_VEDOMOST:

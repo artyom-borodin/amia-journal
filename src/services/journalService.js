@@ -35,7 +35,7 @@ export class JournalService {
 
   static async syncMarks(payload) {
     const res = await apiClient.post(
-      `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}sync-marks/`,
+      `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}${APP_CONSTANTS.ENDPOINTS_SUFFIX.SYNC_MARKS}`,
       payload,
     );
     return res.data;
@@ -119,21 +119,26 @@ export class JournalService {
 
   static async downloadVedomost(lessonId) {
     const response = await apiClient.get(
-      `/api/lessons/${lessonId}/download-vedomost/`,
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}${APP_CONSTANTS.ENDPOINTS_SUFFIX.DOWNLOAD_VEDOMOST}`,
       {
-        responseType: "blob",
+        responseType: APP_CONSTANTS.NETWORK.RESPONSE_TYPE_BLOB,
       },
     );
 
-    let fileName = `vedomost_${lessonId}.docx`;
-    const contentDisposition = response.headers["content-disposition"];
+    let fileName = `${APP_CONSTANTS.FILES.VEDOMOST_PREFIX}${lessonId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`;
+    const contentDisposition =
+      response.headers[APP_CONSTANTS.NETWORK.HEADER_CONTENT_DISPOSITION];
 
     if (contentDisposition) {
-      const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+      const utf8Match = contentDisposition.match(
+        APP_CONSTANTS.FILES.REGEX_UTF8_FILENAME,
+      );
       if (utf8Match && utf8Match[1]) {
         fileName = decodeURIComponent(utf8Match[1]);
       } else {
-        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        const match = contentDisposition.match(
+          APP_CONSTANTS.FILES.REGEX_FALLBACK_FILENAME,
+        );
         if (match && match[1]) fileName = match[1];
       }
     }

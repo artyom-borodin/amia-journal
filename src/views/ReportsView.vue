@@ -27,52 +27,33 @@
         />
       </div>
 
-      <template v-if="activeTab === APP_CONSTANTS.REPORT_TABS.PERFORMANCE">
-        <PerformanceFilters
-          :dicts="dictionaryStore.dicts"
-          :semesters="reportStore.semesters"
-          :is-loading="reportStore.isLoading"
-          @generate="handleGeneratePerformance"
-        />
-        <div
-          v-if="reportStore.performanceData.length > 0"
-          class="view-container mt-3"
-        >
-          <PerformanceTable :data="reportStore.performanceData" />
-        </div>
-        <div v-else-if="!reportStore.isLoading" class="empty-state mt-3">
-          <i class="pi pi-filter empty-state-icon"></i>
-          <span>{{ APP_CONSTANTS.UI.MESSAGES.SELECT_REPORT_FILTERS }}</span>
-        </div>
-      </template>
+      <ReportFilters
+        :mode="activeTab"
+        :dicts="dictionaryStore.dicts"
+        :semesters="reportStore.semesters"
+        :is-loading="reportStore.isLoading"
+        @generate="handleGenerate"
+      />
 
-      <template v-if="activeTab === APP_CONSTANTS.REPORT_TABS.ATTENDANCE">
-        <AttendanceFilters
-          :dicts="dictionaryStore.dicts"
-          :semesters="reportStore.semesters"
-          :is-loading="reportStore.isLoading"
-          @generate="handleGenerateAttendance"
+      <div v-if="currentData.length > 0" class="view-container mt-3">
+        <PerformanceTable
+          v-if="activeTab === APP_CONSTANTS.REPORT_TABS.PERFORMANCE"
+          :data="reportStore.performanceData"
         />
-        <div
-          v-if="reportStore.attendanceData.length > 0"
-          class="view-container mt-3"
-        >
-          <AttendanceTable :data="reportStore.attendanceData" />
-        </div>
-        <div v-else-if="!reportStore.isLoading" class="empty-state mt-3">
-          <i class="pi pi-filter empty-state-icon"></i>
-          <span>{{ APP_CONSTANTS.UI.MESSAGES.SELECT_REPORT_FILTERS }}</span>
-        </div>
-      </template>
+        <AttendanceTable v-else :data="reportStore.attendanceData" />
+      </div>
+      <div v-else-if="!reportStore.isLoading" class="empty-state mt-3">
+        <i class="pi pi-filter empty-state-icon"></i>
+        <span>{{ APP_CONSTANTS.UI.MESSAGES.SELECT_REPORT_FILTERS }}</span>
+      </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import NavBar from "../components/NavBar.vue";
-import PerformanceFilters from "../components/reports/PerformanceFilters.vue";
-import AttendanceFilters from "../components/reports/AttendanceFilters.vue";
+import ReportFilters from "../components/reports/ReportFilters.vue";
 import PerformanceTable from "../components/reports/PerformanceTable.vue";
 import AttendanceTable from "../components/reports/AttendanceTable.vue";
 import { useDictionaryStore } from "../store/dictionaryStore";
@@ -84,6 +65,12 @@ const reportStore = useReportStore();
 
 const activeTab = ref(APP_CONSTANTS.REPORT_TABS.PERFORMANCE);
 
+const currentData = computed(() =>
+  activeTab.value === APP_CONSTANTS.REPORT_TABS.PERFORMANCE
+    ? reportStore.performanceData
+    : reportStore.attendanceData,
+);
+
 onMounted(async () => {
   await reportStore.fetchDictionaries();
 });
@@ -93,11 +80,11 @@ const switchTab = (tab) => {
   reportStore.clearReports();
 };
 
-const handleGeneratePerformance = async (filters) => {
-  await reportStore.generatePerformanceReport(filters);
-};
-
-const handleGenerateAttendance = async (filters) => {
-  await reportStore.generateAttendanceReport(filters);
+const handleGenerate = async (filters) => {
+  if (activeTab.value === APP_CONSTANTS.REPORT_TABS.PERFORMANCE) {
+    await reportStore.generatePerformanceReport(filters);
+  } else {
+    await reportStore.generateAttendanceReport(filters);
+  }
 };
 </script>

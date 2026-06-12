@@ -7,14 +7,14 @@ import { storageUtils } from "../utils/storageUtils";
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "",
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": APP_CONSTANTS.NETWORK.CONTENT_TYPE_JSON,
   },
 });
 
 apiClient.interceptors.request.use((config) => {
   const token = storageUtils.getItem(APP_CONSTANTS.STORAGE_KEYS.TOKEN);
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `${APP_CONSTANTS.NETWORK.AUTH_PREFIX}${token}`;
   }
   return config;
 });

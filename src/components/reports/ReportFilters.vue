@@ -20,9 +20,9 @@
                 }}
                 - {{ slotProps.value.semester }}
               </span>
-              <span v-else>
-                {{ APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SEMESTER }}
-              </span>
+              <span v-else>{{
+                APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SEMESTER
+              }}</span>
             </template>
             <template #option="slotProps">
               {{
@@ -102,18 +102,64 @@
           />
         </div>
 
-        <div class="field">
-          <label>{{ APP_CONSTANTS.UI.LABELS.ATTENDANCE_REASONS }}</label>
-          <MultiSelect
-            v-model="filters.reason"
-            :options="dicts.attendanceReasons"
-            optionLabel="name"
-            optionValue="id"
-            display="chip"
-            :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_REASON"
-            class="w-full"
-          />
-        </div>
+        <!-- Поля только для вкладки "Успеваемость" -->
+        <template v-if="mode === APP_CONSTANTS.REPORT_TABS.PERFORMANCE">
+          <div class="field">
+            <label>{{ APP_CONSTANTS.UI.LABELS.SUBJECT }}</label>
+            <MultiSelect
+              v-model="filters.subject"
+              :options="dicts.subjects"
+              optionLabel="subject_name"
+              optionValue="id"
+              filter
+              display="chip"
+              :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_SUBJECT"
+              class="w-full"
+            />
+          </div>
+
+          <div class="field">
+            <label>{{ APP_CONSTANTS.UI.LABELS.LESSON_TYPE }}</label>
+            <MultiSelect
+              v-model="filters.lessonType"
+              :options="dicts.lessonTypes"
+              optionLabel="name"
+              optionValue="id"
+              display="chip"
+              :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_LESSON_TYPE"
+              class="w-full"
+            />
+          </div>
+
+          <div class="field">
+            <label>{{ APP_CONSTANTS.UI.LABELS.MARK_VALUE }}</label>
+            <MultiSelect
+              v-model="filters.markValue"
+              :options="dicts.markValues"
+              optionLabel="value"
+              optionValue="id"
+              display="chip"
+              :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_MARK"
+              class="w-full"
+            />
+          </div>
+        </template>
+
+        <!-- Поля только для вкладки "Посещаемость" -->
+        <template v-if="mode === APP_CONSTANTS.REPORT_TABS.ATTENDANCE">
+          <div class="field">
+            <label>{{ APP_CONSTANTS.UI.LABELS.ATTENDANCE_REASONS }}</label>
+            <MultiSelect
+              v-model="filters.reason"
+              :options="dicts.attendanceReasons"
+              optionLabel="name"
+              optionValue="id"
+              display="chip"
+              :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_REASON"
+              class="w-full"
+            />
+          </div>
+        </template>
 
         <div class="filter-actions">
           <Button
@@ -137,6 +183,11 @@ import { useStudentFilter } from "../../composables/useStudentFilter";
 import { useDictionaryStore } from "../../store/dictionaryStore";
 
 const props = defineProps({
+  mode: {
+    type: String,
+    required: true,
+    validator: (v) => Object.values(APP_CONSTANTS.REPORT_TABS).includes(v),
+  },
   dicts: Object,
   semesters: Array,
   isLoading: Boolean,
@@ -154,19 +205,43 @@ const filters = reactive({
   specialty: [],
   group: [],
   student: [],
+  // performance
+  subject: [],
+  lessonType: [],
+  markValue: [],
+  // attendance
   reason: [],
 });
 
+const ARRAY_FIELDS_BY_MODE = {
+  [APP_CONSTANTS.REPORT_TABS.PERFORMANCE]: [
+    "faculty",
+    "specialty",
+    "group",
+    "student",
+    "subject",
+    "lessonType",
+    "markValue",
+  ],
+  [APP_CONSTANTS.REPORT_TABS.ATTENDANCE]: [
+    "faculty",
+    "specialty",
+    "group",
+    "student",
+    "reason",
+  ],
+};
+
 const filteredFaculties = computed(() => {
-  return props.dicts.faculties.filter((f) =>
-    APP_CONSTANTS.REPORT_FILTERS.ALLOWED_FACULTIES.includes(f.id),
-  );
+  const allowed = APP_CONSTANTS.REPORT_FILTERS.ALLOWED_FACULTIES;
+  if (!allowed.length) return props.dicts.faculties;
+  return props.dicts.faculties.filter((f) => allowed.includes(f.id));
 });
 
 const filteredSpecialties = computed(() => {
-  return props.dicts.specialties.filter((s) =>
-    APP_CONSTANTS.REPORT_FILTERS.ALLOWED_SPECIALTIES.includes(s.id),
-  );
+  const allowed = APP_CONSTANTS.REPORT_FILTERS.ALLOWED_SPECIALTIES;
+  if (!allowed.length) return props.dicts.specialties;
+  return props.dicts.specialties.filter((s) => allowed.includes(s.id));
 });
 
 const { students, isStudentsLoading } = useStudentFilter(filters);
@@ -197,12 +272,15 @@ const onSubmit = () => {
     ];
   }
 
-  ["faculty", "specialty", "group", "student", "reason"].forEach((key) => {
+  const arrayFields = ARRAY_FIELDS_BY_MODE[props.mode] ?? [];
+  arrayFields.forEach((key) => {
     if (
       Array.isArray(formattedFilters[key]) &&
       formattedFilters[key].length > 0
     ) {
-      formattedFilters[key] = formattedFilters[key].join(",");
+      formattedFilters[key] = formattedFilters[key].join(
+        APP_CONSTANTS.FORMATTING.COMMA,
+      );
     } else {
       formattedFilters[key] = null;
     }

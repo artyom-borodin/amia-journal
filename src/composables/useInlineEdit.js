@@ -40,7 +40,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
         if (inputElement) {
           inputElement.focus();
         }
-      }, 50);
+      }, APP_CONSTANTS.TIMERS.INLINE_EDIT_FOCUS);
     }, APP_CONSTANTS.TIMERS.INLINE_EDIT_DELAY);
   };
 
@@ -119,7 +119,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
             ]?.reason,
         });
       } catch (err) {
-        console.error("Ошибка при сохранении:", err);
+        console.error(APP_CONSTANTS.UI.ERRORS.SAVE_CONSOLE, err);
       } finally {
         isSavingInline.value = false;
         editingCell.value = null;
@@ -157,7 +157,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       if (!isSavingInline.value) {
         saveInlineMark(person, lesson);
       }
-    }, 50);
+    }, APP_CONSTANTS.TIMERS.INLINE_EDIT_SAVE);
   };
 
   const closeInlineEdit = () => {
@@ -167,7 +167,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
       if (!isSavingInline.value) {
         editingCell.value = null;
       }
-    }, 300);
+    }, APP_CONSTANTS.TIMERS.INLINE_EDIT_CLOSE);
   };
 
   return {

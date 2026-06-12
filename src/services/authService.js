@@ -15,7 +15,7 @@ export class AuthService {
 
     const userResponse = await apiClient.get(APP_CONSTANTS.API_ENDPOINTS.ME, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `${APP_CONSTANTS.NETWORK.AUTH_PREFIX}${token}`,
       },
     });
 

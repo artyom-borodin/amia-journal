@@ -77,7 +77,7 @@
                   rounded
                   size="small"
                   class="mt-1 p-0 w-2rem h-2rem text-primary"
-                  title="Скачать ведомость"
+                  :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_VEDOMOST_TITLE"
                   @click.stop="downloadVedomost(lesson.id)"
                 />
               </div>
@@ -122,7 +122,7 @@
               'is-absent':
                 journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
             }"
-            title="Быстро нажмите два раза чтобы увидеть расширенную информацию"
+            :title="APP_CONSTANTS.UI.MESSAGES.DBL_CLICK_HINT"
             @click="handleCellClick(data, lesson)"
             @dblclick="openCellModal(data, lesson)"
           >
@@ -148,7 +148,7 @@
                 "
                 class="absent-label"
               >
-                отсутств.
+                {{ APP_CONSTANTS.UI.LABELS.ABSENT_SHORT }}
               </span>
               <div
                 v-if="
@@ -252,8 +252,18 @@ const getLessonTime = (id) => {
   const time = props.dictsMap.lessonTimes[id];
   if (!time) return "";
 
-  const start = time.start_time ? time.start_time.substring(0, 5) : "";
-  const end = time.end_time ? time.end_time.substring(0, 5) : "";
+  const start = time.start_time
+    ? time.start_time.substring(
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
+      )
+    : "";
+  const end = time.end_time
+    ? time.end_time.substring(
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
+        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
+      )
+    : "";
 
   return `${start} - ${end}`;
 };
@@ -275,7 +285,7 @@ const downloadVedomost = async (lessonId) => {
   try {
     await JournalService.downloadVedomost(lessonId);
   } catch (error) {
-    console.error("Ошибка при скачивании ведомости", error);
+    console.error(APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST, error);
     emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST);
   }
 };
