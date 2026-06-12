@@ -36,3 +36,8 @@ src/
 ├── utils/        # Вспомогательные функции
 └── views/        # Страницы
 ```
+
+## Team
+
+- **Frontend** — [Artyom Borodin](https://github.com/a-a-borodin)
+- **Backend** — [Evgeny Levenko](https://github.com/levenkoevgeny)
