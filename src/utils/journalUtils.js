@@ -81,6 +81,30 @@ export const buildAttendancesMap = (attendances) => {
   return aMap;
 };
 
+export const formatTimeShort = (timeStr) =>
+  (timeStr || "").slice(0, APP_CONSTANTS.RULES.TIME_SUBSTRING_END);
+
+export const formatLessonTimeDisplay = (timeObj) => {
+  if (!timeObj) return "";
+  const start = formatTimeShort(timeObj.start_time);
+  const end = formatTimeShort(timeObj.end_time);
+  return `${timeObj.number} ${APP_CONSTANTS.UI.LABELS.LESSON_NUMBER_SUFFIX} (${start} - ${end})`;
+};
+
+export const getPersonPayloads = (person) => {
+  const isCadet = person.personType === APP_CONSTANTS.STUDENT_TYPES.CADET;
+  return {
+    entityPayload: {
+      cadet: isCadet ? person.id : null,
+      student: !isCadet ? person.id : null,
+    },
+    idPayload: {
+      cadet_id: isCadet ? person.id : null,
+      student_id: !isCadet ? person.id : null,
+    },
+  };
+};
+
 export const sortGroupsByName = (groups) => {
   return [...groups].sort((a, b) =>
     a.group_name.localeCompare(b.group_name, undefined, { numeric: true }),

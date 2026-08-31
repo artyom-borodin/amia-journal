@@ -130,7 +130,7 @@ import { ref, watch } from "vue";
 import DatePicker from "primevue/datepicker";
 import { APP_CONSTANTS } from "../config/constants";
 import { toApiDate } from "../utils/dateUtils";
-import { getPersonFullName } from "../utils/journalUtils";
+import { getPersonFullName, formatLessonTimeDisplay } from "../utils/journalUtils";
 import { useAuthStore } from "../store/authStore";
 
 const props = defineProps({
@@ -152,22 +152,7 @@ const newLesson = ref({
   teachers: [],
 });
 
-const formatTimeDisplay = (timeObj) => {
-  if (!timeObj) return "";
-  const start = timeObj.start_time
-    ? timeObj.start_time.substring(
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
-      )
-    : "";
-  const end = timeObj.end_time
-    ? timeObj.end_time.substring(
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
-      )
-    : "";
-  return `${timeObj.number} ${APP_CONSTANTS.UI.LABELS.LESSON_NUMBER_SUFFIX} (${start} - ${end})`;
-};
+const formatTimeDisplay = (timeObj) => formatLessonTimeDisplay(timeObj);
 
 watch(
   () => props.visible,

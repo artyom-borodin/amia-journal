@@ -27,6 +27,12 @@ const routes = [
     component: () => import("../views/ReportsView.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: APP_CONSTANTS.ROUTES.ATTENDANCE,
+    name: APP_CONSTANTS.ROUTE_NAMES.ATTENDANCE,
+    component: () => import("../views/AttendanceView.vue"),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

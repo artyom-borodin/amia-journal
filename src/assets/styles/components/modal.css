@@ -6,6 +6,10 @@
   width: var(--size-modal-md);
 }
 
+.attendance-modal {
+  width: var(--size-modal-md);
+}
+
 .error-modal {
   width: var(--size-modal-sm);
 }

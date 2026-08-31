@@ -1,0 +1,82 @@
+.attendance-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: var(--space-4);
+  gap: var(--space-4);
+}
+
+.attendance-filters {
+  flex-wrap: wrap;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--p-surface-card);
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+  box-shadow: var(--shadow-border-br);
+}
+
+.attendance-table thead th {
+  background: var(--p-surface-100);
+  font-weight: var(--fw-semibold);
+  box-shadow: var(--shadow-border-br);
+}
+
+.attendance-table .name-col {
+  text-align: left;
+  min-width: 220px;
+  white-space: nowrap;
+  background: var(--p-surface-50);
+  box-shadow: var(--shadow-border-br);
+}
+
+.attendance-table .date-header-cell {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--p-surface-900);
+}
+
+.attendance-table .pair-header-cell {
+  min-width: 100px;
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
+.attendance-table .pair-header-cell small {
+  display: block;
+  font-weight: normal;
+  font-size: var(--fs-xs);
+  color: var(--p-surface-700);
+  white-space: nowrap;
+}
+
+.attendance-table .pair-cell {
+  cursor: pointer;
+  min-width: 100px;
+  font-size: var(--fs-sm);
+  transition: background-color 0.15s;
+}
+
+.attendance-table .pair-cell:hover {
+  background: var(--p-surface-200);
+}
+
+.attendance-table .pair-cell.is-marked {
+  background: var(--p-red-100);
+  color: var(--p-red-700);
+  font-weight: var(--fw-semibold);
+}
+
+.attendance-preview {
+  background: var(--p-surface-100);
+  border-radius: var(--p-border-radius);
+  padding: var(--space-3) var(--space-4);
+}

@@ -40,6 +40,12 @@ const dashboardCards = [
     icon: "pi pi-chart-bar",
     severity: "info",
   },
+  {
+    route: APP_CONSTANTS.ROUTES.ATTENDANCE,
+    label: APP_CONSTANTS.UI.LABELS.ATTENDANCE,
+    icon: "pi pi-calendar-times",
+    severity: "warning",
+  },
 ];
 
 const goTo = (route) => {

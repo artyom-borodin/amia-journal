@@ -4,12 +4,14 @@ export const APP_CONSTANTS = {
     DASHBOARD: "/",
     JOURNAL: "/journal",
     REPORTS: "/reports",
+    ATTENDANCE: "/attendance",
   },
   ROUTE_NAMES: {
     LOGIN: "Login",
     DASHBOARD: "Dashboard",
     JOURNAL: "Journal",
     REPORTS: "Reports",
+    ATTENDANCE: "Attendance",
   },
   API_ENDPOINTS: {
     TOKEN: "/api/token/",
@@ -39,6 +41,8 @@ export const APP_CONSTANTS = {
   ENDPOINTS_SUFFIX: {
     SYNC_MARKS: "sync-marks/",
     DOWNLOAD_VEDOMOST: "/download-vedomost/",
+    BULK: "bulk/",
+    BULK_DELETE: "bulk-delete/",
   },
   NETWORK: {
     AUTH_PREFIX: "Bearer ",
@@ -71,6 +75,7 @@ export const APP_CONSTANTS = {
     MIN_COLUMNS: 10,
     MIN_ROWS: 15,
     DEFAULT_PAGINATION_ROWS: 10,
+    MAX_ATTENDANCE_DAYS: 31,
   },
   TIMERS: {
     INLINE_EDIT_DELAY: 250,
@@ -141,6 +146,7 @@ export const APP_CONSTANTS = {
     PAD_LENGTH: 2,
   },
   RULES: {
+    MS_PER_DAY: 86400000,
     DATE_RANGE_LENGTH: 2,
     REGEX_MATCH_LENGTH: 2,
     DEFAULT_LESSON_NUMBER: 0,
@@ -218,6 +224,7 @@ export const APP_CONSTANTS = {
     PAGE_TITLES: {
       Journal: "Журнал",
       Reports: "Отчетность",
+      Attendance: "Посещаемость",
     },
     LABELS: {
       HOME: "Главная",
@@ -300,6 +307,17 @@ export const APP_CONSTANTS = {
     },
     MESSAGES: {
       SELECT_FILTERS: "Выберите группу и дисциплину",
+      SELECT_ATTENDANCE_FILTERS: "Выберите группу и дату",
+      ATTENDANCE_SCOPE: "Область применения",
+      SCOPE_PAIR: "Только эта пара",
+      SCOPE_PAIRS: "Диапазон пар этого дня",
+      SCOPE_DAYS: "Диапазон дней (все пары)",
+      PAIR_FROM: "С пары",
+      PAIR_TO: "По пару",
+      DAY_FROM: "С даты",
+      DAY_TO: "По дату",
+      AFFECTED_COUNT: "Будет затронуто записей:",
+      RANGE_TOO_LONG: "Максимальный период — 31 день. Выберите период покороче.",
       LOADING: "Загрузка данных...",
       SAVING: "Сохранение...",
       NO_MARKS: "Нет отметок",

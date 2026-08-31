@@ -202,7 +202,7 @@
 <script setup>
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
-import { getPersonFullName } from "../utils/journalUtils";
+import { getPersonFullName, formatTimeShort } from "../utils/journalUtils";
 import { useJournalStore } from "../store/journalStore";
 import { useInlineEdit } from "../composables/useInlineEdit";
 import { useJournalGrid } from "../composables/useJournalGrid";
@@ -252,20 +252,7 @@ const getLessonTime = (id) => {
   const time = props.dictsMap.lessonTimes[id];
   if (!time) return "";
 
-  const start = time.start_time
-    ? time.start_time.substring(
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
-      )
-    : "";
-  const end = time.end_time
-    ? time.end_time.substring(
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_START,
-        APP_CONSTANTS.RULES.TIME_SUBSTRING_END,
-      )
-    : "";
-
-  return `${start} - ${end}`;
+  return `${formatTimeShort(time.start_time)} - ${formatTimeShort(time.end_time)}`;
 };
 
 const getLessonType = (id) => props.dictsMap.lessonTypes[id]?.name || "";

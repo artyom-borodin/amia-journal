@@ -1,6 +1,7 @@
 import apiClient, { fetchAllPages } from "./api";
 import { APP_CONSTANTS } from "../config/constants";
 import { downloadBlob } from "../utils/fileUtils";
+import { getPersonPayloads } from "../utils/journalUtils";
 
 export class JournalService {
   static async getJournalData(groupId, subjectId) {
@@ -62,17 +63,7 @@ export class JournalService {
   }
 
   static _getPersonPayloads(person) {
-    const isCadet = person.personType === APP_CONSTANTS.STUDENT_TYPES.CADET;
-    return {
-      entityPayload: {
-        cadet: isCadet ? person.id : null,
-        student: !isCadet ? person.id : null,
-      },
-      idPayload: {
-        cadet_id: isCadet ? person.id : null,
-        student_id: !isCadet ? person.id : null,
-      },
-    };
+    return getPersonPayloads(person);
   }
 
   static async _handleAttendance(reason, personPayload, lesson, attendance) {
