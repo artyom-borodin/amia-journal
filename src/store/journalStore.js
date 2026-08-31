@@ -123,6 +123,10 @@ export const useJournalStore = defineStore("journal", () => {
     await JournalService.createLesson(lessonData);
   };
 
+  const updateLesson = async (lessonId, lessonData) => {
+    await JournalService.updateLesson(lessonId, lessonData);
+  };
+
   return {
     persons,
     lessons,
@@ -133,5 +137,6 @@ export const useJournalStore = defineStore("journal", () => {
     fetchGridData,
     saveCellData,
     addLesson,
+    updateLesson,
   };
 });

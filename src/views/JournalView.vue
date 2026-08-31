@@ -45,6 +45,7 @@
             :name-filter="nameFilter"
             @update:nameFilter="nameFilter = $event"
             @cell-click="openCellModal"
+            @edit-lesson="openEditLessonModal"
             @error="showError"
           />
         </div>
@@ -65,11 +66,13 @@
 
       <AddLessonModal
         :visible="showAddLessonModal"
+        :lesson="editingLesson"
         :dicts="dictionaryStore.dicts"
         :dicts-map="dictionaryStore.dictsMap"
-        :is-saving="isAddingLesson"
-        @update:visible="showAddLessonModal = $event"
+        :is-saving="isSavingLesson"
+        @update:visible="handleLessonsModalVisibility"
         @add="handleAddLesson"
+        @save="handleEditLesson"
       />
     </main>
 
@@ -103,9 +106,10 @@ const dateFilter = ref(null);
 const nameFilter = ref("");
 
 const showAddLessonModal = ref(false);
+const editingLesson = ref(null);
 const selectedCell = ref(null);
 const isSavingCell = ref(false);
-const isAddingLesson = ref(false);
+const isSavingLesson = ref(false);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
@@ -164,7 +168,7 @@ const handleSaveCell = async ({ reason, marks }) => {
 };
 
 const handleAddLesson = async (lessonData) => {
-  isAddingLesson.value = true;
+  isSavingLesson.value = true;
   try {
     await journalStore.addLesson({
       ...lessonData,
@@ -179,7 +183,36 @@ const handleAddLesson = async (lessonData) => {
       extractLessonErrorMessage(error, APP_CONSTANTS.UI.ERRORS.ADD_LESSON),
     );
   } finally {
-    isAddingLesson.value = false;
+    isSavingLesson.value = false;
+  }
+};
+
+const openEditLessonModal = (lesson) => {
+  editingLesson.value = lesson;
+  showAddLessonModal.value = true;
+};
+
+const handleLessonsModalVisibility = (visible) => {
+  showAddLessonModal.value = visible;
+  if (!visible) {
+    editingLesson.value = null;
+  }
+};
+
+const handleEditLesson = async (lessonData) => {
+  isSavingLesson.value = true;
+  try {
+    await journalStore.updateLesson(editingLesson.value.id, lessonData);
+    showAddLessonModal.value = false;
+    editingLesson.value = null;
+    await loadGridData(true);
+  } catch (error) {
+    console.error("Failed to edit lesson:", error);
+    showError(
+      extractLessonErrorMessage(error, APP_CONSTANTS.UI.ERRORS.EDIT_LESSON),
+    );
+  } finally {
+    isSavingLesson.value = false;
   }
 };
 

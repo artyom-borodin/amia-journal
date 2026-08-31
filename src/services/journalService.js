@@ -34,6 +34,14 @@ export class JournalService {
     return res.data;
   }
 
+  static async updateLesson(lessonId, payload) {
+    const res = await apiClient.patch(
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}/`,
+      payload,
+    );
+    return res.data;
+  }
+
   static async syncMarks(payload) {
     const res = await apiClient.post(
       `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}${APP_CONSTANTS.ENDPOINTS_SUFFIX.SYNC_MARKS}`,

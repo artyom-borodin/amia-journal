@@ -2,7 +2,11 @@
   <Dialog
     :visible="visible"
     modal
-    :header="APP_CONSTANTS.UI.LABELS.ADD_LESSON"
+    :header="
+      isEditMode
+        ? APP_CONSTANTS.UI.LABELS.EDIT_LESSON
+        : APP_CONSTANTS.UI.LABELS.ADD_LESSON
+    "
     class="add-lesson-modal"
     @update:visible="$emit('update:visible', $event)"
   >
@@ -116,7 +120,11 @@
         />
         <Button
           type="submit"
-          :label="APP_CONSTANTS.UI.LABELS.ADD"
+          :label="
+            isEditMode
+              ? APP_CONSTANTS.UI.LABELS.SAVE
+              : APP_CONSTANTS.UI.LABELS.ADD
+          "
           icon="pi pi-check"
           :loading="isSaving"
         />
@@ -126,7 +134,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import DatePicker from "primevue/datepicker";
 import { APP_CONSTANTS } from "../config/constants";
 import { toApiDate } from "../utils/dateUtils";
@@ -138,10 +146,13 @@ const props = defineProps({
   dicts: Object,
   dictsMap: Object,
   isSaving: Boolean,
+  lesson: Object,
 });
 
-const emit = defineEmits(["update:visible", "add"]);
+const emit = defineEmits(["update:visible", "add", "save"]);
 const authStore = useAuthStore();
+
+const isEditMode = computed(() => !!props.lesson);
 
 const newLesson = ref({
   date: null,
@@ -157,7 +168,20 @@ const formatTimeDisplay = (timeObj) => formatLessonTimeDisplay(timeObj);
 watch(
   () => props.visible,
   (newVal) => {
-    if (newVal) {
+    if (!newVal) return;
+
+    if (props.lesson) {
+      newLesson.value = {
+        date: props.lesson.date ? new Date(props.lesson.date) : null,
+        hours: props.lesson.hours || null,
+        lesson_time: props.lesson.lesson_time,
+        lesson_type: props.lesson.lesson_type,
+        topic: props.lesson.topic,
+        teachers: props.lesson.teachers
+          ? props.lesson.teachers.map((t) => t.id ?? t)
+          : [],
+      };
+    } else {
       newLesson.value = {
         date: null,
         hours: null,
@@ -171,10 +195,16 @@ watch(
 );
 
 const handleSubmit = () => {
-  emit("add", {
+  const payload = {
     ...newLesson.value,
     hours: newLesson.value.hours || 0,
     date: toApiDate(newLesson.value.date),
-  });
+  };
+
+  if (isEditMode.value) {
+    emit("save", payload);
+  } else {
+    emit("add", payload);
+  }
 };
 </script>

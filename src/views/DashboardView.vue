@@ -45,6 +45,7 @@ const dashboardCards = [
     label: APP_CONSTANTS.UI.LABELS.ATTENDANCE,
     icon: "pi pi-calendar-times",
     severity: "warning",
+    disabled: true,
   },
 ];
 

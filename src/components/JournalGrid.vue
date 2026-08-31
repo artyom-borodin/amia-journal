@@ -86,9 +86,19 @@
                     text
                     rounded
                     size="small"
+                    disabled
                     class="mt-1 p-0 w-2rem h-2rem text-primary"
                     :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_STUDENT_CARD_TITLE"
                     @click.stop="downloadStudentCard(lesson.id)"
+                  />
+                  <Button
+                    icon="pi pi-pencil"
+                    text
+                    rounded
+                    size="small"
+                    class="mt-1 p-0 w-2rem h-2rem text-primary"
+                    :title="APP_CONSTANTS.UI.LABELS.EDIT_LESSON_TITLE"
+                    @click.stop="$emit('edit-lesson', lesson)"
                   />
                 </div>
               </div>
@@ -229,7 +239,7 @@ const props = defineProps({
   nameFilter: String,
 });
 
-const emit = defineEmits(["cell-click", "update:nameFilter", "error"]);
+const emit = defineEmits(["cell-click", "update:nameFilter", "error", "edit-lesson"]);
 
 const journalStore = useJournalStore();
 

@@ -262,6 +262,8 @@ export const APP_CONSTANTS = {
       DELETE: "Удалить",
       ACTIONS: "Действия",
       ADD_LESSON: "Добавить учебное занятие",
+      EDIT_LESSON: "Редактировать учебное занятие",
+      EDIT_LESSON_TITLE: "Редактировать занятие",
       FILTERS: "Фильтры",
       CLEAR_FILTERS: "Очистить фильтры",
       ATTENDANCE_REASONS: "Причина пропуска",
@@ -337,6 +339,7 @@ export const APP_CONSTANTS = {
       SAVE_DATA: "Ошибка при сохранении данных",
       SAVE_CONSOLE: "Ошибка при сохранении:",
       ADD_LESSON: "Ошибка при добавлении занятия",
+      EDIT_LESSON: "Ошибка при сохранении занятия",
       LESSON_EXISTS: "Учебное занятие на эту дату и пару уже существует.",
       DOWNLOAD_VEDOMOST:
         "Не удалось скачать ведомость. Проверьте наличие шаблона на сервере.",
