@@ -189,6 +189,14 @@
   min-height: var(--size-subheader-min-h);
 }
 
+.lesson-header-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xs);
+}
+
 .lesson-time {
   font-size: var(--fs-xs);
   color: var(--p-surface-600);

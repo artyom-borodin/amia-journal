@@ -109,14 +109,30 @@ export class JournalService {
   }
 
   static async downloadVedomost(lessonId) {
+    return this._downloadLessonDoc(
+      lessonId,
+      APP_CONSTANTS.ENDPOINTS_SUFFIX.DOWNLOAD_VEDOMOST,
+      APP_CONSTANTS.FILES.VEDOMOST_PREFIX,
+    );
+  }
+
+  static async downloadStudentCard(lessonId) {
+    return this._downloadLessonDoc(
+      lessonId,
+      APP_CONSTANTS.ENDPOINTS_SUFFIX.DOWNLOAD_STUDENT_CARD,
+      APP_CONSTANTS.FILES.STUDENT_CARD_PREFIX,
+    );
+  }
+
+  static async _downloadLessonDoc(lessonId, endpointSuffix, fallbackPrefix) {
     const response = await apiClient.get(
-      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}${APP_CONSTANTS.ENDPOINTS_SUFFIX.DOWNLOAD_VEDOMOST}`,
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}${endpointSuffix}`,
       {
         responseType: APP_CONSTANTS.NETWORK.RESPONSE_TYPE_BLOB,
       },
     );
 
-    let fileName = `${APP_CONSTANTS.FILES.VEDOMOST_PREFIX}${lessonId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`;
+    let fileName = `${fallbackPrefix}${lessonId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`;
     const contentDisposition =
       response.headers[APP_CONSTANTS.NETWORK.HEADER_CONTENT_DISPOSITION];
 

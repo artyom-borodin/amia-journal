@@ -71,15 +71,26 @@
                   :title="getLessonTeachers(lesson.teachers)"
                   >{{ getLessonTeachers(lesson.teachers) }}</span
                 >
-                <Button
-                  icon="pi pi-file-word"
-                  text
-                  rounded
-                  size="small"
-                  class="mt-1 p-0 w-2rem h-2rem text-primary"
-                  :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_VEDOMOST_TITLE"
-                  @click.stop="downloadVedomost(lesson.id)"
-                />
+                <div class="lesson-header-actions">
+                  <Button
+                    icon="pi pi-file-word"
+                    text
+                    rounded
+                    size="small"
+                    class="mt-1 p-0 w-2rem h-2rem text-primary"
+                    :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_VEDOMOST_TITLE"
+                    @click.stop="downloadVedomost(lesson.id)"
+                  />
+                  <Button
+                    icon="pi pi-id-card"
+                    text
+                    rounded
+                    size="small"
+                    class="mt-1 p-0 w-2rem h-2rem text-primary"
+                    :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_STUDENT_CARD_TITLE"
+                    @click.stop="downloadStudentCard(lesson.id)"
+                  />
+                </div>
               </div>
             </template>
           </Column>
@@ -274,6 +285,15 @@ const downloadVedomost = async (lessonId) => {
   } catch (error) {
     console.error(APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST, error);
     emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST);
+  }
+};
+
+const downloadStudentCard = async (lessonId) => {
+  try {
+    await JournalService.downloadStudentCard(lessonId);
+  } catch (error) {
+    console.error(APP_CONSTANTS.UI.ERRORS.DOWNLOAD_STUDENT_CARD, error);
+    emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_STUDENT_CARD);
   }
 };
 </script>
