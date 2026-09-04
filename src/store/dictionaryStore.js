@@ -31,18 +31,25 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   }));
 
   const isLoading = ref(false);
+  let inflight = null;
 
   const fetchDictionaries = async (force = false) => {
     if (!force && dicts.value.groups.length > 0) return;
+    if (inflight) return inflight;
 
     isLoading.value = true;
-    try {
-      dicts.value = await DictionaryService.getDictionaries();
-    } catch (error) {
-      console.error("Failed to fetch dictionaries:", error);
-    } finally {
-      isLoading.value = false;
-    }
+    inflight = DictionaryService.getDictionaries()
+      .then((data) => {
+        dicts.value = data;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dictionaries:", error);
+      })
+      .finally(() => {
+        isLoading.value = false;
+        inflight = null;
+      });
+    return inflight;
   };
 
   return {

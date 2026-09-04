@@ -33,6 +33,8 @@
   --shadow-border-r: inset -1px 0 0 var(--p-surface-200);
   --shadow-border-br: inset -1px -1px 0 var(--p-surface-200);
 
+  --table-border-color: var(--p-surface-300);
+
   /* ─── Component size tokens ─────────────────────────────────────────── */
   --size-login-card: clamp(20rem, 90vw, 28rem);
   --size-modal-sm: clamp(20rem, 90vw, 25rem);
@@ -67,6 +69,7 @@
 
   /* ─── Opacity ────────────────────────────────────────────────────────── */
   --opacity-muted: 0.9;
+  --opacity-disabled: 0.55;
 
   /* ─── Overlays ───────────────────────────────────────────────────────── */
   --color-overlay-light: rgba(255, 255, 255, 0.1);

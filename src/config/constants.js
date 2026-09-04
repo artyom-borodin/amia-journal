@@ -37,6 +37,7 @@ export const APP_CONSTANTS = {
     YEARS: "/api/year/",
     REPORTS_PERFORMANCE: "/api/reports/performance/",
     REPORTS_ATTENDANCE: "/api/reports/attendance/",
+    ACADEMIC_CARD: "/api/academic-card/download/",
   },
   ENDPOINTS_SUFFIX: {
     SYNC_MARKS: "sync-marks/",
@@ -168,7 +169,9 @@ export const APP_CONSTANTS = {
   FILES: {
     VEDOMOST_PREFIX: "vedomost_",
     STUDENT_CARD_PREFIX: "vypiska_iz_uchebnoy_kartochki_",
+    ACADEMIC_CARD_PREFIX: "vypiska_",
     VEDOMOST_EXT: ".docx",
+    ACADEMIC_CARD_EXT: ".xlsx",
     REGEX_UTF8_FILENAME: /filename\*=UTF-8''([^;]+)/i,
     REGEX_FALLBACK_FILENAME: /filename="?([^"]+)"?/,
   },

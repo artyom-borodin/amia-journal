@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { ReportService } from "../services/reportService";
 import { useDictionaryStore } from "./dictionaryStore";
+import { useLatestRequest } from "../composables/useLatestRequest";
 
 export const useReportStore = defineStore("report", () => {
   const dictionaryStore = useDictionaryStore();
@@ -10,6 +11,8 @@ export const useReportStore = defineStore("report", () => {
   const performanceData = ref([]);
   const attendanceData = ref([]);
   const isLoading = ref(false);
+
+  const reportRequest = useLatestRequest();
 
   const fetchDictionaries = async () => {
     await dictionaryStore.fetchDictionaries();
@@ -21,9 +24,12 @@ export const useReportStore = defineStore("report", () => {
   };
 
   const generatePerformanceReport = async (filters) => {
+    const mySeq = reportRequest.begin();
     isLoading.value = true;
     try {
-      performanceData.value = await ReportService.getPerformanceReport(filters);
+      const data = await ReportService.getPerformanceReport(filters);
+      if (!reportRequest.isLatest(mySeq)) return;
+      performanceData.value = data;
     } catch (error) {
       console.error("Failed to fetch performance report:", error);
       throw error;
@@ -33,9 +39,12 @@ export const useReportStore = defineStore("report", () => {
   };
 
   const generateAttendanceReport = async (filters) => {
+    const mySeq = reportRequest.begin();
     isLoading.value = true;
     try {
-      attendanceData.value = await ReportService.getAttendanceReport(filters);
+      const data = await ReportService.getAttendanceReport(filters);
+      if (!reportRequest.isLatest(mySeq)) return;
+      attendanceData.value = data;
     } catch (error) {
       console.error("Failed to fetch attendance report:", error);
       throw error;

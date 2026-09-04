@@ -79,17 +79,8 @@
                     size="small"
                     class="mt-1 p-0 w-2rem h-2rem text-primary"
                     :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_VEDOMOST_TITLE"
+                    :loading="downloadingVedomostIds.has(lesson.id)"
                     @click.stop="downloadVedomost(lesson.id)"
-                  />
-                  <Button
-                    icon="pi pi-id-card"
-                    text
-                    rounded
-                    size="small"
-                    disabled
-                    class="mt-1 p-0 w-2rem h-2rem text-primary"
-                    :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_STUDENT_CARD_TITLE"
-                    @click.stop="downloadStudentCard(lesson.id)"
                   />
                   <Button
                     icon="pi pi-pencil"
@@ -124,7 +115,18 @@
       <Column field="fullName" frozen alignFrozen="left" class="fio-column">
         <template #body="{ data }">
           <template v-if="!data.isEmptyRow">
-            {{ getPersonFullName(data) }}
+            <div class="flex-row align-center justify-between gap-2">
+              <span class="flex-1 white-space-nowrap overflow-hidden text-overflow-ellipsis">{{ getPersonFullName(data) }}</span>
+              <Button
+                icon="pi pi-id-card"
+                text
+                rounded
+                size="small"
+                class="p-0 w-2rem h-2rem text-primary flex-shrink-0"
+                :title="APP_CONSTANTS.UI.LABELS.DOWNLOAD_STUDENT_CARD_TITLE"
+                disabled
+              />
+            </div>
           </template>
           <template v-else> &nbsp; </template>
         </template>
@@ -221,6 +223,7 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
 import { getPersonFullName, formatTimeShort } from "../utils/journalUtils";
@@ -290,11 +293,15 @@ const getLessonTeachers = (teacherIds) => {
 };
 
 const downloadVedomost = async (lessonId) => {
+  if (downloadingVedomostIds.value.has(lessonId)) return;
+  downloadingVedomostIds.value.add(lessonId);
   try {
     await JournalService.downloadVedomost(lessonId);
   } catch (error) {
     console.error(APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST, error);
     emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST);
+  } finally {
+    downloadingVedomostIds.value.delete(lessonId);
   }
 };
 
@@ -306,4 +313,6 @@ const downloadStudentCard = async (lessonId) => {
     emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_STUDENT_CARD);
   }
 };
+
+const downloadingVedomostIds = ref(new Set());
 </script>

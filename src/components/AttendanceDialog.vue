@@ -4,6 +4,9 @@
     modal
     :header="headerTitle"
     class="attendance-modal"
+    :closable="!isSaving"
+    :closeOnEscape="!isSaving"
+    :dismissableMask="!isSaving"
     @update:visible="$emit('update:visible', $event)"
   >
     <form @submit.prevent="handleSave" class="form-layout">
@@ -132,7 +135,7 @@
           type="submit"
           :label="APP_CONSTANTS.UI.LABELS.SAVE"
           icon="pi pi-check"
-          :disabled="!formData.reason"
+          :disabled="!formData.reason || isSaving"
           :loading="isSaving"
         />
       </div>
@@ -242,6 +245,7 @@ const affectedCount = computed(() => {
 });
 
 const handleSave = () => {
+  if (props.isSaving) return;
   emit("save", {
     reason: formData.reason,
     ...effectiveRange.value,
@@ -249,6 +253,7 @@ const handleSave = () => {
 };
 
 const handleRemove = () => {
+  if (props.isSaving) return;
   emit("remove", effectiveRange.value);
 };
 </script>

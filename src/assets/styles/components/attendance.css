@@ -13,7 +13,8 @@
 
 .attendance-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: var(--p-surface-card);
 }
 
@@ -21,13 +22,23 @@
 .attendance-table td {
   padding: var(--space-2) var(--space-3);
   text-align: center;
-  box-shadow: var(--shadow-border-br);
+  border: 0 solid var(--table-border-color);
+  border-width: 0 1px 1px 0;
+  background-clip: padding-box;
+}
+
+.attendance-table thead tr:first-child th {
+  border-top-width: 1px;
+}
+
+.attendance-table th:first-child,
+.attendance-table td:first-child {
+  border-left-width: 1px;
 }
 
 .attendance-table thead th {
   background: var(--p-surface-100);
   font-weight: var(--fw-semibold);
-  box-shadow: var(--shadow-border-br);
 }
 
 .attendance-table .name-col {
@@ -35,7 +46,6 @@
   min-width: 220px;
   white-space: nowrap;
   background: var(--p-surface-50);
-  box-shadow: var(--shadow-border-br);
 }
 
 .attendance-table .date-header-cell {

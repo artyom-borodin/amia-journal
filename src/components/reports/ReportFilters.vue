@@ -167,6 +167,7 @@
             :label="APP_CONSTANTS.UI.LABELS.GENERATE_REPORT"
             icon="pi pi-table"
             :loading="isLoading"
+            :disabled="isLoading"
             class="w-full"
           />
         </div>
@@ -260,6 +261,7 @@ const onSemesterChange = () => {
 };
 
 const onSubmit = () => {
+  if (props.isLoading) return;
   const formattedFilters = { ...filters };
 
   if (

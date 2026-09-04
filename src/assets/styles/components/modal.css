@@ -34,6 +34,10 @@
   margin-top: var(--space-3);
 }
 
+.p-dialog .p-button:disabled {
+  opacity: var(--opacity-disabled);
+}
+
 .marks-header {
   display: flex;
   justify-content: space-between;

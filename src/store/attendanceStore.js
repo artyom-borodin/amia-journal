@@ -6,6 +6,7 @@ import { useDictionaryStore } from "./dictionaryStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { buildAttendancesMap, generateCellKey, getPersonPayloads } from "../utils/journalUtils";
 import { toApiDate } from "../utils/dateUtils";
+import { useLatestRequest } from "../composables/useLatestRequest";
 
 export const useAttendanceStore = defineStore("attendance", () => {
   const dictionaryStore = useDictionaryStore();
@@ -14,8 +15,12 @@ export const useAttendanceStore = defineStore("attendance", () => {
   const attendancesMap = ref({});
   const isLoading = ref(false);
 
+  const attendanceRequest = useLatestRequest();
+
   const fetchAttendanceData = async (groupId, dateFrom, dateTo) => {
     if (!groupId || !dateFrom || !dateTo) return;
+
+    const mySeq = attendanceRequest.begin();
 
     isLoading.value = true;
     try {
@@ -23,6 +28,8 @@ export const useAttendanceStore = defineStore("attendance", () => {
         PersonService.getPersonsByGroup(groupId),
         AttendanceService.getAttendances({ groupId, dateFrom, dateTo }),
       ]);
+
+      if (!attendanceRequest.isLatest(mySeq)) return;
 
       persons.value = personsData;
       attendancesMap.value = buildAttendancesMap(attendances);

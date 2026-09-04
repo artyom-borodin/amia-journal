@@ -147,6 +147,7 @@ const openDialog = ({ person, lessonTime, date }) => {
 };
 
 const applyAttendanceAction = (action, payload) => {
+  if (isSaving.value) return;
   isSaving.value = true;
   attendanceStore[action]({
     person: dialogPerson.value,

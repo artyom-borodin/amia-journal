@@ -4,6 +4,9 @@
     modal
     :header="headerTitle"
     class="cell-modal"
+    :closable="!isSaving"
+    :closeOnEscape="!isSaving"
+    :dismissableMask="!isSaving"
     @update:visible="$emit('update:visible', $event)"
   >
     <form @submit.prevent="handleSave" class="form-layout">
@@ -93,6 +96,7 @@
           :label="APP_CONSTANTS.UI.LABELS.SAVE"
           icon="pi pi-check"
           :loading="isSaving"
+          :disabled="isSaving"
         />
       </div>
     </form>
@@ -152,6 +156,7 @@ const removeMark = (index) => {
 };
 
 const handleSave = () => {
+  if (props.isSaving) return;
   emit("save", {
     reason: formData.value.reason,
     marks: formData.value.marks,

@@ -8,6 +8,9 @@
         : APP_CONSTANTS.UI.LABELS.ADD_LESSON
     "
     class="add-lesson-modal"
+    :closable="!isSaving"
+    :closeOnEscape="!isSaving"
+    :dismissableMask="!isSaving"
     @update:visible="$emit('update:visible', $event)"
   >
     <form @submit.prevent="handleSubmit" class="form-layout">
@@ -127,6 +130,7 @@
           "
           icon="pi pi-check"
           :loading="isSaving"
+          :disabled="isSaving"
         />
       </div>
     </form>
@@ -182,19 +186,25 @@ watch(
           : [],
       };
     } else {
+      const meId = authStore.user?.id;
+      const selfTeacher = (props.dicts.teachers || []).find(
+        (t) => meId != null && String(t.id) === String(meId),
+      );
       newLesson.value = {
-        date: null,
+        date: new Date(),
         hours: null,
         lesson_time: null,
         lesson_type: null,
         topic: null,
-        teachers: authStore.user?.id ? [authStore.user.id] : [],
+        teachers: selfTeacher ? [selfTeacher.id] : [],
       };
     }
   },
 );
 
 const handleSubmit = () => {
+  if (props.isSaving) return;
+
   const payload = {
     ...newLesson.value,
     hours: newLesson.value.hours || 0,

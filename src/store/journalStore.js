@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { JournalService } from "../services/journalService";
 import { PersonService } from "../services/personService";
 import { useDictionaryStore } from "./dictionaryStore";
+import { useLatestRequest } from "../composables/useLatestRequest";
 import { APP_CONSTANTS } from "../config/constants";
 import {
   sortLessons,
@@ -21,8 +22,12 @@ export const useJournalStore = defineStore("journal", () => {
   const gridMatrix = ref({});
   const isLoading = ref(false);
 
+  const gridRequest = useLatestRequest();
+
   const fetchGridData = async (groupId, subjectId, silent = false) => {
     if (!groupId || !subjectId) return;
+
+    const mySeq = gridRequest.begin();
 
     if (!silent) {
       isLoading.value = true;
@@ -33,6 +38,8 @@ export const useJournalStore = defineStore("journal", () => {
         PersonService.getPersonsByGroup(groupId),
         JournalService.getJournalData(groupId, subjectId),
       ]);
+
+      if (!gridRequest.isLatest(mySeq)) return;
 
       persons.value = personsData;
       lessons.value = sortLessons(

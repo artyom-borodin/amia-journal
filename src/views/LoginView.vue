@@ -36,6 +36,7 @@
             type="submit"
             :label="APP_CONSTANTS.UI.LABELS.LOGIN_BTN"
             :loading="isLoading"
+            :disabled="isLoading"
             class="w-full mt-3"
           />
         </form>
@@ -59,6 +60,7 @@ const isLoading = ref(false);
 const errorMessage = ref("");
 
 const handleLogin = async () => {
+  if (isLoading.value) return;
   isLoading.value = true;
   errorMessage.value = "";
   try {

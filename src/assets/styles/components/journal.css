@@ -114,8 +114,20 @@
 }
 
 .grid-container .journal-table .p-datatable-table {
-  width: auto;
+  width: max-content;
+  min-width: 100%;
   table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.journal-table.p-datatable-gridlines .p-datatable-thead > tr > th,
+.journal-table.p-datatable-gridlines .p-datatable-tbody > tr > td {
+  border-color: var(--table-border-color) !important;
+}
+
+.journal-table .p-button:disabled {
+  opacity: var(--opacity-disabled);
 }
 
 .fio-column {
@@ -140,14 +152,15 @@
 }
 
 .journal-table .p-datatable-thead > tr:last-child > th {
-  box-shadow: var(--shadow-border-b);
+  border-bottom: 1px solid var(--table-border-color) !important;
 }
 
 .journal-table .p-datatable-thead > tr > th.fio-column {
   position: sticky !important;
   left: 0 !important;
   z-index: var(--z-corner) !important;
-  box-shadow: var(--shadow-border-br);
+  border-right: 1px solid var(--table-border-color) !important;
+  background-clip: padding-box;
 }
 
 .journal-table .p-datatable-tbody > tr > td.fio-column {
@@ -155,7 +168,8 @@
   left: 0 !important;
   z-index: var(--z-base) !important;
   background-color: var(--p-surface-50) !important;
-  box-shadow: var(--shadow-border-r);
+  border-right: 1px solid var(--table-border-color) !important;
+  background-clip: padding-box;
 }
 
 .lesson-column {

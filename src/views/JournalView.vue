@@ -148,6 +148,7 @@ const openCellModal = ({ person, lesson }) => {
 };
 
 const handleSaveCell = async ({ reason, marks }) => {
+  if (isSavingCell.value) return;
   isSavingCell.value = true;
   try {
     await journalStore.saveCellData({
@@ -168,6 +169,7 @@ const handleSaveCell = async ({ reason, marks }) => {
 };
 
 const handleAddLesson = async (lessonData) => {
+  if (isSavingLesson.value) return;
   isSavingLesson.value = true;
   try {
     await journalStore.addLesson({
@@ -200,6 +202,7 @@ const handleLessonsModalVisibility = (visible) => {
 };
 
 const handleEditLesson = async (lessonData) => {
+  if (isSavingLesson.value) return;
   isSavingLesson.value = true;
   try {
     await journalStore.updateLesson(editingLesson.value.id, lessonData);
@@ -217,6 +220,7 @@ const handleEditLesson = async (lessonData) => {
 };
 
 watch([selectedGroup, selectedSubject], () => {
+  nameFilter.value = "";
   loadGridData(false);
 });
 
