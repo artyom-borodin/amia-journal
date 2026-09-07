@@ -170,8 +170,12 @@
                   journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent
                 "
                 class="absent-label"
+                :title="getAbsentReason(data, lesson)"
               >
-                {{ APP_CONSTANTS.UI.LABELS.ABSENT_SHORT }}
+                {{
+                  getAbsentReason(data, lesson) ||
+                  APP_CONSTANTS.UI.LABELS.ABSENT_SHORT
+                }}
               </span>
               <div
                 v-if="
@@ -269,6 +273,9 @@ const handleCellClick = (data, lesson) => {
   if (isAbsent) return;
   handleSingleClick(data, lesson);
 };
+
+const getAbsentReason = (data, lesson) =>
+  journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.absentReason || "";
 
 const getLessonTime = (id) => {
   if (!id) return "";

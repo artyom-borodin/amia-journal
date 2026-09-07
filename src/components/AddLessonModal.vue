@@ -114,6 +114,16 @@
 
       <div class="dialog-footer">
         <Button
+          v-if="isEditMode"
+          :label="APP_CONSTANTS.UI.LABELS.DELETE_LESSON"
+          icon="pi pi-trash"
+          text
+          severity="danger"
+          class="mr-auto"
+          :disabled="isSaving"
+          @click="$emit('delete')"
+        />
+        <Button
           :label="APP_CONSTANTS.UI.LABELS.CANCEL"
           icon="pi pi-times"
           text
@@ -153,7 +163,7 @@ const props = defineProps({
   lesson: Object,
 });
 
-const emit = defineEmits(["update:visible", "add", "save"]);
+const emit = defineEmits(["update:visible", "add", "save", "delete"]);
 const authStore = useAuthStore();
 
 const isEditMode = computed(() => !!props.lesson);

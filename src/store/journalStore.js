@@ -69,6 +69,7 @@ export const useJournalStore = defineStore("journal", () => {
           matrix[person.uniqueId][lesson.id] = {
             records: recordsMap.value[recordKey] || [],
             isAbsent: reason ? reason.is_absent : false,
+            absentReason: reason ? reason.name : null,
           };
         });
       });
@@ -123,6 +124,9 @@ export const useJournalStore = defineStore("journal", () => {
       gridMatrix.value[person.uniqueId][lesson.id].isAbsent = reasonObj
         ? reasonObj.is_absent
         : false;
+      gridMatrix.value[person.uniqueId][lesson.id].absentReason = reasonObj
+        ? reasonObj.name
+        : null;
     }
   };
 
@@ -132,6 +136,10 @@ export const useJournalStore = defineStore("journal", () => {
 
   const updateLesson = async (lessonId, lessonData) => {
     await JournalService.updateLesson(lessonId, lessonData);
+  };
+
+  const deleteLesson = async (lessonId) => {
+    await JournalService.deleteLesson(lessonId);
   };
 
   return {
@@ -145,5 +153,6 @@ export const useJournalStore = defineStore("journal", () => {
     saveCellData,
     addLesson,
     updateLesson,
+    deleteLesson,
   };
 });

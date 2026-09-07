@@ -15,7 +15,7 @@
       <tr>
         <th v-for="col in columns" :key="col.key" class="pair-header-cell">
           {{ col.lt.number }} {{ APP_CONSTANTS.UI.LABELS.LESSON_NUMBER_SUFFIX }}
-          <small>{{ formatTimeShort(col.lt.start_time) }}–{{ formatTimeShort(col.lt.end_time) }}</small>
+          <small>{{ formatTimeShort(col.lt.start_time) }}-{{ formatTimeShort(col.lt.end_time) }}</small>
         </th>
       </tr>
     </thead>

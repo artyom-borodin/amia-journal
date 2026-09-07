@@ -42,6 +42,13 @@ export class JournalService {
     return res.data;
   }
 
+  static async deleteLesson(lessonId) {
+    const res = await apiClient.delete(
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}/`,
+    );
+    return res.data;
+  }
+
   static async syncMarks(payload) {
     const res = await apiClient.post(
       `${APP_CONSTANTS.API_ENDPOINTS.JOURNAL_RECORDS}${APP_CONSTANTS.ENDPOINTS_SUFFIX.SYNC_MARKS}`,

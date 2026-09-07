@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { APP_CONSTANTS } from "../config/constants";
 import { useAuthStore } from "../store/authStore";
 
@@ -33,10 +33,14 @@ const routes = [
     component: () => import("../views/AttendanceView.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: APP_CONSTANTS.ROUTES.DASHBOARD,
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 

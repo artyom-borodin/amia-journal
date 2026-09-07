@@ -24,6 +24,15 @@
       </div>
 
       <div v-else class="grid-container">
+        <div class="flex-row justify-end mb-4 flex-shrink-0">
+          <Button
+            icon="pi pi-question-circle"
+            text
+            rounded
+            :title="APP_CONSTANTS.UI.HELP.ATTENDANCE_TITLE"
+            @click="openHelp"
+          />
+        </div>
         <AttendanceGrid
           :persons="attendanceStore.persons"
           :lesson-times="sortedLessonTimes"
@@ -51,6 +60,14 @@
     />
 
     <ErrorDialog v-model:visible="showErrorDialog" :message="errorMessage" />
+
+    <HelpDialog
+      :visible="showHelpDialog"
+      :title="APP_CONSTANTS.UI.HELP.ATTENDANCE_TITLE"
+      :lines="APP_CONSTANTS.UI.HELP.ATTENDANCE_LINES"
+      @update:visible="showHelpDialog = $event"
+      @confirm="handleHelpConfirm"
+    />
   </div>
 </template>
 
@@ -61,10 +78,12 @@ import ErrorDialog from "../components/ErrorDialog.vue";
 import AttendanceFilters from "../components/attendance/AttendanceFilters.vue";
 import AttendanceGrid from "../components/attendance/AttendanceGrid.vue";
 import AttendanceDialog from "../components/AttendanceDialog.vue";
+import HelpDialog from "../components/HelpDialog.vue";
 import { useDictionaryStore } from "../store/dictionaryStore";
 import { useAttendanceStore } from "../store/attendanceStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
+import { useHelpDialog } from "../composables/useHelpDialog";
 import { toApiDate } from "../utils/dateUtils";
 
 const dictionaryStore = useDictionaryStore();
@@ -83,7 +102,9 @@ const clickedCellHasAttendance = ref(false);
 const clickedReason = ref(null);
 const isSaving = ref(false);
 
-// дефолт — текущая неделя (с понедельника по воскресенье)
+const { showHelpDialog, openHelp, handleHelpConfirm, maybeShowHelp } =
+  useHelpDialog(APP_CONSTANTS.STORAGE_KEYS.ATTENDANCE_HELP_HIDE);
+
 const startOfWeek = () => {
   const d = new Date();
   const day = (d.getDay() + 6) % 7;
@@ -123,6 +144,15 @@ const isRangeTooLong = computed(() => {
 watch([selectedGroup, periodDates], () => {
   loadData();
 });
+
+watch(
+  () => [attendanceStore.persons.length, attendanceStore.isLoading],
+  () => {
+    maybeShowHelp(
+      !attendanceStore.isLoading && attendanceStore.persons.length > 0,
+    );
+  },
+);
 
 const loadData = () => {
   if (!selectedGroup.value || !periodDates.value.length || isRangeTooLong.value) return;

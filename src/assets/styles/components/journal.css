@@ -276,9 +276,13 @@
   font-size: var(--fs-2xs);
   color: var(--p-red-700);
   font-weight: var(--fw-semibold);
-  line-height: 1;
+  line-height: 1.4;
   text-align: center;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .marks-container.has-absent {

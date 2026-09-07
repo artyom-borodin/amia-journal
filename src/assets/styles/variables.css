@@ -39,6 +39,7 @@
   --size-login-card: clamp(20rem, 90vw, 28rem);
   --size-modal-sm: clamp(20rem, 90vw, 25rem);
   --size-modal-md: clamp(20rem, 90vw, 31rem);
+  --size-modal-lg: clamp(20rem, 90vw, 38rem);
   --size-card-w: clamp(11rem, 20vw, 15.625rem);
   --size-card-h: clamp(6rem, 12vw, 9.375rem);
   --size-fio-col: clamp(12rem, 25vw, 17.5rem);

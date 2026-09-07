@@ -32,6 +32,16 @@
               class="w-full"
             />
           </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <Button
+              icon="pi pi-question-circle"
+              text
+              rounded
+              :title="APP_CONSTANTS.UI.HELP.OPEN_TITLE"
+              @click="openHelp"
+            />
+          </div>
         </div>
 
         <div class="grid-container">
@@ -73,6 +83,24 @@
         @update:visible="handleLessonsModalVisibility"
         @add="handleAddLesson"
         @save="handleEditLesson"
+        @delete="openDeleteLesson"
+      />
+
+      <DeleteLessonDialog
+        :visible="showDeleteDialog"
+        :lesson-line="deleteLessonLine"
+        :marks-count="deleteMarksCount"
+        :is-deleting="isDeletingLesson"
+        @update:visible="showDeleteDialog = $event"
+        @confirm="handleDeleteLesson"
+      />
+
+      <HelpDialog
+        :visible="showHelpDialog"
+        :title="APP_CONSTANTS.UI.HELP.TITLE"
+        :lines="APP_CONSTANTS.UI.HELP.LINES"
+        @update:visible="showHelpDialog = $event"
+        @confirm="handleHelpConfirm"
       />
     </main>
 
@@ -87,11 +115,15 @@ import JournalFilters from "../components/journal/JournalFilters.vue";
 import JournalGrid from "../components/JournalGrid.vue";
 import CellModal from "../components/CellModal.vue";
 import AddLessonModal from "../components/AddLessonModal.vue";
+import DeleteLessonDialog from "../components/DeleteLessonDialog.vue";
+import HelpDialog from "../components/HelpDialog.vue";
 import ErrorDialog from "../components/ErrorDialog.vue";
 import { useJournalStore } from "../store/journalStore";
 import { useDictionaryStore } from "../store/dictionaryStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
+import { formatDate } from "../utils/dateUtils";
+import { useHelpDialog } from "../composables/useHelpDialog";
 import {
   extractErrorMessage,
   extractLessonErrorMessage,
@@ -111,8 +143,16 @@ const selectedCell = ref(null);
 const isSavingCell = ref(false);
 const isSavingLesson = ref(false);
 
+const showDeleteDialog = ref(false);
+const deleteLessonLine = ref("");
+const deleteMarksCount = ref(0);
+const isDeletingLesson = ref(false);
+
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
+
+const { showHelpDialog, openHelp, handleHelpConfirm, maybeShowHelp } =
+  useHelpDialog(APP_CONSTANTS.STORAGE_KEYS.JOURNAL_HELP_HIDE);
 
 const showError = (errorOrMessage, defaultMsg) => {
   if (typeof errorOrMessage === "string") {
@@ -194,6 +234,50 @@ const openEditLessonModal = (lesson) => {
   showAddLessonModal.value = true;
 };
 
+const openDeleteLesson = () => {
+  if (!editingLesson.value) return;
+  const lesson = editingLesson.value;
+  const subjectName =
+    dictionaryStore.dictsMap.subjects[lesson.subject]?.subject_name || "";
+  const group = (dictionaryStore.dicts.groups || []).find(
+    (g) => g.id === lesson.group,
+  );
+  const groupName = group ? group.group_name : "";
+  const parts = [subjectName, groupName, formatDate(lesson.date)].filter(
+    Boolean,
+  );
+  if (lesson.topic) {
+    parts.push(`"${lesson.topic}"`);
+  }
+  deleteLessonLine.value = parts.join(APP_CONSTANTS.FORMATTING.SEPARATOR);
+
+  deleteMarksCount.value = Object.values(
+    journalStore.gridMatrix || {},
+  ).reduce(
+    (sum, byLesson) => sum + (byLesson[lesson.id]?.records?.length || 0),
+    0,
+  );
+
+  showDeleteDialog.value = true;
+};
+
+const handleDeleteLesson = async () => {
+  if (isDeletingLesson.value || !editingLesson.value) return;
+  isDeletingLesson.value = true;
+  try {
+    await journalStore.deleteLesson(editingLesson.value.id);
+    showDeleteDialog.value = false;
+    showAddLessonModal.value = false;
+    editingLesson.value = null;
+    await loadGridData(true);
+  } catch (error) {
+    console.error("Failed to delete lesson:", error);
+    showError(error, APP_CONSTANTS.UI.ERRORS.DELETE_LESSON);
+  } finally {
+    isDeletingLesson.value = false;
+  }
+};
+
 const handleLessonsModalVisibility = (visible) => {
   showAddLessonModal.value = visible;
   if (!visible) {
@@ -223,6 +307,15 @@ watch([selectedGroup, selectedSubject], () => {
   nameFilter.value = "";
   loadGridData(false);
 });
+
+watch(
+  () => [journalStore.lessons.length, journalStore.isLoading],
+  () => {
+    maybeShowHelp(
+      !journalStore.isLoading && journalStore.lessons.length > 0,
+    );
+  },
+);
 
 onMounted(() => {
   dictionaryStore.fetchDictionaries();
