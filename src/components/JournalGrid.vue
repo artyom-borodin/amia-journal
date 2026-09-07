@@ -270,7 +270,10 @@ const { filteredLessons, groupedLessons, emptyColumnsCount, paddedPersons } =
 const handleCellClick = (data, lesson) => {
   const isAbsent =
     journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent;
-  if (isAbsent) return;
+  if (isAbsent) {
+    openCellModal(data, lesson);
+    return;
+  }
   handleSingleClick(data, lesson);
 };
 

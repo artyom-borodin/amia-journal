@@ -19,6 +19,10 @@
         <i class="pi pi-spin pi-spinner empty-state-icon"></i>
         <span>{{ APP_CONSTANTS.UI.MESSAGES.LOADING }}</span>
       </div>
+      <div v-else-if="journalStore.lessons.length === 0" class="empty-state">
+        <i class="pi pi-calendar empty-state-icon"></i>
+        <span>{{ APP_CONSTANTS.UI.MESSAGES.NO_LESSONS }}</span>
+      </div>
 
       <div v-else class="flex-col flex-1 overflow-hidden">
         <div class="flex-row gap-4 mb-4 align-end flex-shrink-0">
@@ -28,6 +32,7 @@
               v-model="dateFilter"
               selectionMode="range"
               showIcon
+              :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SELECT_PERIOD"
               :dateFormat="APP_CONSTANTS.LOCALE_CONFIG.dateFormat"
               class="w-full"
             />
