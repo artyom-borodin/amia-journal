@@ -8,7 +8,6 @@
         <Button
           :label="continueLabel"
           icon="pi pi-history"
-          severity="success"
           class="continue-btn"
           @click="goTo(APP_CONSTANTS.ROUTES.JOURNAL)"
         />

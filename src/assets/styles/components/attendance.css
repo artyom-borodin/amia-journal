@@ -93,11 +93,11 @@
 }
 
 .attendance-table .is-today {
-  background: var(--p-primary-50);
+  background: var(--p-green-50);
 }
 
 .attendance-table thead .is-today {
-  background: var(--p-primary-100);
+  background: var(--p-green-100);
 }
 
 .attendance-table .pair-cell.is-marked {
@@ -107,7 +107,7 @@
 }
 
 .attendance-table .total-col {
-  min-width: 90px;
+  min-width: var(--size-total-col);
   font-weight: var(--fw-bold);
   background: var(--p-surface-50);
 }

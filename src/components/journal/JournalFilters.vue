@@ -33,7 +33,6 @@
             v-if="group && subject"
             :label="APP_CONSTANTS.UI.LABELS.ADD_LESSON"
             icon="pi pi-plus"
-            severity="success"
             class="w-full"
             @click="$emit('add-lesson')"
           />

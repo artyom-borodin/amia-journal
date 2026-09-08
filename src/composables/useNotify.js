@@ -6,7 +6,7 @@ export function useNotify() {
 
   const notifySuccess = (message) => {
     toast.add({
-      severity: "success",
+      severity: "info",
       summary: APP_CONSTANTS.UI.NOTIFY.SUCCESS_SUMMARY,
       detail: message,
       life: APP_CONSTANTS.NOTIFY.LIFE_MS,
