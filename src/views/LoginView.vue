@@ -2,6 +2,9 @@
   <div class="login-container">
     <Card class="login-card">
       <template #title>
+        <div class="login-brand">
+          <span class="login-emblem"><i class="pi pi-book"></i></span>
+        </div>
         <div class="text-center">{{ APP_CONSTANTS.UI.APP_TITLE }}</div>
       </template>
       <template #subtitle>

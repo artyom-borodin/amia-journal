@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
-import Aura from "@primevue/themes/aura";
+import { AcademyPreset } from "./config/theme";
 import "primeicons/primeicons.css";
 
 import App from "./App.vue";
@@ -36,7 +36,7 @@ app.use(router);
 app.use(ToastService);
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: AcademyPreset,
     options: {
       darkModeSelector: "none",
     },

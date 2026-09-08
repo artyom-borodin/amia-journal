@@ -46,11 +46,15 @@
   --size-lesson-col: clamp(6.5rem, 12vw, 8.125rem);
   --size-cell-h: clamp(2.25rem, 4vw, 2.8125rem);
   --size-filter-min: clamp(12rem, 25vw, 15.625rem);
+  --size-filter-max: clamp(20rem, 35vw, 26rem);
+  --size-total-col: clamp(5rem, 8vw, 6rem);
+  --size-emblem: clamp(3rem, 8vw, 4rem);
   --size-header-min-h: 2.5rem;
   --size-subheader-min-h: 4rem;
 
   /* ─── Border radius ─────────────────────────────────────────────────── */
   --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
   --radius-lg: 1rem;
 
   /* ─── Borders ───────────────────────────────────────────────────────── */

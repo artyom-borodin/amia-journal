@@ -137,7 +137,7 @@
 .delete-summary {
   border: 2px solid var(--p-red-300);
   background: var(--p-red-50);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.9rem 1.1rem;
   font-size: 1.05rem;
 }
@@ -165,7 +165,7 @@
   border: 2px solid var(--p-red-500);
   background: var(--p-red-600);
   color: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.9rem 1.1rem;
   font-size: 1.1rem;
   font-weight: 700;
