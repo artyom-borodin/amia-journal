@@ -36,12 +36,25 @@
   border-left-width: 1px;
 }
 
+.attendance-table thead {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+}
+
 .attendance-table thead th {
   background: var(--p-surface-100);
   font-weight: var(--fw-semibold);
 }
 
+.attendance-table thead .name-col {
+  z-index: var(--z-corner);
+}
+
 .attendance-table .name-col {
+  position: sticky;
+  left: 0;
+  z-index: var(--z-base);
   text-align: left;
   min-width: 220px;
   white-space: nowrap;
