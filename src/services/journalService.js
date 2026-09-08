@@ -115,10 +115,14 @@ export class JournalService {
   static async saveCellData({ reason, marks, person, lesson, attendance }) {
     const { entityPayload, idPayload } = this._getPersonPayloads(person);
 
-    const [savedAttendance, savedMarks] = await Promise.all([
-      this._handleAttendance(reason, entityPayload, lesson, attendance),
-      this._handleMarks(marks, idPayload, lesson),
-    ]);
+    // параллельные записи вешают SQLite (dev окружение)
+    const savedAttendance = await this._handleAttendance(
+      reason,
+      entityPayload,
+      lesson,
+      attendance,
+    );
+    const savedMarks = await this._handleMarks(marks, idPayload, lesson);
 
     return { savedAttendance, savedMarks };
   }
