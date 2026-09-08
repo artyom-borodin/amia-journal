@@ -43,6 +43,7 @@ export const APP_CONSTANTS = {
     SYNC_MARKS: "sync-marks/",
     DOWNLOAD_VEDOMOST: "/download-vedomost/",
     DOWNLOAD_STUDENT_CARD: "/download-student-card/",
+    DOWNLOAD_ROSTER: "/download-roster/",
     BULK: "bulk/",
     BULK_DELETE: "bulk-delete/",
   },
@@ -172,6 +173,7 @@ export const APP_CONSTANTS = {
     VEDOMOST_PREFIX: "vedomost_",
     STUDENT_CARD_PREFIX: "vypiska_iz_uchebnoy_kartochki_",
     ACADEMIC_CARD_PREFIX: "vypiska_",
+    ROSTER_PREFIX: "roster_",
     VEDOMOST_EXT: ".docx",
     ACADEMIC_CARD_EXT: ".xlsx",
     REGEX_UTF8_FILENAME: /filename\*=UTF-8''([^;]+)/i,
@@ -299,6 +301,7 @@ export const APP_CONSTANTS = {
       RETAKEN_MARK: "Пересданная отметка",
       DOWNLOAD_VEDOMOST_TITLE: "Скачать ведомость",
       DOWNLOAD_STUDENT_CARD_TITLE: "Скачать выписку из учебной карточки",
+      DOWNLOAD_ROSTER: "Скачать список группы",
       LESSON_NUMBER_SUFFIX: "пара",
     },
     PLACEHOLDERS: {
@@ -356,6 +359,8 @@ export const APP_CONSTANTS = {
         "Не удалось скачать ведомость. Проверьте наличие шаблона на сервере.",
       DOWNLOAD_STUDENT_CARD:
         "Не удалось скачать выписку из учебной карточки. Проверьте наличие шаблона на сервере.",
+      DOWNLOAD_ROSTER:
+        "Не удалось скачать список группы. Проверьте наличие шаблона на сервере.",
       LOAD_STUDENTS: "Ошибка при загрузке списка обучающихся.",
       DELETE_LESSON: "Не удалось удалить занятие.",
       UNKNOWN_SERVER_ERROR:

@@ -38,6 +38,17 @@
             @click="$emit('add-lesson')"
           />
         </div>
+        <div class="filter-action">
+          <Button
+            v-if="group && subject"
+            :label="APP_CONSTANTS.UI.LABELS.DOWNLOAD_ROSTER"
+            icon="pi pi-file-word"
+            severity="secondary"
+            :loading="downloadingRoster"
+            class="w-full"
+            @click="$emit('download-roster')"
+          />
+        </div>
       </div>
     </template>
   </Card>
@@ -51,7 +62,8 @@ defineProps({
   subject: Number,
   groups: Array,
   subjects: Array,
+  downloadingRoster: Boolean,
 });
 
-defineEmits(["update:group", "update:subject", "add-lesson"]);
+defineEmits(["update:group", "update:subject", "add-lesson", "download-roster"]);
 </script>

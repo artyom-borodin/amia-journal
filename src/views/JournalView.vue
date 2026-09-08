@@ -8,7 +8,9 @@
         v-model:subject="selectedSubject"
         :groups="dictionaryStore.dicts.groups"
         :subjects="dictionaryStore.dicts.subjects"
+        :downloading-roster="isDownloadingRoster"
         @add-lesson="showAddLessonModal = true"
+        @download-roster="handleDownloadRoster"
       />
 
       <div v-if="!selectedGroup || !selectedSubject" class="empty-state">
@@ -125,6 +127,7 @@ import HelpDialog from "../components/HelpDialog.vue";
 import ErrorDialog from "../components/ErrorDialog.vue";
 import { useJournalStore } from "../store/journalStore";
 import { useDictionaryStore } from "../store/dictionaryStore";
+import { JournalService } from "../services/journalService";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
 import { formatDate } from "../utils/dateUtils";
@@ -147,6 +150,7 @@ const editingLesson = ref(null);
 const selectedCell = ref(null);
 const isSavingCell = ref(false);
 const isSavingLesson = ref(false);
+const isDownloadingRoster = ref(false);
 
 const showDeleteDialog = ref(false);
 const deleteLessonLine = ref("");
@@ -237,6 +241,22 @@ const handleAddLesson = async (lessonData) => {
 const openEditLessonModal = (lesson) => {
   editingLesson.value = lesson;
   showAddLessonModal.value = true;
+};
+
+const handleDownloadRoster = async () => {
+  if (isDownloadingRoster.value) return;
+  isDownloadingRoster.value = true;
+  try {
+    await JournalService.downloadRoster(
+      selectedGroup.value,
+      selectedSubject.value,
+    );
+  } catch (error) {
+    console.error("Failed to download roster:", error);
+    showError(error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_ROSTER);
+  } finally {
+    isDownloadingRoster.value = false;
+  }
 };
 
 const openDeleteLesson = () => {

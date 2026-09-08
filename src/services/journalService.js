@@ -139,15 +139,29 @@ export class JournalService {
     );
   }
 
-  static async _downloadLessonDoc(lessonId, endpointSuffix, fallbackPrefix) {
-    const response = await apiClient.get(
-      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}${endpointSuffix}`,
-      {
-        responseType: APP_CONSTANTS.NETWORK.RESPONSE_TYPE_BLOB,
-      },
+  static async downloadRoster(groupId, subjectId) {
+    return this._downloadDoc(
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${APP_CONSTANTS.ENDPOINTS_SUFFIX.DOWNLOAD_ROSTER}`,
+      { group: groupId, subject: subjectId },
+      `${APP_CONSTANTS.FILES.ROSTER_PREFIX}${groupId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`,
     );
+  }
 
-    let fileName = `${fallbackPrefix}${lessonId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`;
+  static async _downloadLessonDoc(lessonId, endpointSuffix, fallbackPrefix) {
+    return this._downloadDoc(
+      `${APP_CONSTANTS.API_ENDPOINTS.LESSONS}${lessonId}${endpointSuffix}`,
+      undefined,
+      `${fallbackPrefix}${lessonId}${APP_CONSTANTS.FILES.VEDOMOST_EXT}`,
+    );
+  }
+
+  static async _downloadDoc(url, params, fallbackFileName) {
+    const response = await apiClient.get(url, {
+      params,
+      responseType: APP_CONSTANTS.NETWORK.RESPONSE_TYPE_BLOB,
+    });
+
+    let fileName = fallbackFileName;
     const contentDisposition =
       response.headers[APP_CONSTANTS.NETWORK.HEADER_CONTENT_DISPOSITION];
 
