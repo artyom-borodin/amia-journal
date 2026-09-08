@@ -15,16 +15,17 @@
       </div>
 
       <div class="cards-container">
-        <Button
-          v-for="card in dashboardCards"
-          :key="card.route"
-          :label="card.label"
-          :icon="card.icon"
-          :severity="card.severity"
-          :disabled="card.disabled"
-          class="dashboard-btn"
-          @click="goTo(card.route)"
-        />
+        <div v-for="card in dashboardCards" :key="card.route" class="dashboard-card">
+          <Button
+            :label="card.label"
+            :icon="card.icon"
+            :severity="card.severity"
+            :disabled="card.disabled"
+            class="dashboard-btn"
+            @click="goTo(card.route)"
+          />
+          <span class="dashboard-card-desc">{{ card.desc }}</span>
+        </div>
       </div>
     </main>
   </div>
@@ -62,18 +63,21 @@ const dashboardCards = [
   {
     route: APP_CONSTANTS.ROUTES.JOURNAL,
     label: APP_CONSTANTS.UI.LABELS.JOURNAL,
+    desc: APP_CONSTANTS.UI.LABELS.JOURNAL_DESC,
     icon: "pi pi-book",
     severity: null,
   },
   {
     route: APP_CONSTANTS.ROUTES.REPORTS,
     label: APP_CONSTANTS.UI.LABELS.REPORTS,
+    desc: APP_CONSTANTS.UI.LABELS.REPORTS_DESC,
     icon: "pi pi-chart-bar",
     severity: "info",
   },
   {
     route: APP_CONSTANTS.ROUTES.ATTENDANCE,
     label: APP_CONSTANTS.UI.LABELS.ATTENDANCE,
+    desc: APP_CONSTANTS.UI.LABELS.ATTENDANCE_DESC,
     icon: "pi pi-calendar-times",
     severity: "warning",
   },
