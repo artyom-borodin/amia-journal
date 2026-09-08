@@ -89,3 +89,14 @@ export const isToday = (apiDateStr) => {
   if (!apiDateStr) return false;
   return toApiDate(new Date()) === apiDateStr;
 };
+
+export const normalizePeriod = (period) => {
+  if (!Array.isArray(period) || !(period[0] instanceof Date)) return [];
+  if (isNaN(period[0].getTime())) return [];
+  const from = new Date(period[0]);
+  const to =
+    period[1] instanceof Date && !isNaN(period[1].getTime())
+      ? new Date(period[1])
+      : new Date(period[0]);
+  return [from, to];
+};

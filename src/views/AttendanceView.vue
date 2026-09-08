@@ -82,7 +82,7 @@ import { generateCellKey } from "../utils/journalUtils";
 import { useHelpDialog } from "../composables/useHelpDialog";
 import { useStoredRef } from "../composables/useStoredRef";
 import { useNotify } from "../composables/useNotify";
-import { getWeekRange, toApiDate } from "../utils/dateUtils";
+import { getWeekRange, normalizePeriod, toApiDate } from "../utils/dateUtils";
 
 const dictionaryStore = useDictionaryStore();
 const attendanceStore = useAttendanceStore();
@@ -111,12 +111,9 @@ onMounted(async () => {
   loadData();
 });
 
-const periodDates = computed(() => {
-  if (!period.value || period.value.length < 2 || !period.value[0] || !period.value[1]) {
-    return [];
-  }
-  return [toApiDate(period.value[0]), toApiDate(period.value[1])];
-});
+const periodDates = computed(() =>
+  normalizePeriod(period.value).map((date) => toApiDate(date)),
+);
 
 const isRangeTooLong = computed(() => {
   if (!periodDates.value.length) return false;

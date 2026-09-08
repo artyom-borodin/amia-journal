@@ -60,7 +60,7 @@ import {
   generateCellKey,
   formatTimeShort,
 } from "../../utils/journalUtils";
-import { toApiDate, isToday } from "../../utils/dateUtils";
+import { normalizePeriod, toApiDate, isToday } from "../../utils/dateUtils";
 
 const props = defineProps({
   persons: Array,
@@ -109,11 +109,10 @@ const dateLabels = computed(() =>
 );
 
 const periodDates = computed(() => {
-  if (!props.period || props.period.length < 2 || !props.period[0] || !props.period[1]) {
-    return [];
-  }
+  const [from, to] = normalizePeriod(props.period);
+  if (!from || !to) return [];
   const dates = [];
-  for (let d = new Date(props.period[0]); d <= props.period[1]; d.setDate(d.getDate() + 1)) {
+  for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
     dates.push(new Date(d));
   }
   return dates;
