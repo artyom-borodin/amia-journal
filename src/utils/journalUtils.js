@@ -136,3 +136,39 @@ export const sortMarkValues = (marks) => {
     return valA.localeCompare(valB, undefined, { numeric: true });
   });
 };
+
+export const getLastLesson = (lessons) => {
+  if (!Array.isArray(lessons) || lessons.length === 0) return null;
+  return lessons.reduce((latest, lesson) => {
+    if (!latest) return lesson;
+    if (lesson.date !== latest.date) {
+      return new Date(lesson.date) > new Date(latest.date) ? lesson : latest;
+    }
+    return lesson.id > latest.id ? lesson : latest;
+  }, null);
+};
+
+export const resolveMarkByText = (markValuesMap, text) => {
+  const query = String(text || "")
+    .toLowerCase()
+    .trim();
+  const noMatch = { mark: null, isAmbiguous: false };
+  if (!query) return noMatch;
+
+  const allMarks = Object.values(markValuesMap || {});
+  const exact = allMarks.find((m) => String(m.value || "").toLowerCase() === query);
+  if (exact) {
+    const isAmbiguous = allMarks.some(
+      (m) => m.id !== exact.id && String(m.value || "").toLowerCase().startsWith(query),
+    );
+    return { mark: exact, isAmbiguous };
+  }
+
+  const prefixMatches = allMarks.filter((m) =>
+    String(m.value || "").toLowerCase().startsWith(query),
+  );
+  if (prefixMatches.length === 1) {
+    return { mark: prefixMatches[0], isAmbiguous: false };
+  }
+  return { mark: null, isAmbiguous: prefixMatches.length > 1 };
+};

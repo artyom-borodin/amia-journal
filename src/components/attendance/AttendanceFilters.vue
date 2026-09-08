@@ -34,6 +34,36 @@
         class="w-full"
       />
     </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <div class="flex-row gap-2 align-center">
+        <Button
+          icon="pi pi-question-circle"
+          text
+          rounded
+          :title="APP_CONSTANTS.UI.HELP.ATTENDANCE_TITLE"
+          @click="$emit('help')"
+        />
+        <Button
+          :label="APP_CONSTANTS.UI.LABELS.CURRENT_WEEK"
+          size="small"
+          severity="secondary"
+          @click="$emit('update:period', currentWeekRange())"
+        />
+        <Button
+          :label="APP_CONSTANTS.UI.LABELS.PREV_WEEK"
+          size="small"
+          severity="secondary"
+          @click="$emit('update:period', prevWeekRange())"
+        />
+        <Button
+          :label="APP_CONSTANTS.UI.LABELS.NEXT_WEEK"
+          size="small"
+          severity="secondary"
+          @click="$emit('update:period', nextWeekRange())"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -42,6 +72,7 @@ import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
 import InputText from "primevue/inputtext";
 import { APP_CONSTANTS } from "../../config/constants";
+import { getWeekRange } from "../../utils/dateUtils";
 
 defineProps({
   group: Number,
@@ -50,5 +81,12 @@ defineProps({
   groups: Array,
 });
 
-defineEmits(["update:group", "update:period", "update:nameFilter"]);
+defineEmits(["update:group", "update:period", "update:nameFilter", "help"]);
+
+const currentWeekRange = () =>
+  getWeekRange(APP_CONSTANTS.RULES.WEEK_OFFSET_CURRENT);
+const prevWeekRange = () =>
+  getWeekRange(APP_CONSTANTS.RULES.WEEK_OFFSET_PREV);
+const nextWeekRange = () =>
+  getWeekRange(APP_CONSTANTS.RULES.WEEK_OFFSET_NEXT);
 </script>

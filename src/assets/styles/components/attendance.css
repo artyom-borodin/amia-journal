@@ -79,10 +79,37 @@
   background: var(--p-surface-200);
 }
 
+.attendance-table .is-today {
+  background: var(--p-primary-50);
+}
+
+.attendance-table thead .is-today {
+  background: var(--p-primary-100);
+}
+
 .attendance-table .pair-cell.is-marked {
   background: var(--p-red-100);
   color: var(--p-red-700);
   font-weight: var(--fw-semibold);
+}
+
+.attendance-table .total-col {
+  min-width: 90px;
+  font-weight: var(--fw-bold);
+  background: var(--p-surface-50);
+}
+
+.attendance-table .empty-cell {
+  padding: 0;
+  border: 0;
+}
+
+.attendance-empty {
+  text-align: center;
+  color: var(--p-surface-500);
+  font-size: var(--fs-base);
+  padding: var(--space-8) var(--space-4);
+  border: var(--border-width-md) dashed var(--p-surface-300);
 }
 
 .attendance-preview {

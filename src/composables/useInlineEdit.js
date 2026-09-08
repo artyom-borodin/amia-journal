@@ -1,6 +1,6 @@
 import { ref, nextTick } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
-import { generateCellKey } from "../utils/journalUtils";
+import { generateCellKey, resolveMarkByText } from "../utils/journalUtils";
 
 export function useInlineEdit(dictsMap, journalStore, emit) {
   const editingCell = ref(null);
@@ -18,6 +18,33 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     );
   };
 
+  const focusEditor = () => {
+    setTimeout(() => {
+      const inputElement = document.querySelector(
+        APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT,
+      );
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, APP_CONSTANTS.TIMERS.INLINE_EDIT_FOCUS);
+  };
+
+  const openEditor = async (personUniqueId, lessonId) => {
+    editingCell.value = { personUniqueId, lessonId };
+    inlineMarkValue.value = "";
+    await nextTick();
+    focusEditor();
+  };
+
+  const openEditorOnNext = async (persons, currentUniqueId, lesson) => {
+    const list = (persons || []).filter((p) => !p.isEmptyRow);
+    const index = list.findIndex((p) => p.uniqueId === currentUniqueId);
+    const next = index >= 0 ? list[index + 1] : null;
+    if (next) {
+      await openEditor(next.uniqueId, lesson.id);
+    }
+  };
+
   const handleSingleClick = (person, lesson) => {
     if (isSavingInline.value) return;
     if (isEditing(person.uniqueId, lesson.id)) return;
@@ -26,21 +53,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     if (blurTimer) clearTimeout(blurTimer);
 
     clickTimer = setTimeout(async () => {
-      editingCell.value = {
-        personUniqueId: person.uniqueId,
-        lessonId: lesson.id,
-      };
-      inlineMarkValue.value = "";
-
-      await nextTick();
-      setTimeout(() => {
-        const inputElement = document.querySelector(
-          APP_CONSTANTS.CSS_SELECTORS.INLINE_EDITOR_INPUT,
-        );
-        if (inputElement) {
-          inputElement.focus();
-        }
-      }, APP_CONSTANTS.TIMERS.INLINE_EDIT_FOCUS);
+      await openEditor(person.uniqueId, lesson.id);
     }, APP_CONSTANTS.TIMERS.INLINE_EDIT_DELAY);
   };
 
@@ -60,72 +73,68 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     );
   };
 
+  const persistInlineMark = async (person, lesson, markObj) => {
+    isSavingInline.value = true;
+    inlineMarkValue.value = markObj;
+
+    const existingRecords =
+      journalStore.gridMatrix[person.uniqueId]?.[lesson.id]?.records || [];
+    const marks = [...existingRecords];
+
+    if (marks.length > 0) {
+      marks[0].mark_value = markObj.id;
+    } else {
+      marks.push({ mark_value: markObj.id });
+    }
+
+    try {
+      await journalStore.saveCellData({
+        person,
+        lesson,
+        marks,
+        reason:
+          journalStore.attendancesMap[
+            generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time)
+          ]?.reason,
+      });
+      return true;
+    } catch (err) {
+      console.error(APP_CONSTANTS.UI.ERRORS.SAVE_CONSOLE, err);
+      emit("error", err, APP_CONSTANTS.UI.ERRORS.SAVE_DATA);
+      return false;
+    } finally {
+      isSavingInline.value = false;
+    }
+  };
+
+  const normalizeMarkPayload = (payload) => {
+    if (!payload) return null;
+    const candidate =
+      typeof payload === "object" && payload.value !== undefined && payload.id === undefined
+        ? payload.value
+        : payload;
+    if (typeof candidate === "string") {
+      return resolveMarkByText(dictsMap.markValues, candidate).mark;
+    }
+    return candidate && candidate.id ? candidate : null;
+  };
+
   const saveInlineMark = async (person, lesson, eventPayload = null) => {
     if (blurTimer) clearTimeout(blurTimer);
 
     if (isSavingInline.value) return;
 
-    let markObj = inlineMarkValue.value;
-
-    if (eventPayload) {
-      markObj =
-        eventPayload.value !== undefined ? eventPayload.value : eventPayload;
-    }
+    const markObj = normalizeMarkPayload(eventPayload ?? inlineMarkValue.value);
 
     if (!markObj) {
       editingCell.value = null;
       return;
     }
 
-    if (typeof markObj === "string") {
-      const query = markObj.toLowerCase().trim();
-      const allMarks = Object.values(dictsMap.markValues);
-
-      let found = allMarks.find((m) => m.value.toLowerCase() === query);
-
-      if (!found) {
-        const matches = allMarks.filter((m) =>
-          m.value.toLowerCase().startsWith(query),
-        );
-        if (matches.length === 1) {
-          found = matches[0];
-        }
-      }
-      markObj = found;
-    }
-
-    if (markObj && markObj.id) {
-      isSavingInline.value = true;
-      inlineMarkValue.value = markObj;
-
-      const existingRecords =
-        journalStore.gridMatrix[person.uniqueId]?.[lesson.id]?.records || [];
-      const marks = [...existingRecords];
-
-      if (marks.length > 0) {
-        marks[0].mark_value = markObj.id;
-      } else {
-        marks.push({ mark_value: markObj.id });
-      }
-
-      try {
-        await journalStore.saveCellData({
-          person,
-          lesson,
-          marks,
-          reason:
-            journalStore.attendancesMap[
-              generateCellKey(person.uniqueId, lesson.date, lesson.lesson_time)
-            ]?.reason,
-        });
-      } catch (err) {
-        console.error(APP_CONSTANTS.UI.ERRORS.SAVE_CONSOLE, err);
-      } finally {
-        isSavingInline.value = false;
-        editingCell.value = null;
-      }
-    } else {
-      editingCell.value = null;
+    const saved = await persistInlineMark(person, lesson, markObj);
+    editingCell.value = null;
+    if (saved) {
+      emit("saved");
     }
   };
 
@@ -134,28 +143,45 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
 
     if (!val || isSavingInline.value || typeof val !== "string") return;
 
-    const query = val.toLowerCase().trim();
-    const allMarks = Object.values(dictsMap.markValues);
-
-    const exactMatch = allMarks.find((m) => m.value.toLowerCase() === query);
-
-    if (exactMatch) {
-      const isPrefixForOthers = allMarks.some(
-        (m) =>
-          m.id !== exactMatch.id && m.value.toLowerCase().startsWith(query),
-      );
-
-      if (!isPrefixForOthers) {
-        saveInlineMark(person, lesson, exactMatch);
-      }
+    const { mark, isAmbiguous } = resolveMarkByText(dictsMap.markValues, val);
+    if (mark && !isAmbiguous) {
+      saveInlineMark(person, lesson, mark);
     }
   };
 
-  const handleEnter = (person, lesson) => {
+  const handleInlineKeydown = async (event, person, lesson, persons) => {
+    if (
+      event.key === APP_CONSTANTS.KEYBOARD.ENTER ||
+      event.key === APP_CONSTANTS.KEYBOARD.ESCAPE
+    ) {
+      return;
+    }
+    if (typeof event.key !== "string" || event.key.length !== 1) return;
+    if (isSavingInline.value) return;
+
+    const { mark, isAmbiguous } = resolveMarkByText(dictsMap.markValues, event.key);
+    if (!mark || isAmbiguous) return;
+
+    event.preventDefault();
     if (blurTimer) clearTimeout(blurTimer);
-    setTimeout(() => {
-      if (!isSavingInline.value) {
-        saveInlineMark(person, lesson);
+    if (clickTimer) clearTimeout(clickTimer);
+
+    const saved = await persistInlineMark(person, lesson, mark);
+    editingCell.value = null;
+    if (saved) {
+      emit("saved");
+      await openEditorOnNext(persons, person.uniqueId, lesson);
+    }
+  };
+
+  const handleEnter = (person, lesson, persons = null) => {
+    if (blurTimer) clearTimeout(blurTimer);
+    setTimeout(async () => {
+      if (!isSavingInline.value && isEditing(person.uniqueId, lesson.id)) {
+        await saveInlineMark(person, lesson);
+        if (persons) {
+          await openEditorOnNext(persons, person.uniqueId, lesson);
+        }
       }
     }, APP_CONSTANTS.TIMERS.INLINE_EDIT_SAVE);
   };
@@ -182,6 +208,7 @@ export function useInlineEdit(dictsMap, journalStore, emit) {
     saveInlineMark,
     closeInlineEdit,
     handleInlineInput,
+    handleInlineKeydown,
     handleEnter,
   };
 }

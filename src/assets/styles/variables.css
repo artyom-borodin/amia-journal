@@ -44,6 +44,7 @@
   --size-card-h: clamp(6rem, 12vw, 9.375rem);
   --size-fio-col: clamp(12rem, 25vw, 17.5rem);
   --size-lesson-col: clamp(6.5rem, 12vw, 8.125rem);
+  --size-summary-col: clamp(7rem, 12vw, 9rem);
   --size-cell-h: clamp(2.25rem, 4vw, 2.8125rem);
   --size-filter-min: clamp(12rem, 25vw, 15.625rem);
   --size-header-min-h: 2.5rem;

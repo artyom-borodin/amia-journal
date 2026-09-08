@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { getPersonFullName } from "../utils/journalUtils";
+import { matchesQuickFilter } from "../utils/journalStats";
 
 export function useJournalGrid(props) {
   const filteredLessons = computed(() => {
@@ -36,6 +37,19 @@ export function useJournalGrid(props) {
     if (props.nameFilter) {
       const q = props.nameFilter.toLowerCase();
       list = list.filter((p) => getPersonFullName(p).toLowerCase().includes(q));
+    }
+    if (
+      props.quickFilter &&
+      props.quickFilter !== APP_CONSTANTS.JOURNAL_QUICK_FILTERS.ALL
+    ) {
+      list = list.filter((p) =>
+        matchesQuickFilter(
+          p.uniqueId,
+          filteredLessons.value,
+          props.gridMatrix,
+          props.quickFilter,
+        ),
+      );
     }
     return list;
   });

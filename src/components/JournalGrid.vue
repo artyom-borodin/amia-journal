@@ -22,6 +22,23 @@
                   :placeholder="APP_CONSTANTS.UI.PLACEHOLDERS.SEARCH_BY_NAME"
                   class="w-full p-inputtext-sm"
                 />
+                <div class="quick-filters">
+                  <Button
+                    v-for="filter in quickFilters"
+                    :key="filter.key"
+                    :label="filter.label"
+                    size="small"
+                    rounded
+                    :severity="
+                      filter.key === quickFilter ? 'primary' : 'secondary'
+                    "
+                    @click.stop="$emit('update:quickFilter', filter.key)"
+                  />
+                </div>
+                <span class="counter-text"
+                  >{{ APP_CONSTANTS.UI.LABELS.SHOWN_COUNT }}
+                  <b>{{ personsCounter }}</b></span
+                >
               </div>
             </template>
           </Column>
@@ -34,6 +51,13 @@
             <template #header>
               <div class="date-header-content">
                 {{ formatDate(group.date) }}
+              </div>
+            </template>
+          </Column>
+          <Column :rowspan="2" class="summary-column">
+            <template #header>
+              <div class="summary-header">
+                {{ APP_CONSTANTS.UI.LABELS.SUMMARY }}
               </div>
             </template>
           </Column>
@@ -144,10 +168,12 @@
             :class="{
               'is-absent':
                 journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent,
+              'is-empty': isEmptyCell(data.uniqueId, lesson.id),
             }"
             :title="APP_CONSTANTS.UI.MESSAGES.DBL_CLICK_HINT"
             @click="handleCellClick(data, lesson)"
             @dblclick="openCellModal(data, lesson)"
+            @keydown="onCellKeydown($event, data, lesson)"
           >
             <template v-if="isEditing(data.uniqueId, lesson.id)">
               <AutoComplete
@@ -158,7 +184,7 @@
                 @complete="searchMarkValues"
                 @item-select="saveInlineMark(data, lesson, $event)"
                 @blur="closeInlineEdit"
-                @keyup.enter="handleEnter(data, lesson)"
+                @keyup.enter="handleEnter(data, lesson, filteredPersons)"
                 @click.stop
                 optionLabel="value"
                 class="inline-editor"
@@ -206,6 +232,22 @@
         </template>
       </Column>
 
+      <Column class="summary-column">
+        <template #body="{ data }">
+          <div v-if="!data.isEmptyRow" class="summary-cell">
+            <span v-if="personStats(data.uniqueId).avg != null" class="avg-value"
+              >{{ APP_CONSTANTS.UI.LABELS.AVG_SHORT }}
+              {{ personStats(data.uniqueId).avg }}</span
+            >
+            <span v-if="personStats(data.uniqueId).absences > 0" class="absent-label"
+              >{{ APP_CONSTANTS.UI.LABELS.ABSENCES_SHORT }}:
+              {{ personStats(data.uniqueId).absences }}</span
+            >
+          </div>
+          <div v-else class="cell-content disabled-cell"></div>
+        </template>
+      </Column>
+
       <Column
         v-for="i in emptyColumnsCount"
         :key="APP_CONSTANTS.PREFIXES.EMPTY_COL + i"
@@ -227,13 +269,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
 import { getPersonFullName, formatTimeShort } from "../utils/journalUtils";
+import { calcPersonStats } from "../utils/journalStats";
 import { useJournalStore } from "../store/journalStore";
 import { useInlineEdit } from "../composables/useInlineEdit";
 import { useJournalGrid } from "../composables/useJournalGrid";
+import { useNotify } from "../composables/useNotify";
 import { JournalService } from "../services/journalService";
 
 const props = defineProps({
@@ -242,13 +286,23 @@ const props = defineProps({
   recordsMap: Object,
   attendancesMap: Object,
   dictsMap: Object,
+  gridMatrix: Object,
   dateFilter: Array,
   nameFilter: String,
+  quickFilter: String,
 });
 
-const emit = defineEmits(["cell-click", "update:nameFilter", "error", "edit-lesson"]);
+const emit = defineEmits([
+  "cell-click",
+  "update:nameFilter",
+  "update:quickFilter",
+  "error",
+  "edit-lesson",
+  "saved",
+]);
 
 const journalStore = useJournalStore();
+const { notifySuccess } = useNotify();
 
 const {
   inlineMarkValue,
@@ -261,11 +315,60 @@ const {
   saveInlineMark,
   closeInlineEdit,
   handleInlineInput,
+  handleInlineKeydown,
   handleEnter,
 } = useInlineEdit(props.dictsMap, journalStore, emit);
 
-const { filteredLessons, groupedLessons, emptyColumnsCount, paddedPersons } =
+const { filteredLessons, filteredPersons, groupedLessons, emptyColumnsCount, paddedPersons } =
   useJournalGrid(props);
+
+const quickFilters = computed(() => [
+  { key: APP_CONSTANTS.JOURNAL_QUICK_FILTERS.ALL, label: APP_CONSTANTS.UI.LABELS.FILTER_ALL },
+  {
+    key: APP_CONSTANTS.JOURNAL_QUICK_FILTERS.NO_MARKS,
+    label: APP_CONSTANTS.UI.LABELS.FILTER_NO_MARKS,
+  },
+  {
+    key: APP_CONSTANTS.JOURNAL_QUICK_FILTERS.WITH_ABSENCES,
+    label: APP_CONSTANTS.UI.LABELS.FILTER_ABSENCES,
+  },
+  {
+    key: APP_CONSTANTS.JOURNAL_QUICK_FILTERS.WITH_RETAKES,
+    label: APP_CONSTANTS.UI.LABELS.FILTER_RETAKES,
+  },
+]);
+
+const personsCounter = computed(() => {
+  const shown = (filteredPersons.value || []).length;
+  const total = (props.persons || []).length;
+  return `${shown} ${APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR} ${total}`;
+});
+
+const personStatsCache = computed(() => {
+  const cache = {};
+  (props.persons || []).forEach((person) => {
+    cache[person.uniqueId] = calcPersonStats(
+      person.uniqueId,
+      filteredLessons.value,
+      props.gridMatrix,
+      props.dictsMap?.markValues,
+    );
+  });
+  return cache;
+});
+
+const personStats = (personUniqueId) =>
+  personStatsCache.value[personUniqueId] || { avg: null, absences: 0 };
+
+const isEmptyCell = (personUniqueId, lessonId) => {
+  const cell = props.gridMatrix?.[personUniqueId]?.[lessonId];
+  return !!cell && !cell.isAbsent && (cell.records || []).length === 0;
+};
+
+const onCellKeydown = (event, person, lesson) => {
+  if (!isEditing(person.uniqueId, lesson.id)) return;
+  handleInlineKeydown(event, person, lesson, filteredPersons.value);
+};
 
 const handleCellClick = (data, lesson) => {
   const isAbsent =
@@ -307,6 +410,7 @@ const downloadVedomost = async (lessonId) => {
   downloadingVedomostIds.value.add(lessonId);
   try {
     await JournalService.downloadVedomost(lessonId);
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.VEDOMOST_SAVED);
   } catch (error) {
     console.error(APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST, error);
     emit("error", error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_VEDOMOST);

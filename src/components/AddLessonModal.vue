@@ -81,8 +81,9 @@
         <label>{{ APP_CONSTANTS.UI.LABELS.TEACHERS }}</label>
         <MultiSelect
           v-model="newLesson.teachers"
-          :options="dicts.teachers"
-          optionLabel="username"
+          :options="teacherOptions"
+          optionLabel="fullName"
+          :filterFields="['fullName', 'username']"
           display="chip"
           optionValue="id"
           filter
@@ -109,6 +110,16 @@
           rows="3"
           class="w-full"
           :disabled="isSaving"
+        />
+        <Button
+          v-if="lastLesson?.topic && !newLesson.topic"
+          :label="APP_CONSTANTS.UI.LABELS.REPEAT_LAST_TOPIC"
+          icon="pi pi-history"
+          text
+          size="small"
+          class="align-self-start"
+          :disabled="isSaving"
+          @click="useLastTopic"
         />
       </div>
 
@@ -161,12 +172,20 @@ const props = defineProps({
   dictsMap: Object,
   isSaving: Boolean,
   lesson: Object,
+  lastLesson: Object,
 });
 
 const emit = defineEmits(["update:visible", "add", "save", "delete"]);
 const authStore = useAuthStore();
 
 const isEditMode = computed(() => !!props.lesson);
+
+const teacherOptions = computed(() =>
+  (props.dicts.teachers || []).map((teacher) => ({
+    ...teacher,
+    fullName: getPersonFullName(teacher),
+  })),
+);
 
 const newLesson = ref({
   date: null,
@@ -178,6 +197,39 @@ const newLesson = ref({
 });
 
 const formatTimeDisplay = (timeObj) => formatLessonTimeDisplay(timeObj);
+
+const normalizeTeacherIds = (teachers) => (teachers || []).map((t) => t.id ?? t);
+
+const findSelfTeacherId = () => {
+  const meId = authStore.user?.id;
+  const selfTeacher = (props.dicts.teachers || []).find(
+    (t) => meId != null && String(t.id) === String(meId),
+  );
+  return selfTeacher ? selfTeacher.id : null;
+};
+
+const buildCreateDefaults = () => {
+  const teachersFromLast = normalizeTeacherIds(props.lastLesson?.teachers);
+  let teachers = teachersFromLast;
+  if (teachers.length === 0) {
+    const selfId = findSelfTeacherId();
+    teachers = selfId ? [selfId] : [];
+  }
+  return {
+    date: new Date(),
+    hours: props.lastLesson?.hours ?? null,
+    lesson_time: null,
+    lesson_type: props.lastLesson?.lesson_type ?? null,
+    topic: null,
+    teachers,
+  };
+};
+
+const useLastTopic = () => {
+  if (props.lastLesson?.topic) {
+    newLesson.value.topic = props.lastLesson.topic;
+  }
+};
 
 watch(
   () => props.visible,
@@ -191,23 +243,10 @@ watch(
         lesson_time: props.lesson.lesson_time,
         lesson_type: props.lesson.lesson_type,
         topic: props.lesson.topic,
-        teachers: props.lesson.teachers
-          ? props.lesson.teachers.map((t) => t.id ?? t)
-          : [],
+        teachers: normalizeTeacherIds(props.lesson.teachers),
       };
     } else {
-      const meId = authStore.user?.id;
-      const selfTeacher = (props.dicts.teachers || []).find(
-        (t) => meId != null && String(t.id) === String(meId),
-      );
-      newLesson.value = {
-        date: new Date(),
-        hours: null,
-        lesson_time: null,
-        lesson_type: null,
-        topic: null,
-        teachers: selfTeacher ? [selfTeacher.id] : [],
-      };
+      newLesson.value = buildCreateDefaults();
     }
   },
 );

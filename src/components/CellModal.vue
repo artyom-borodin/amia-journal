@@ -84,6 +84,24 @@
 
       <div class="dialog-footer">
         <Button
+          icon="pi pi-chevron-left"
+          text
+          rounded
+          :title="APP_CONSTANTS.UI.LABELS.PREV"
+          :disabled="isSaving || prevDisabled"
+          class="mr-auto"
+          @click="$emit('prev')"
+        />
+        <span v-if="positionText" class="cell-position">{{ positionText }}</span>
+        <Button
+          icon="pi pi-chevron-right"
+          text
+          rounded
+          :title="APP_CONSTANTS.UI.LABELS.NEXT"
+          :disabled="isSaving || nextDisabled"
+          @click="$emit('next')"
+        />
+        <Button
           :label="APP_CONSTANTS.UI.LABELS.CANCEL"
           icon="pi pi-times"
           text
@@ -116,9 +134,12 @@ const props = defineProps({
   attendance: Object,
   dicts: Object,
   isSaving: Boolean,
+  positionText: String,
+  prevDisabled: Boolean,
+  nextDisabled: Boolean,
 });
 
-const emit = defineEmits(["update:visible", "save"]);
+const emit = defineEmits(["update:visible", "save", "prev", "next"]);
 
 const headerTitle = computed(() => getPersonFullName(props.person));
 

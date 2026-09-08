@@ -8,6 +8,7 @@
         v-model:period="period"
         v-model:nameFilter="nameFilter"
         :groups="dictionaryStore.dicts.groups"
+        @help="openHelp"
       />
 
       <div v-if="!selectedGroup || !periodDates.length" class="empty-state">
@@ -22,17 +23,12 @@
         <i class="pi pi-spin pi-spinner empty-state-icon"></i>
         <span>{{ APP_CONSTANTS.UI.MESSAGES.LOADING }}</span>
       </div>
+      <div v-else-if="!attendanceStore.persons.length" class="empty-state">
+        <i class="pi pi-inbox empty-state-icon"></i>
+        <span>{{ APP_CONSTANTS.UI.MESSAGES.NO_DATA }}</span>
+      </div>
 
       <div v-else class="grid-container">
-        <div class="flex-row justify-end mb-4 flex-shrink-0">
-          <Button
-            icon="pi pi-question-circle"
-            text
-            rounded
-            :title="APP_CONSTANTS.UI.HELP.ATTENDANCE_TITLE"
-            @click="openHelp"
-          />
-        </div>
         <AttendanceGrid
           :persons="attendanceStore.persons"
           :lesson-times="sortedLessonTimes"
@@ -84,12 +80,15 @@ import { useAttendanceStore } from "../store/attendanceStore";
 import { APP_CONSTANTS } from "../config/constants";
 import { generateCellKey } from "../utils/journalUtils";
 import { useHelpDialog } from "../composables/useHelpDialog";
-import { toApiDate } from "../utils/dateUtils";
+import { useStoredRef } from "../composables/useStoredRef";
+import { useNotify } from "../composables/useNotify";
+import { getWeekRange, toApiDate } from "../utils/dateUtils";
 
 const dictionaryStore = useDictionaryStore();
 const attendanceStore = useAttendanceStore();
+const { notifySuccess } = useNotify();
 
-const selectedGroup = ref(null);
+const selectedGroup = useStoredRef(APP_CONSTANTS.STORAGE_KEYS.ATTENDANCE_GROUP);
 const nameFilter = ref("");
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
@@ -105,23 +104,11 @@ const isSaving = ref(false);
 const { showHelpDialog, openHelp, handleHelpConfirm, maybeShowHelp } =
   useHelpDialog(APP_CONSTANTS.STORAGE_KEYS.ATTENDANCE_HELP_HIDE);
 
-const startOfWeek = () => {
-  const d = new Date();
-  const day = (d.getDay() + 6) % 7;
-  d.setDate(d.getDate() - day);
-  return d;
-};
-const period = ref([
-  startOfWeek(),
-  (() => {
-    const d = startOfWeek();
-    d.setDate(d.getDate() + 6);
-    return d;
-  })(),
-]);
+const period = ref(getWeekRange(APP_CONSTANTS.RULES.WEEK_OFFSET_CURRENT));
 
-onMounted(() => {
-  dictionaryStore.fetchDictionaries();
+onMounted(async () => {
+  await dictionaryStore.fetchDictionaries();
+  loadData();
 });
 
 const periodDates = computed(() => {
@@ -176,7 +163,7 @@ const openDialog = ({ person, lessonTime, date }) => {
   dialogVisible.value = true;
 };
 
-const applyAttendanceAction = (action, payload) => {
+const applyAttendanceAction = (action, payload, successMessage) => {
   if (isSaving.value) return;
   isSaving.value = true;
   attendanceStore[action]({
@@ -185,6 +172,7 @@ const applyAttendanceAction = (action, payload) => {
   })
     .then(() => {
       dialogVisible.value = false;
+      notifySuccess(successMessage);
     })
     .catch((e) =>
       showError(e?.response?.data?.error || APP_CONSTANTS.UI.ERRORS.SAVE_DATA),
@@ -194,10 +182,19 @@ const applyAttendanceAction = (action, payload) => {
     });
 };
 
-const handleSave = (payload) => applyAttendanceAction("applyBulkSave", payload);
+const handleSave = (payload) =>
+  applyAttendanceAction(
+    "applyBulkSave",
+    payload,
+    APP_CONSTANTS.UI.NOTIFY.ATTENDANCE_SAVED,
+  );
 
 const handleRemove = (payload) =>
-  applyAttendanceAction("applyBulkDelete", payload);
+  applyAttendanceAction(
+    "applyBulkDelete",
+    payload,
+    APP_CONSTANTS.UI.NOTIFY.ATTENDANCE_DELETED,
+  );
 
 const showError = (message) => {
   errorMessage.value = message;

@@ -34,6 +34,14 @@
   margin-top: var(--space-3);
 }
 
+.cell-position {
+  align-self: center;
+  font-size: var(--fs-sm);
+  color: var(--p-surface-500);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
 .p-dialog .p-button:disabled {
   opacity: var(--opacity-disabled);
 }

@@ -26,7 +26,7 @@
         <span>{{ APP_CONSTANTS.UI.MESSAGES.NO_LESSONS }}</span>
       </div>
 
-      <div v-else class="flex-col flex-1 overflow-hidden">
+      <div v-else class="flex-col flex-1 overflow-hidden min-w-0">
         <div class="flex-row gap-4 mb-4 align-end flex-shrink-0">
           <div class="field max-w-30rem">
             <label>{{ APP_CONSTANTS.UI.LABELS.PERIOD }}</label>
@@ -58,12 +58,16 @@
             :records-map="journalStore.recordsMap"
             :attendances-map="journalStore.attendancesMap"
             :dicts-map="dictionaryStore.dictsMap"
+            :grid-matrix="journalStore.gridMatrix"
             :date-filter="dateFilter"
             :name-filter="nameFilter"
+            :quick-filter="quickFilter"
             @update:nameFilter="nameFilter = $event"
+            @update:quickFilter="quickFilter = $event"
             @cell-click="openCellModal"
             @edit-lesson="openEditLessonModal"
             @error="showError"
+            @saved="notifySuccess(APP_CONSTANTS.UI.NOTIFY.SAVED)"
           />
         </div>
       </div>
@@ -77,13 +81,19 @@
         :attendance="selectedCell.attendance"
         :dicts="dictionaryStore.dicts"
         :is-saving="isSavingCell"
+        :position-text="selectedCellPosition"
+        :prev-disabled="isFirstCell"
+        :next-disabled="isLastCell"
         @update:visible="selectedCell = null"
         @save="handleSaveCell"
+        @prev="goToSiblingCell(-1)"
+        @next="goToSiblingCell(1)"
       />
 
       <AddLessonModal
         :visible="showAddLessonModal"
         :lesson="editingLesson"
+        :last-lesson="lastLesson"
         :dicts="dictionaryStore.dicts"
         :dicts-map="dictionaryStore.dictsMap"
         :is-saving="isSavingLesson"
@@ -116,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import NavBar from "../components/NavBar.vue";
 import JournalFilters from "../components/journal/JournalFilters.vue";
 import JournalGrid from "../components/JournalGrid.vue";
@@ -129,9 +139,11 @@ import { useJournalStore } from "../store/journalStore";
 import { useDictionaryStore } from "../store/dictionaryStore";
 import { JournalService } from "../services/journalService";
 import { APP_CONSTANTS } from "../config/constants";
-import { generateCellKey } from "../utils/journalUtils";
+import { generateCellKey, getLastLesson } from "../utils/journalUtils";
 import { formatDate } from "../utils/dateUtils";
 import { useHelpDialog } from "../composables/useHelpDialog";
+import { useStoredRef } from "../composables/useStoredRef";
+import { useNotify } from "../composables/useNotify";
 import {
   extractErrorMessage,
   extractLessonErrorMessage,
@@ -139,11 +151,13 @@ import {
 
 const journalStore = useJournalStore();
 const dictionaryStore = useDictionaryStore();
+const { notifySuccess } = useNotify();
 
-const selectedGroup = ref(null);
-const selectedSubject = ref(null);
+const selectedGroup = useStoredRef(APP_CONSTANTS.STORAGE_KEYS.JOURNAL_GROUP);
+const selectedSubject = useStoredRef(APP_CONSTANTS.STORAGE_KEYS.JOURNAL_SUBJECT);
 const dateFilter = ref(null);
 const nameFilter = ref("");
+const quickFilter = ref(APP_CONSTANTS.JOURNAL_QUICK_FILTERS.ALL);
 
 const showAddLessonModal = ref(false);
 const editingLesson = ref(null);
@@ -178,9 +192,16 @@ const loadGridData = async (silent = false) => {
     selectedSubject.value,
     silent,
   );
+  if (!silent) {
+    maybeShowHelp(journalStore.lessons.length > 0);
+  }
 };
 
 const openCellModal = ({ person, lesson }) => {
+  selectedCell.value = buildSelectedCell(person, lesson);
+};
+
+const buildSelectedCell = (person, lesson) => {
   const attendanceKey = generateCellKey(
     person.uniqueId,
     lesson.date,
@@ -188,7 +209,7 @@ const openCellModal = ({ person, lesson }) => {
   );
   const recordKey = `${person.uniqueId}_${lesson.id}`;
 
-  selectedCell.value = {
+  return {
     person,
     lesson,
     records: journalStore.recordsMap[recordKey] || [],
@@ -196,19 +217,52 @@ const openCellModal = ({ person, lesson }) => {
   };
 };
 
+const selectedCellIndex = computed(() => {
+  if (!selectedCell.value) return -1;
+  return journalStore.persons.findIndex(
+    (p) => p.uniqueId === selectedCell.value.person.uniqueId,
+  );
+});
+
+const selectedCellPosition = computed(() => {
+  if (selectedCellIndex.value < 0) return "";
+  const current = selectedCellIndex.value + 1;
+  const total = journalStore.persons.length;
+  return `${current} ${APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR} ${total}`;
+});
+
+const isFirstCell = computed(() => selectedCellIndex.value <= 0);
+const isLastCell = computed(
+  () =>
+    selectedCellIndex.value < 0 ||
+    selectedCellIndex.value >= journalStore.persons.length - 1,
+);
+
+const lastLesson = computed(() => getLastLesson(journalStore.lessons));
+
+const goToSiblingCell = (direction) => {
+  const nextIndex = selectedCellIndex.value + direction;
+  const nextPerson = journalStore.persons[nextIndex];
+  if (!nextPerson || !selectedCell.value) return;
+  selectedCell.value = buildSelectedCell(nextPerson, selectedCell.value.lesson);
+};
+
 const handleSaveCell = async ({ reason, marks }) => {
   if (isSavingCell.value) return;
   isSavingCell.value = true;
   try {
+    const person = selectedCell.value.person;
+    const lesson = selectedCell.value.lesson;
     await journalStore.saveCellData({
       reason,
       marks,
-      person: selectedCell.value.person,
-      lesson: selectedCell.value.lesson,
+      person,
+      lesson,
       attendance: selectedCell.value.attendance,
     });
 
-    selectedCell.value = null;
+    selectedCell.value = buildSelectedCell(person, lesson);
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.SAVED);
   } catch (error) {
     console.error("Failed to save cell data:", error);
     showError(error, APP_CONSTANTS.UI.ERRORS.SAVE_DATA);
@@ -228,6 +282,7 @@ const handleAddLesson = async (lessonData) => {
     });
     showAddLessonModal.value = false;
     await loadGridData(true);
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.LESSON_ADDED);
   } catch (error) {
     console.error("Failed to add lesson:", error);
     showError(
@@ -251,6 +306,7 @@ const handleDownloadRoster = async () => {
       selectedGroup.value,
       selectedSubject.value,
     );
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.ROSTER_SAVED);
   } catch (error) {
     console.error("Failed to download roster:", error);
     showError(error, APP_CONSTANTS.UI.ERRORS.DOWNLOAD_ROSTER);
@@ -295,6 +351,7 @@ const handleDeleteLesson = async () => {
     showAddLessonModal.value = false;
     editingLesson.value = null;
     await loadGridData(true);
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.LESSON_DELETED);
   } catch (error) {
     console.error("Failed to delete lesson:", error);
     showError(error, APP_CONSTANTS.UI.ERRORS.DELETE_LESSON);
@@ -318,6 +375,7 @@ const handleEditLesson = async (lessonData) => {
     showAddLessonModal.value = false;
     editingLesson.value = null;
     await loadGridData(true);
+    notifySuccess(APP_CONSTANTS.UI.NOTIFY.LESSON_UPDATED);
   } catch (error) {
     console.error("Failed to edit lesson:", error);
     showError(
@@ -330,19 +388,14 @@ const handleEditLesson = async (lessonData) => {
 
 watch([selectedGroup, selectedSubject], () => {
   nameFilter.value = "";
+  quickFilter.value = APP_CONSTANTS.JOURNAL_QUICK_FILTERS.ALL;
   loadGridData(false);
 });
 
-watch(
-  () => [journalStore.lessons.length, journalStore.isLoading],
-  () => {
-    maybeShowHelp(
-      !journalStore.isLoading && journalStore.lessons.length > 0,
-    );
-  },
-);
-
-onMounted(() => {
-  dictionaryStore.fetchDictionaries();
+onMounted(async () => {
+  await dictionaryStore.fetchDictionaries();
+  if (selectedGroup.value && selectedSubject.value) {
+    await loadGridData(false);
+  }
 });
 </script>

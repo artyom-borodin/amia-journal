@@ -52,3 +52,40 @@ export const toApiTime = (date) => {
   );
   return `${hours}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}${minutes}${APP_CONSTANTS.FORMATTING.TIME_SEPARATOR}${seconds}`;
 };
+
+export const startOfWeek = (date = new Date()) => {
+  const d = new Date(date);
+  const day =
+    (d.getDay() + APP_CONSTANTS.RULES.MONDAY_FIRST_DAY_OFFSET) %
+    APP_CONSTANTS.RULES.DAYS_PER_WEEK;
+  d.setDate(d.getDate() - day);
+  d.setHours(
+    APP_CONSTANTS.RULES.START_OF_DAY_HOURS,
+    APP_CONSTANTS.RULES.START_OF_DAY_MINUTES,
+    APP_CONSTANTS.RULES.START_OF_DAY_SECONDS,
+    APP_CONSTANTS.RULES.START_OF_DAY_MS,
+  );
+  return d;
+};
+
+export const addDays = (date, days) => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+};
+
+export const getWeekRange = (
+  offsetWeeks = APP_CONSTANTS.RULES.WEEK_OFFSET_CURRENT,
+) => {
+  const start = addDays(
+    startOfWeek(),
+    offsetWeeks * APP_CONSTANTS.RULES.DAYS_PER_WEEK,
+  );
+  const end = addDays(start, APP_CONSTANTS.RULES.DAYS_PER_WEEK - 1);
+  return [start, end];
+};
+
+export const isToday = (apiDateStr) => {
+  if (!apiDateStr) return false;
+  return toApiDate(new Date()) === apiDateStr;
+};

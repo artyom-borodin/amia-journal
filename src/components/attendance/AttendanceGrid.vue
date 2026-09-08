@@ -8,12 +8,19 @@
           :key="dateLabel.key"
           :colspan="lessonTimes.length"
           class="date-header-cell"
+          :class="{ 'is-today': dateLabel.isToday }"
         >
           {{ dateLabel.label }}
         </th>
+        <th rowspan="2" class="total-col">{{ APP_CONSTANTS.UI.LABELS.ABSENCES_SHORT }}</th>
       </tr>
       <tr>
-        <th v-for="col in columns" :key="col.key" class="pair-header-cell">
+        <th
+          v-for="col in columns"
+          :key="col.key"
+          class="pair-header-cell"
+          :class="{ 'is-today': col.isToday }"
+        >
           {{ col.lt.number }} {{ APP_CONSTANTS.UI.LABELS.LESSON_NUMBER_SUFFIX }}
           <small>{{ formatTimeShort(col.lt.start_time) }}-{{ formatTimeShort(col.lt.end_time) }}</small>
         </th>
@@ -26,16 +33,19 @@
           v-for="col in columns"
           :key="col.key"
           class="pair-cell"
-          :class="{ 'is-marked': !!getCellReason(person, col) }"
+          :class="{ 'is-marked': !!getCellReason(person, col), 'is-today': col.isToday }"
           :title="cellText(person, col)"
           @click="$emit('cell-click', { person, lessonTime: col.lt, date: col.date })"
         >
           {{ cellText(person, col) }}
         </td>
+        <td class="total-col">{{ absenceTotal(person) }}</td>
       </tr>
       <tr v-if="!filteredPersons.length">
-        <td :colspan="columns.length + 1" class="empty-state">
-          {{ APP_CONSTANTS.UI.MESSAGES.NO_DATA }}
+        <td :colspan="columns.length + 2" class="empty-cell">
+          <div class="attendance-empty">
+            {{ APP_CONSTANTS.UI.MESSAGES.NO_DATA }}
+          </div>
         </td>
       </tr>
     </tbody>
@@ -50,7 +60,7 @@ import {
   generateCellKey,
   formatTimeShort,
 } from "../../utils/journalUtils";
-import { toApiDate } from "../../utils/dateUtils";
+import { toApiDate, isToday } from "../../utils/dateUtils";
 
 const props = defineProps({
   persons: Array,
@@ -79,6 +89,7 @@ const columns = computed(() => {
       cols.push({
         key: `${dateStr}_${lt.id}`,
         date: dateStr,
+        isToday: isToday(dateStr),
         lt,
       });
     });
@@ -87,10 +98,14 @@ const columns = computed(() => {
 });
 
 const dateLabels = computed(() =>
-  periodDates.value.map((date) => ({
-    key: toApiDate(date),
-    label: dateFormat.format(date),
-  })),
+  periodDates.value.map((date) => {
+    const key = toApiDate(date);
+    return {
+      key,
+      label: dateFormat.format(date),
+      isToday: isToday(key),
+    };
+  }),
 );
 
 const periodDates = computed(() => {
@@ -124,4 +139,7 @@ const cellText = (person, col) => {
   const reason = getCellReason(person, col);
   return reason?.name || "";
 };
+
+const absenceTotal = (person) =>
+  columns.value.reduce((sum, col) => sum + (getCellReason(person, col) ? 1 : 0), 0);
 </script>

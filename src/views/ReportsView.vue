@@ -25,6 +25,14 @@
           "
           @click="switchTab(APP_CONSTANTS.REPORT_TABS.ATTENDANCE)"
         />
+        <Button
+          icon="pi pi-question-circle"
+          text
+          rounded
+          class="ml-auto"
+          :title="APP_CONSTANTS.UI.HELP.REPORTS_TITLE"
+          @click="openHelp"
+        />
       </div>
 
       <ReportFilters
@@ -46,24 +54,47 @@
         <i class="pi pi-filter empty-state-icon"></i>
         <span>{{ APP_CONSTANTS.UI.MESSAGES.SELECT_REPORT_FILTERS }}</span>
       </div>
+
+      <HelpDialog
+        :visible="showHelpDialog"
+        :title="APP_CONSTANTS.UI.HELP.REPORTS_TITLE"
+        :lines="APP_CONSTANTS.UI.HELP.REPORTS_LINES"
+        @update:visible="showHelpDialog = $event"
+        @confirm="handleHelpConfirm"
+      />
     </main>
+    <ErrorDialog v-model:visible="showErrorDialog" :message="errorMessage" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import NavBar from "../components/NavBar.vue";
+import ErrorDialog from "../components/ErrorDialog.vue";
 import ReportFilters from "../components/reports/ReportFilters.vue";
 import PerformanceTable from "../components/reports/PerformanceTable.vue";
 import AttendanceTable from "../components/reports/AttendanceTable.vue";
 import { useDictionaryStore } from "../store/dictionaryStore";
 import { useReportStore } from "../store/reportStore";
 import { APP_CONSTANTS } from "../config/constants";
+import { extractErrorMessage } from "../utils/errorUtils";
+import { useHelpDialog } from "../composables/useHelpDialog";
+import HelpDialog from "../components/HelpDialog.vue";
 
 const dictionaryStore = useDictionaryStore();
 const reportStore = useReportStore();
 
 const activeTab = ref(APP_CONSTANTS.REPORT_TABS.PERFORMANCE);
+const showErrorDialog = ref(false);
+const errorMessage = ref("");
+
+const { showHelpDialog, openHelp, handleHelpConfirm, maybeShowHelp } =
+  useHelpDialog(APP_CONSTANTS.STORAGE_KEYS.REPORTS_HELP_HIDE);
+
+const showError = (error) => {
+  errorMessage.value = extractErrorMessage(error, APP_CONSTANTS.UI.ERRORS.GENERATE_REPORT);
+  showErrorDialog.value = true;
+};
 
 const currentData = computed(() =>
   activeTab.value === APP_CONSTANTS.REPORT_TABS.PERFORMANCE
@@ -81,10 +112,16 @@ const switchTab = (tab) => {
 };
 
 const handleGenerate = async (filters) => {
-  if (activeTab.value === APP_CONSTANTS.REPORT_TABS.PERFORMANCE) {
-    await reportStore.generatePerformanceReport(filters);
-  } else {
-    await reportStore.generateAttendanceReport(filters);
+  try {
+    if (activeTab.value === APP_CONSTANTS.REPORT_TABS.PERFORMANCE) {
+      await reportStore.generatePerformanceReport(filters);
+    } else {
+      await reportStore.generateAttendanceReport(filters);
+    }
+    maybeShowHelp(currentData.value.length > 0);
+  } catch (error) {
+    console.error("Failed to generate report:", error);
+    showError(error);
   }
 };
 </script>
