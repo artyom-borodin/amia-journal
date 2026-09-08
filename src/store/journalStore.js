@@ -20,7 +20,7 @@ export const useJournalStore = defineStore("journal", () => {
   const recordsMap = ref({});
   const attendancesMap = ref({});
   const gridMatrix = ref({});
-  const isLoading = ref(false);
+  const isLoading = ref(true);
 
   const gridRequest = useLatestRequest();
 

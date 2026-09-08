@@ -13,7 +13,7 @@ export const useAttendanceStore = defineStore("attendance", () => {
 
   const persons = ref([]);
   const attendancesMap = ref({});
-  const isLoading = ref(false);
+  const isLoading = ref(true);
 
   const attendanceRequest = useLatestRequest();
 
