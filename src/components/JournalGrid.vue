@@ -54,13 +54,6 @@
               </div>
             </template>
           </Column>
-          <Column :rowspan="2" class="summary-column">
-            <template #header>
-              <div class="summary-header">
-                {{ APP_CONSTANTS.UI.LABELS.SUMMARY }}
-              </div>
-            </template>
-          </Column>
           <Column
             v-for="i in emptyColumnsCount"
             :key="APP_CONSTANTS.PREFIXES.EMPTY_DATE + i"
@@ -232,22 +225,6 @@
         </template>
       </Column>
 
-      <Column class="summary-column">
-        <template #body="{ data }">
-          <div v-if="!data.isEmptyRow" class="summary-cell">
-            <span v-if="personStats(data.uniqueId).avg != null" class="avg-value"
-              >{{ APP_CONSTANTS.UI.LABELS.AVG_SHORT }}
-              {{ personStats(data.uniqueId).avg }}</span
-            >
-            <span v-if="personStats(data.uniqueId).absences > 0" class="absent-label"
-              >{{ APP_CONSTANTS.UI.LABELS.ABSENCES_SHORT }}:
-              {{ personStats(data.uniqueId).absences }}</span
-            >
-          </div>
-          <div v-else class="cell-content disabled-cell"></div>
-        </template>
-      </Column>
-
       <Column
         v-for="i in emptyColumnsCount"
         :key="APP_CONSTANTS.PREFIXES.EMPTY_COL + i"
@@ -273,7 +250,6 @@ import { computed, ref } from "vue";
 import { APP_CONSTANTS } from "../config/constants";
 import { formatDate } from "../utils/dateUtils";
 import { getPersonFullName, formatTimeShort } from "../utils/journalUtils";
-import { calcPersonStats } from "../utils/journalStats";
 import { useJournalStore } from "../store/journalStore";
 import { useInlineEdit } from "../composables/useInlineEdit";
 import { useJournalGrid } from "../composables/useJournalGrid";
@@ -343,22 +319,6 @@ const personsCounter = computed(() => {
   const total = (props.persons || []).length;
   return `${shown} ${APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR} ${total}`;
 });
-
-const personStatsCache = computed(() => {
-  const cache = {};
-  (props.persons || []).forEach((person) => {
-    cache[person.uniqueId] = calcPersonStats(
-      person.uniqueId,
-      filteredLessons.value,
-      props.gridMatrix,
-      props.dictsMap?.markValues,
-    );
-  });
-  return cache;
-});
-
-const personStats = (personUniqueId) =>
-  personStatsCache.value[personUniqueId] || { avg: null, absences: 0 };
 
 const isEmptyCell = (personUniqueId, lessonId) => {
   const cell = props.gridMatrix?.[personUniqueId]?.[lessonId];

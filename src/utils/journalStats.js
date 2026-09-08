@@ -1,13 +1,5 @@
 import { APP_CONSTANTS } from "../config/constants";
 
-const toNumericValue = (markValue) => {
-  if (markValue == null) return null;
-  const normalized = String(markValue).replace(",", ".").trim();
-  if (normalized === "") return null;
-  const num = Number(normalized);
-  return Number.isNaN(num) ? null : num;
-};
-
 const cellOf = (gridMatrix, personId, lessonId) => gridMatrix?.[personId]?.[lessonId];
 
 const getPersonCellList = (personId, lessons, gridMatrix) =>
@@ -38,31 +30,4 @@ export const matchesQuickFilter = (personId, lessons, gridMatrix, filter) => {
     default:
       return true;
   }
-};
-
-export const calcPersonStats = (personId, lessons, gridMatrix, markValuesMap) => {
-  const cells = getPersonCellList(personId, lessons, gridMatrix);
-  let absences = 0;
-  let sum = 0;
-  let numericCount = 0;
-
-  cells.forEach((cell) => {
-    if (!cell) return;
-    if (cell.isAbsent) absences += 1;
-    const mainRecord = (cell.records || [])[0];
-    if (!mainRecord) return;
-    const num = toNumericValue(markValuesMap?.[mainRecord.mark_value]?.value);
-    if (num != null) {
-      sum += num;
-      numericCount += 1;
-    }
-  });
-
-  return {
-    absences,
-    avg:
-      numericCount > 0
-        ? Number((sum / numericCount).toFixed(APP_CONSTANTS.STATS.AVG_FRACTION_DIGITS))
-        : null,
-  };
 };
