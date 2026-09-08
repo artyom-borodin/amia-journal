@@ -53,6 +53,7 @@
 
         <div class="grid-container">
           <JournalGrid
+            ref="journalGridRef"
             :persons="journalStore.persons"
             :lessons="journalStore.lessons"
             :records-map="journalStore.recordsMap"
@@ -162,6 +163,7 @@ const quickFilter = ref(APP_CONSTANTS.JOURNAL_QUICK_FILTERS.ALL);
 const showAddLessonModal = ref(false);
 const editingLesson = ref(null);
 const selectedCell = ref(null);
+const journalGridRef = ref(null);
 const isSavingCell = ref(false);
 const isSavingLesson = ref(false);
 const isDownloadingRoster = ref(false);
@@ -217,9 +219,12 @@ const buildSelectedCell = (person, lesson) => {
   };
 };
 
+const navPersons = () =>
+  journalGridRef.value?.getVisiblePersons?.() ?? journalStore.persons;
+
 const selectedCellIndex = computed(() => {
   if (!selectedCell.value) return -1;
-  return journalStore.persons.findIndex(
+  return navPersons().findIndex(
     (p) => p.uniqueId === selectedCell.value.person.uniqueId,
   );
 });
@@ -227,7 +232,7 @@ const selectedCellIndex = computed(() => {
 const selectedCellPosition = computed(() => {
   if (selectedCellIndex.value < 0) return "";
   const current = selectedCellIndex.value + 1;
-  const total = journalStore.persons.length;
+  const total = navPersons().length;
   return `${current} ${APP_CONSTANTS.UI.BREADCRUMB_SEPARATOR} ${total}`;
 });
 
@@ -235,14 +240,14 @@ const isFirstCell = computed(() => selectedCellIndex.value <= 0);
 const isLastCell = computed(
   () =>
     selectedCellIndex.value < 0 ||
-    selectedCellIndex.value >= journalStore.persons.length - 1,
+    selectedCellIndex.value >= navPersons().length - 1,
 );
 
 const lastLesson = computed(() => getLastLesson(journalStore.lessons));
 
 const goToSiblingCell = (direction) => {
   const nextIndex = selectedCellIndex.value + direction;
-  const nextPerson = journalStore.persons[nextIndex];
+  const nextPerson = navPersons()[nextIndex];
   if (!nextPerson || !selectedCell.value) return;
   selectedCell.value = buildSelectedCell(nextPerson, selectedCell.value.lesson);
 };

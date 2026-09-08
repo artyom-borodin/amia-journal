@@ -330,6 +330,10 @@ const onCellKeydown = (event, person, lesson) => {
   handleInlineKeydown(event, person, lesson, filteredPersons.value);
 };
 
+defineExpose({
+  getVisiblePersons: () => filteredPersons.value,
+});
+
 const handleCellClick = (data, lesson) => {
   const isAbsent =
     journalStore.gridMatrix[data.uniqueId]?.[lesson.id]?.isAbsent;
