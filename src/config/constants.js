@@ -43,7 +43,7 @@ export const APP_CONSTANTS = {
     SYNC_MARKS: "sync-marks/",
     DOWNLOAD_VEDOMOST: "/download-vedomost/",
     DOWNLOAD_STUDENT_CARD: "/download-student-card/",
-    DOWNLOAD_ROSTER: "/download-roster/",
+    DOWNLOAD_ROSTER: "download-roster/",
     BULK: "bulk/",
     BULK_DELETE: "bulk-delete/",
   },
